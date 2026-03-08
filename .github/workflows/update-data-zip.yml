@@ -1,0 +1,26 @@
+name: Update data.zip
+
+on:
+  push:
+    paths:
+      - 'data/**'
+
+permissions:
+  contents: write
+
+jobs:
+  zipdata:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create zip
+        run: zip -r data.zip data
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: data-latest
+          name: Data
+          files: data.zip

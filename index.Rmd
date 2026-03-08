@@ -1,0 +1,95 @@
+--- 
+title: "Spatial Analysis for Environmental Scientists"
+subtitle: "Notes for ESCI 505"
+author: "Andy Bunn"
+date: "`r format(Sys.time(), '%d-%B-%Y')`"
+description: "Spatial analysis notes and exercises for ESCI 505"
+documentclass: book
+bibliography: [packages.bib,otherRefs.bib]
+#csl: global-change-biology.csl
+biblio-style: apalike
+link-citations: yes
+site: bookdown::bookdown_site
+output: 
+  bookdown::gitbook:
+    includes:
+      in_header: hide_code.html # inspired by: https://stackoverflow.com/questions/45360998/code-folding-in-bookdown
+    config:
+      toc:
+        collapse: section
+        scroll_highlight: true
+        before: null
+        after: null
+    split_bib: no
+---
+
+# Welcome
+
+This document is a compilation of notes, examples, and exercises developed for our course on spatial analysis, with a particular focus on environmental applications. Rather than follow a traditional textbook, we’ve taken a modular, hands-on approach. Each section builds on what came before, emphasizing interpretation, practical tools, and critical thinking about how spatial models apply to real-world environmental questions.
+
+You’ll find annotated code, worked examples, and commentary throughout — some informal, some technical — all aimed at helping you *do* spatial work, not just read about it. The examples often draw from environmental data: climate records, ecological spatial, and other systems that change over time and space. But the core ideas and tools are broadly applicable.
+
+From time to time, I’ll refer you to more formal textbooks or peer-reviewed articles to go deeper into theory, context, or application. These serve as complements, not replacements, for what we’re doing here.
+
+The tone of these notes is meant to be accessible, pragmatic, and occasionally opinionated. You’ll see suggestions, cautions, and nudges — all based on what I’ve found helpful (and confusing) when learning and teaching these methods.
+
+This isn’t a comprehensive or final text. It’s a live document, shaped by your questions, feedback, and curiosity. Think of it as a field guide: not everything you’ll ever need, but hopefully exactly what you need to get your bearings, spot the patterns, and know what to do next.
+
+*This is a living document — feedback and corrections are always welcome.*
+
+## What’s in These Notes
+
+The notes move through the core ideas of spatial analysis in roughly this order:
+
+**Enter chapters here**
+
+Each chapter builds on the last, so working through them in order is recommended — though the asides can be read independently.
+
+## Technical Setup
+
+This document was written in Markdown using the **bookdown** package and built with **R version `r getRversion()`**. You should be reasonably up to date on your versions of R, RStudio, and relevant packages. You can update your packages by running:
+
+``` r
+update.packages()
+```
+
+### Project Structure
+
+To follow along with the examples, you'll want a working RStudio project.
+
+1.  **Create a new RStudio project**\
+Go to **File → New Project → New Directory → New Project**. Give it a name (for example `spatial-course`) and choose where to save it.
+
+2.  **Download the `data/` folder**\
+The datasets used in the examples are available in the `data/` folder of the course repository. Download that folder and place it inside your project directory.
+
+You can download the data directly from the GitHub [repo](https://github.com/AndyBunn/spatialNotes). The hard link to it is:
+https://github.com/AndyBunn/spatialNotes/releases/download/data-latest/data.zip
+
+Once it's unzipped your folder structure should look something like this:
+
+   ```
+   spatial-course/
+   ├── data/
+   │   ├── stuff.csv
+   │   ├── morestuff.rds
+   │   └── ...
+   └── spatial-course.Rproj
+   ```
+
+3.  **Refer to data files using relative paths**
+
+In your code, use paths like `"data/stuff.csv"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `fishcatch <- read.csv("data/stuff.csv")`.
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'tidyverse', 'terra', 'sf', 'ggnewscale','tidyterra',
+  'spatstat'),
+'packages.bib')
+# to build everything in docs/.
+# bookdown::render_book() 
+# to build a chapter only
+# bookdown::preview_chapter("05SoManyChoices.Rmd")
+```

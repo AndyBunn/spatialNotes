@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Mt Baker Map | Spatial Analysis for Environmental Scientists</title>
+  <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Mt Baker Map | Spatial Analysis for Environmental Scientists" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Mt Baker Map | Spatial Analysis for Environmental Scientists" />
+  
+  <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
+  
+
+<meta name="author" content="Andy Bunn" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="point-patterns.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+<script>
+/* ========================================================================
+ * Bootstrap: transition.js v3.3.7
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: collapse.js v3.3.7
+ * http://getbootstrap.com/javascript/#collapse
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+/* jshint latedef: false */
+
++function ($) {
+  'use strict';
+
+  // COLLAPSE PUBLIC CLASS DEFINITION
+  // ================================
+
+  var Collapse = function (element, options) {
+    this.$element      = $(element)
+    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
+                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
+    this.transitioning = null
+
+    if (this.options.parent) {
+      this.$parent = this.getParent()
+    } else {
+      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
+    }
+
+    if (this.options.toggle) this.toggle()
+  }
+
+  Collapse.VERSION  = '3.3.7'
+
+  Collapse.TRANSITION_DURATION = 350
+
+  Collapse.DEFAULTS = {
+    toggle: true
+  }
+
+  Collapse.prototype.dimension = function () {
+    var hasWidth = this.$element.hasClass('width')
+    return hasWidth ? 'width' : 'height'
+  }
+
+  Collapse.prototype.show = function () {
+    if (this.transitioning || this.$element.hasClass('in')) return
+
+    var activesData
+    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
+
+    if (actives && actives.length) {
+      activesData = actives.data('bs.collapse')
+      if (activesData && activesData.transitioning) return
+    }
+
+    var startEvent = $.Event('show.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    if (actives && actives.length) {
+      Plugin.call(actives, 'hide')
+      activesData || actives.data('bs.collapse', null)
+    }
+
+    var dimension = this.dimension()
+
+    this.$element
+      .removeClass('collapse')
+      .addClass('collapsing')[dimension](0)
+      .attr('aria-expanded', true)
+
+    this.$trigger
+      .removeClass('collapsed')
+      .attr('aria-expanded', true)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse in')[dimension]('')
+      this.transitioning = 0
+      this.$element
+        .trigger('shown.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
+
+    this.$element
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
+  }
+
+  Collapse.prototype.hide = function () {
+    if (this.transitioning || !this.$element.hasClass('in')) return
+
+    var startEvent = $.Event('hide.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    var dimension = this.dimension()
+
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
+
+    this.$element
+      .addClass('collapsing')
+      .removeClass('collapse in')
+      .attr('aria-expanded', false)
+
+    this.$trigger
+      .addClass('collapsed')
+      .attr('aria-expanded', false)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.transitioning = 0
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse')
+        .trigger('hidden.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    this.$element
+      [dimension](0)
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
+  }
+
+  Collapse.prototype.toggle = function () {
+    this[this.$element.hasClass('in') ? 'hide' : 'show']()
+  }
+
+  Collapse.prototype.getParent = function () {
+    return $(this.options.parent)
+      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+      .each($.proxy(function (i, element) {
+        var $element = $(element)
+        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
+      }, this))
+      .end()
+  }
+
+  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+    var isOpen = $element.hasClass('in')
+
+    $element.attr('aria-expanded', isOpen)
+    $trigger
+      .toggleClass('collapsed', !isOpen)
+      .attr('aria-expanded', isOpen)
+  }
+
+  function getTargetFromTrigger($trigger) {
+    var href
+    var target = $trigger.attr('data-target')
+      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+
+    return $(target)
+  }
+
+
+  // COLLAPSE PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.collapse')
+      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
+      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
+  $.fn.collapse.Constructor = Collapse
+
+
+  // COLLAPSE NO CONFLICT
+  // ====================
+
+  $.fn.collapse.noConflict = function () {
+    $.fn.collapse = old
+    return this
+  }
+
+
+  // COLLAPSE DATA-API
+  // =================
+
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var $this   = $(this)
+
+    if (!$this.attr('data-target')) e.preventDefault()
+
+    var $target = getTargetFromTrigger($this)
+    var data    = $target.data('bs.collapse')
+    var option  = data ? 'toggle' : $this.data()
+
+    Plugin.call($target, option)
+  })
+
+}(jQuery);
+</script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.sourceCode, pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  rCodeBlocks.each(function() {
+
+    // if code block has been labeled with class `fold-show`, show the code on init!
+    var classList = $(this).attr('class').split(/\s+/);
+    for (var i = 0; i < classList.length; i++) {
+    if (classList[i] === 'fold-show') {
+        show = true;
+      }
+      // AGB add fold-hide
+    if (classList[i] === 'fold-hide') {
+        show = false;
+      }
+    }
+    // AGB
+    // if code block has been labeled with class `fold-hide`, hide the code on init!
+//    var classList = $(this).attr('class').split(/\s+/);
+//    for (var i = 0; i < classList.length; i++) {
+//    if (classList[i] === 'fold-hide') {
+//        show = false;
+//      }
+//    }
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // hack: return show to false, otherwise all next codeBlocks will be shown!
+    show = true;
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+    });
+  });
+
+}
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: dropdown.js v3.3.7
+ * http://getbootstrap.com/javascript/#dropdowns
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // DROPDOWN CLASS DEFINITION
+  // =========================
+
+  var backdrop = '.dropdown-backdrop'
+  var toggle   = '[data-toggle="dropdown"]'
+  var Dropdown = function (element) {
+    $(element).on('click.bs.dropdown', this.toggle)
+  }
+
+  Dropdown.VERSION = '3.3.7'
+
+  function getParent($this) {
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = selector && $(selector)
+
+    return $parent && $parent.length ? $parent : $this.parent()
+  }
+
+  function clearMenus(e) {
+    if (e && e.which === 3) return
+    $(backdrop).remove()
+    $(toggle).each(function () {
+      var $this         = $(this)
+      var $parent       = getParent($this)
+      var relatedTarget = { relatedTarget: this }
+
+      if (!$parent.hasClass('open')) return
+
+      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
+
+      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this.attr('aria-expanded', 'false')
+      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
+    })
+  }
+
+  Dropdown.prototype.toggle = function (e) {
+    var $this = $(this)
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+    if (!isActive) {
+      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+        // if mobile we use a backdrop because click events don't delegate
+        $(document.createElement('div'))
+          .addClass('dropdown-backdrop')
+          .insertAfter($(this))
+          .on('click', clearMenus)
+      }
+
+      var relatedTarget = { relatedTarget: this }
+      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this
+        .trigger('focus')
+        .attr('aria-expanded', 'true')
+
+      $parent
+        .toggleClass('open')
+        .trigger($.Event('shown.bs.dropdown', relatedTarget))
+    }
+
+    return false
+  }
+
+  Dropdown.prototype.keydown = function (e) {
+    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
+
+    var $this = $(this)
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    if (!isActive && e.which != 27 || isActive && e.which == 27) {
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
+    }
+
+    var desc = ' li:not(.disabled):visible a'
+    var $items = $parent.find('.dropdown-menu' + desc)
+
+    if (!$items.length) return
+
+    var index = $items.index(e.target)
+
+    if (e.which == 38 && index > 0)                 index--         // up
+    if (e.which == 40 && index < $items.length - 1) index++         // down
+    if (!~index)                                    index = 0
+
+    $items.eq(index).trigger('focus')
+  }
+
+
+  // DROPDOWN PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.dropdown')
+
+      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  // DROPDOWN NO CONFLICT
+  // ====================
+
+  $.fn.dropdown.noConflict = function () {
+    $.fn.dropdown = old
+    return this
+  }
+
+
+  // APPLY TO STANDARD DROPDOWN ELEMENTS
+  // ===================================
+
+  $(document)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+
+}(jQuery);
+</script>
+<style type="text/css">
+.code-folding-btn {
+  margin-bottom: 4px;
+}
+
+.row { display: flex; }
+.collapse { display: none; }
+.in { display:block }
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.open > .dropdown-menu {
+    display: block;
+    color: #ffffff;
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #92897e;
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+  outline: 0;
+}
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  color: #aea79f;
+}
+
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+.btn {
+  display: inline-block;
+  margin-bottom: 1;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+.btn:active,
+.btn.active {
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  opacity: 0.65;
+  box-shadow: none;
+}
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+.btn-default {
+  color: #ffffff;
+  background-color: #aea79f; #important
+  border-color: #aea79f;
+}
+
+.btn-default:focus,
+.btn-default.focus {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #6f675e;
+}
+
+.btn-default:hover {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #92897e;
+}
+.btn-default:active,
+.btn-default.active,
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.btn-group > .btn:first-child {
+  margin-left: 0;
+}
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group > .btn-group {
+  float: left;
+}
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
+  border-radius: 0;
+}
+.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,
+.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group .dropdown-toggle:active,
+.btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+.btn-group > .btn + .dropdown-toggle {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.btn-group > .btn-lg + .dropdown-toggle {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+.btn-group.open .dropdown-toggle {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-group.open .dropdown-toggle.btn-link {
+  box-shadow: none;
+}
+
+</style>
+<script>
+var str = '<div class="btn-group pull-right" style="position: fixed; right: 50px; top: 10px; z-index: 200"><button type="button" class="btn btn-default btn-xs dropdown-toggle" id="allCodeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast=""><span>Code</span> <span class="caret"></span></button><ul class="dropdown-menu" style="min-width: 50px;"><li><a id="rmd-show-all-code" href="#">Show All Code</a></li><li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li></ul></div>';
+document.write(str);
+</script>
+<script>
+$(document).ready(function () {
+  // AGB add fold-hide changed === to !== to default to showing code
+  window.initializeCodeFolding("show" !== "hide");
+});
+</script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#whats-in-these-notes"><i class="fa fa-check"></i><b>1.1</b> What’s in These Notes</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#technical-setup"><i class="fa fa-check"></i><b>1.2</b> Technical Setup</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#project-structure"><i class="fa fa-check"></i><b>1.2.1</b> Project Structure</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="mt-baker-map.html"><a href="mt-baker-map.html"><i class="fa fa-check"></i><b>2</b> Mt Baker Map</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="mt-baker-map.html"><a href="mt-baker-map.html#big-idea"><i class="fa fa-check"></i><b>2.1</b> Big Idea</a></li>
+<li class="chapter" data-level="2.2" data-path="mt-baker-map.html"><a href="mt-baker-map.html#packages"><i class="fa fa-check"></i><b>2.2</b> Packages</a></li>
+<li class="chapter" data-level="2.3" data-path="mt-baker-map.html"><a href="mt-baker-map.html#prepratory-work"><i class="fa fa-check"></i><b>2.3</b> Prepratory Work</a></li>
+<li class="chapter" data-level="2.4" data-path="mt-baker-map.html"><a href="mt-baker-map.html#introduction"><i class="fa fa-check"></i><b>2.4</b> Introduction</a></li>
+<li class="chapter" data-level="2.5" data-path="mt-baker-map.html"><a href="mt-baker-map.html#the-data"><i class="fa fa-check"></i><b>2.5</b> The Data</a></li>
+<li class="chapter" data-level="2.6" data-path="mt-baker-map.html"><a href="mt-baker-map.html#a-map"><i class="fa fa-check"></i><b>2.6</b> A Map</a></li>
+<li class="chapter" data-level="2.7" data-path="mt-baker-map.html"><a href="mt-baker-map.html#your-work"><i class="fa fa-check"></i><b>2.7</b> Your work</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="point-patterns.html"><a href="point-patterns.html"><i class="fa fa-check"></i><b>3</b> Point Patterns</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="point-patterns.html"><a href="point-patterns.html#big-idea-1"><i class="fa fa-check"></i><b>3.1</b> Big Idea</a></li>
+<li class="chapter" data-level="3.2" data-path="point-patterns.html"><a href="point-patterns.html#reading"><i class="fa fa-check"></i><b>3.2</b> Reading</a></li>
+<li class="chapter" data-level="3.3" data-path="point-patterns.html"><a href="point-patterns.html#packages-1"><i class="fa fa-check"></i><b>3.3</b> Packages</a></li>
+<li class="chapter" data-level="3.4" data-path="point-patterns.html"><a href="point-patterns.html#point-patterns-1"><i class="fa fa-check"></i><b>3.4</b> Point Patterns</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="point-patterns.html"><a href="point-patterns.html#simulated-example"><i class="fa fa-check"></i><b>3.4.1</b> Simulated Example</a></li>
+<li class="chapter" data-level="3.4.2" data-path="point-patterns.html"><a href="point-patterns.html#data"><i class="fa fa-check"></i><b>3.4.2</b> Data</a></li>
+<li class="chapter" data-level="3.4.3" data-path="point-patterns.html"><a href="point-patterns.html#kernel-density-estimation"><i class="fa fa-check"></i><b>3.4.3</b> Kernel Density Estimation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="point-patterns.html"><a href="point-patterns.html#ripleys-k"><i class="fa fa-check"></i><b>3.5</b> Ripley’s K</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="point-patterns.html"><a href="point-patterns.html#distances-and-edges"><i class="fa fa-check"></i><b>3.5.1</b> Distances and edges</a></li>
+<li class="chapter" data-level="3.5.2" data-path="point-patterns.html"><a href="point-patterns.html#l-hat"><i class="fa fa-check"></i><b>3.5.2</b> L hat</a></li>
+<li class="chapter" data-level="3.5.3" data-path="point-patterns.html"><a href="point-patterns.html#marked-point-patterns"><i class="fa fa-check"></i><b>3.5.3</b> Marked point patterns</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="point-patterns.html"><a href="point-patterns.html#roll-your-own"><i class="fa fa-check"></i><b>3.6</b> Roll your own</a></li>
+<li class="chapter" data-level="3.7" data-path="point-patterns.html"><a href="point-patterns.html#more-than-trees"><i class="fa fa-check"></i><b>3.7</b> More than trees</a></li>
+<li class="chapter" data-level="3.8" data-path="point-patterns.html"><a href="point-patterns.html#your-work-1"><i class="fa fa-check"></i><b>3.8</b> Your Work</a>
+<ul>
+<li class="chapter" data-level="3.8.1" data-path="point-patterns.html"><a href="point-patterns.html#simulated-data"><i class="fa fa-check"></i><b>3.8.1</b> Simulated data</a></li>
+<li class="chapter" data-level="3.8.2" data-path="point-patterns.html"><a href="point-patterns.html#mycorrhizal-fungi"><i class="fa fa-check"></i><b>3.8.2</b> Mycorrhizal fungi</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="point-patterns.html"><a href="point-patterns.html#extra-rolling-k-by-hand"><i class="fa fa-check"></i><b>3.9</b> Extra: Rolling K by Hand</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>4</b> References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Spatial Analysis for Environmental Scientists</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="mt-baker-map" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Mt Baker Map<a href="mt-baker-map.html#mt-baker-map" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="big-idea" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Big Idea<a href="mt-baker-map.html#big-idea" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The nuts and bolts of working with spatial data are critical to get right. Being able to use raster and vector data are going to be important as we learn spatial analytic methods.</p>
+</div>
+<div id="packages" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Packages<a href="mt-baker-map.html#packages" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Install these if you need them: <code>sf</code><span class="citation">(<a href="references.html#ref-R-sf">Pebesma 2026</a>)</span>, <code>terra</code><span class="citation">(<a href="references.html#ref-R-terra">Hijmans 2026</a>)</span>, and <code>tidyverse</code><span class="citation">(<a href="references.html#ref-R-tidyverse">Wickham 2023</a>)</span> but if you completed the workshop from Data Carpentry they should be all good to go on your system. We’ll use <code>tidyterra</code><span class="citation">(<a href="references.html#ref-R-tidyterra">Hernangómez 2023</a>)</span> and <code>ggnewscale</code><span class="citation">(<a href="references.html#ref-R-ggnewscale">Campitelli 2025</a>)</span> as well.</p>
+<p>But first…</p>
+<p>For the past couple of years there has been major upheaval underway in how projection information is getting stored and how R is working with spatial data in general (e.g., the <code>PROJ</code> projection standard is being replaced by <code>WKT</code> and the <code>raster</code> library is being superseded by <code>terra</code>. It’s both complicated and extremely boring. But while the details are getting worked out, many of the different R libraries that work with the old projection scheme are throwing warnings sometimes. I’ll try to anticipate that and give you workarounds if we need them.</p>
+<p>Ok. Let’s go.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="mt-baker-map.html#cb3-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code></pre></div>
+<pre><code>## terra 1.8.93</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="mt-baker-map.html#cb5-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
+<pre><code>## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="mt-baker-map.html#cb7-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.2.0     ✔ readr     2.2.0
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ ggplot2   4.0.2     ✔ tibble    3.3.1
+## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ tidyr::extract() masks terra::extract()
+## ✖ dplyr::filter()  masks stats::filter()
+## ✖ dplyr::lag()     masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="mt-baker-map.html#cb10-1" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
+<span id="cb10-2"><a href="mt-baker-map.html#cb10-2" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;tidyterra&#39;
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+</div>
+<div id="prepratory-work" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Prepratory Work<a href="mt-baker-map.html#prepratory-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before continuing you should have completed <a href="https://datacarpentry.org/organization-geospatial/">this Introduction to Geospatial Concepts</a> from the good folks at Data Carpentry as well as <a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction to Geospatial Raster and Vector Data with R</a>.</p>
+<p>The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros (literally) and conversant with different data types and spatial schemas. Others are spatial novices. Finishing both of these will help establish a common baseline of knowledge.</p>
+</div>
+<div id="introduction" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Introduction<a href="mt-baker-map.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Because some of you are GIS experts and some of you have only done a tiny bit of GIS, we a tough dynamic in class. This is because a lot of working with spatial data is in the mechanics of displaying and handling data from different sources as well as the whole idea of projecting data from a roundish planet onto a plane. We will focus as much as we can on the big picture of how spatial patterns let us make inference about environmental processes. But we need to be able to do some basic GIS work in R. This assignment builds on what you’ve done in the Data Carpentry workshops and has you make a map using data you haven’t seen before.</p>
+<p>I’ve been working on a cool spatial analysis project up at the Mt Baker ski hill. I won’t go into it now, but it is a project to improve geolocation for skiers and riders using very inexpensive RFID equipment. We will look at some of those data later in class but let’s start with just making a map of some of the features at the ski hill. Many of you are familiar with the area from recreating.</p>
+</div>
+<div id="the-data" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> The Data<a href="mt-baker-map.html#the-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>All of these data are on Canvas.</p>
+<p>First we have a digital elevation model (DEM) of the area near the ski hill. I’ll read this in here using <code>raster</code> from the <code>terra</code> library. Note that these data are projected in UTM (EPSG:32610) so the units are in meters. The DEM has five meter resolution.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="mt-baker-map.html#cb12-1" tabindex="-1"></a>mtbDEM <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;data/mtbDEM.tif&quot;</span>)</span>
+<span id="cb12-2"><a href="mt-baker-map.html#cb12-2" tabindex="-1"></a>mtbDEM</span></code></pre></div>
+<pre><code>## class       : SpatRaster 
+## size        : 409, 628, 1  (nrow, ncol, nlyr)
+## resolution  : 5, 5  (x, y)
+## extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
+## coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
+## source      : mtbDEM.tif 
+## name        :      elev 
+## min value   :  826.4308 
+## max value   : 1689.3694</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="mt-baker-map.html#cb14-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
+<span id="cb14-2"><a href="mt-baker-map.html#cb14-2" tabindex="-1"></a>mtbDEM_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mtbDEM, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-3"><a href="mt-baker-map.html#cb14-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb14-4"><a href="mt-baker-map.html#cb14-4" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> mtbDEM_df , <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
+<span id="cb14-5"><a href="mt-baker-map.html#cb14-5" tabindex="-1"></a>                                               <span class="at">fill =</span> elev)) <span class="sc">+</span> </span>
+<span id="cb14-6"><a href="mt-baker-map.html#cb14-6" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="mt-baker-map.html#cb14-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Easting (m)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Northing (m)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="mt-baker-map.html#cb14-8" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
+<p>This is very similar to the way that the carpentries workshop approached mapping where you take the raster layer from <code>rast</code> and then turn it into a <code>data.frame</code> for plotting. And that works fine. I’ve using the <code>tidyterra</code> library which has a <code>ggplot</code> geometry for the <code>SpatRaster</code> class. That seems easier to me. So here is a simpler approach using <code>geom_spatraster</code>. Oh, and <code>tidyterra</code> has some very cool color schemes. Look at <code>?hypso.colors</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="mt-baker-map.html#cb15-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-2"><a href="mt-baker-map.html#cb15-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="mt-baker-map.html#cb15-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>)</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
+<p>Note that unlike <code>geom_raster()</code>, <code>geom_spatraster()</code> uses the projection information and shows us the plot using latitude and longitude. That can mess us up if we aren’t careful because the projection for <code>mtbDEM</code> is un UTM. If we wanted to we can plot in the original projection with <code>coord_sf()</code>.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="mt-baker-map.html#cb16-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-2"><a href="mt-baker-map.html#cb16-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="mt-baker-map.html#cb16-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="mt-baker-map.html#cb16-4" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">datum =</span> <span class="dv">32610</span>)</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
+<p>Next, I made a hillshade layer from the elevation model.This is a common way to get a 3D representation of a surface that basically shines a light onto a surface at a specified angle and elevation to create shading the image. We need make a slope raster and an aspect raster in order to be able to calculate hillshade.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="mt-baker-map.html#cb17-1" tabindex="-1"></a>mtbSlope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;slope&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
+<span id="cb17-2"><a href="mt-baker-map.html#cb17-2" tabindex="-1"></a>mtbAspect <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;aspect&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
+<span id="cb17-3"><a href="mt-baker-map.html#cb17-3" tabindex="-1"></a>mtbHillshade <span class="ot">&lt;-</span> <span class="fu">shade</span>(mtbSlope, mtbAspect, <span class="at">angle =</span> <span class="dv">40</span>, <span class="at">direction =</span> <span class="dv">270</span>)</span>
+<span id="cb17-4"><a href="mt-baker-map.html#cb17-4" tabindex="-1"></a>mtbHillshade[mtbHillshade <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-5"><a href="mt-baker-map.html#cb17-5" tabindex="-1"></a><span class="fu">names</span>(mtbHillshade) <span class="ot">&lt;-</span> <span class="st">&quot;value&quot;</span> <span class="co"># these are unitless</span></span>
+<span id="cb17-6"><a href="mt-baker-map.html#cb17-6" tabindex="-1"></a>mtbHillshade</span></code></pre></div>
+<pre><code>## class       : SpatRaster 
+## size        : 409, 628, 1  (nrow, ncol, nlyr)
+## resolution  : 5, 5  (x, y)
+## extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
+## coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
+## source(s)   : memory
+## varname     : mtbDEM 
+## name        :    value 
+## min value   : 0.000000 
+## max value   : 0.999856</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="mt-baker-map.html#cb19-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
+<span id="cb19-2"><a href="mt-baker-map.html#cb19-2" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb19-3"><a href="mt-baker-map.html#cb19-3" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade)</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
+<p>You can combine these with and show both rasters using transparency.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="mt-baker-map.html#cb20-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-2"><a href="mt-baker-map.html#cb20-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="mt-baker-map.html#cb20-3" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> <span class="fu">gray.colors</span>(<span class="dv">100</span>,</span>
+<span id="cb20-4"><a href="mt-baker-map.html#cb20-4" tabindex="-1"></a>                                            <span class="at">start =</span> <span class="fl">0.1</span>,</span>
+<span id="cb20-5"><a href="mt-baker-map.html#cb20-5" tabindex="-1"></a>                                            <span class="at">end =</span> <span class="fl">0.9</span>), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="mt-baker-map.html#cb20-6" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
+<span id="cb20-7"><a href="mt-baker-map.html#cb20-7" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="mt-baker-map.html#cb20-8" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">name =</span> <span class="st">&quot;Elevation (m)&quot;</span>, </span>
+<span id="cb20-9"><a href="mt-baker-map.html#cb20-9" tabindex="-1"></a>                     <span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>,<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb20-10"><a href="mt-baker-map.html#cb20-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb20-11"><a href="mt-baker-map.html#cb20-11" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
+<p>Walk through the code and note how I added the hillshade in grey first and then added the elevation layer afterwards with a transparency. I used <code>new_scale_fill</code> from the <code>ggnewscale</code> library to allow for more than one scale for the fill aesthetic. Refer back to the last module for mapping hillshades for a different approach.</p>
+<p>Next, we have a shapefile of line data showing where the chairlifts are. I’ll read that in using <code>st_read()</code> from the <code>sf</code> library. These data are also projected in UTM.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="mt-baker-map.html#cb21-1" tabindex="-1"></a>chairs <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/mtbChairLines.shp&quot;</span>)</span></code></pre></div>
+<pre><code>## Reading layer `mtbChairLines&#39; from data source 
+##   `/Users/andybunn/Documents/teaching/current/ESCI505/spatialNotes/data/mtbChairLines.shp&#39; 
+##   using driver `ESRI Shapefile&#39;
+## Simple feature collection with 8 features and 1 field
+## Geometry type: LINESTRING
+## Dimension:     XY
+## Bounding box:  xmin: 596713.7 ymin: 5411451 xmax: 599131.5 ymax: 5412970
+## Projected CRS: UTM_Zone_10_Northern_Hemisphere</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="mt-baker-map.html#cb23-1" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data=</span>chairs)</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
+<p>And finally, here is the location of the three lodges stored in a simple csv file.The coordinates are in UTM as above.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="mt-baker-map.html#cb24-1" tabindex="-1"></a>buildings <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/mtbLodges.csv&quot;</span>)</span>
+<span id="cb24-2"><a href="mt-baker-map.html#cb24-2" tabindex="-1"></a>buildings</span></code></pre></div>
+<pre><code>##          X       Y                    id
+## 1 598732.6 5412985    White Salmon Lodge
+## 2 596891.9 5412928 Heather Meadows Lodge
+## 3 598253.1 5412510           Raven&#39;s Hut</code></pre>
+<p>Note that I’ve given you three different kinds of spatial data. As geospatially-explicit raster in an external file (a GeoTif), a shapefile (shp) of lines, and a text file of points. The first two are already projected. The last is not (but the units are at least the same).</p>
+</div>
+<div id="a-map" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> A Map<a href="mt-baker-map.html#a-map" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here is a map of the area I made with <code>ggplot</code> using the objects <code>mtbDEM</code>, <code>chairs</code>, and <code>buildings</code>. I’ll be the first to tell you that I’m no cartographer and this is not an excellent map but it is adequate. In most cases, I show you exactly what I’m doing with all the R code by setting <code>echo=TRUE</code> in all my chunks. For this map, I hid the code I used because I want you to make your own as I explain below in the “Your Work” section.</p>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-10-1.png" alt="" width="768" /></p>
+</div>
+<div id="your-work" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> Your work<a href="mt-baker-map.html#your-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Make a pretty map of the Mt Baker ski hill area using the data above. You can color outside the lines (e.g., pull in imagery from Google Earth or use other ancillary data) if you like. There are few limits to what you can do but you need to use all three data sets in one map. The idea here is to make sure you can handle raster data and two types of vector data (points and lines) simultaneously.</p>
+<p>Turn in a knitted R Markdown document in HTML that has a map and explain what you did. Make sure all your code is clean, your variables named well, your explanations clear. Show all the code.</p>
+<p>Finally, there is a lot to do in this class. As such, I’m not going to ask you to do a bunch of fancy cartography. In general I want you to focus on the spatial analysis and not fall into time sinks of map making. But I’m not against you making cool maps! Feel free to experiment with cartography. The Lovelace chapter <a href="https://geocompr.robinlovelace.net/adv-map.html">Making maps with R</a> is a great resource for <code>tmap</code> etc.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="point-patterns.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

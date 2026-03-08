@@ -1,0 +1,27 @@
+# RStudio junk
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# bookdown build artifacts
+_book/
+_bookdown_files/
+
+# knitr cache
+_cache/
+*.utf8.md
+*.knit.md
+
+# intermediate files
+*.log
+*.aux
+*.toc
+*.out
+
+# misc
+todo.txt
+.DS_Store
+data.zip
+# docs is kept for GitHub Pages
+# build via bookdown::render_book("index.Rmd", "bookdown::gitbook")
