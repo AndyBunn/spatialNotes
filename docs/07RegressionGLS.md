@@ -184,7 +184,7 @@ summary(glsNaive)
 ## Degrees of freedom: 75 total; 73 residual
 ```
 
-We fit a linear model of the form $y=\beta_0 + \beta_1x$ using GLS and got out estimates for the intercept ($\hat\beta_0$) and slope ($\hat\beta_1$). We assumed that the error term was uncorrelated. Looking at summary, we can see the the estimate of the slope ($\hat\beta_1$) is 0.677 and significantly different than zero. We also have a variety of goodness of fit statistics and some other goodies. I'll walk through those in the video. The important thing to wrap your head around here is that we just fit GLS with uncorrelated errors meaning it's essentially identical to OLS. Compare the above to the more familiar `summary(lm(y~x,data=dat))`.
+We fit a linear model of the form $y=\beta_0 + \beta_1x$ using GLS and got out estimates for the intercept ($\hat\beta_0$) and slope ($\hat\beta_1$). We assumed that the error term was uncorrelated. Looking at summary, we can see the the estimate of the slope ($\hat\beta_1$) is 0.677 and significantly different than zero. We also have a variety of goodness of fit statistics and some other goodies. The important thing to wrap your head around here is that we just fit GLS with uncorrelated errors meaning it's essentially identical to OLS. Compare the above to the more familiar `summary(lm(y~x,data=dat))`.
 
 Since these data are spatial. the key for us is to look at the residuals and see if they are autocorrelated. Let's map them first.
 

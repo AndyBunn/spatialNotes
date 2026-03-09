@@ -18,7 +18,7 @@ We often want to estimate phenomena at locations where we do not have measuremen
 ## Packages
 The `gstat`[@R-gstat] package is your friend. But we will need some of our recent collaborators as well including `sp`[@R-sp] so we can load the `meuse` data easily. And I'm going to plot in `ggplot` via `tidyverse`[@R-tidyverse] with `sf`[@R-sf], `terra`[@R-terra] and `tidyterra`[@R-tidyterra]. 
 
-```{r}
+```{r, message=FALSE}
 library(sp)
 library(sf)
 library(gstat)

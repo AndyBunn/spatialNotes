@@ -8,7 +8,7 @@ Space matters: Spatial pattern lets us understand process. That is, knowing wher
 We can quantify the pattern of points themselves or in the presence of an explanatory variable. 
 
 ## Reading
-Read chapter 7 in Bivand's book up to section 7.5. PDF on Canvas. Also start reading through Fortin et al. (2016) as a great overall short chapter on spatial analysis. Don't worry about some of the details in there yet. We will revisit as we go along.
+Read chapter 7 in Bivand's book up to section 7.5. Also start reading through Fortin et al. (2016) as a great overall short chapter on spatial analysis. Don't worry about some of the details in there yet. We will revisit as we go along.
 
 
 Bivand R (2008) Spatial Point Pattern Analysis. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
@@ -507,7 +507,7 @@ env <- envelope(foo, Lest, nsim = 100)
 plot(env)
 ```
 
-Note that you can just do this on your own. No need to show me in your assignment. To put this part of "Your Work" into a R Markdown doc for me to see would take some work because the `clickppp` function is interactive. You'd have to make `foo` by clicking and then save it using something like `saveRDS` and then reading it in for your R Markdown doc with `readRDS`. It's overkill to do that amount of work. So just do this on your own. Again, I'll explain in the video.
+Note that you can just do this on your own. No need to show me in your assignment. To put this part of "Your Work" into a R Markdown doc for me to see would take some work because the `clickppp` function is interactive. You'd have to make `foo` by clicking and then save it using something like `saveRDS` and then reading it in for your R Markdown doc with `readRDS`. It's overkill to do that amount of work. So just do this on your own. 
 
 ## More than trees
 The `spatstat` library has a ludicrous number of data sets to work with. If you are not interested in trees for some reason (weird, I know) you can look at point patterns for all kinds of things: anemones, ants, gorilla nests, mycorrhizal fungi, waterstriders. Type `demo(data)` at the prompt to see all the `spatstat` data sets if you want to get an appreciation for all the different types of point pattern data that exist in `spatstat`. 
@@ -581,7 +581,7 @@ text(15,8,"Tree", cex=0.75)
 
 <img src="03Point_Patterns_files/figure-html/unnamed-chunk-30-1.png" alt="" width="672" />
 
-Note that this is a marked point pattern with three species of fungi. The data come from Ford et al. (1980) which I've put on Canvas. It's not important that you understand the ins and outs of the various species described. You can read up on some of them [here](https://link.springer.com/article/10.1007/s005720100108). But it's enough to know that different species have different functional roles and also differing abilities to colonize. Oh, and sporophores are mushrooms (but you probably knew that).
+Note that this is a marked point pattern with three species of fungi. The data come from Ford et al. (1980). It's not important that you understand the ins and outs of the various species described. You can read up on some of them [here](https://link.springer.com/article/10.1007/s005720100108). But it's enough to know that different species have different functional roles and also differing abilities to colonize. Oh, and sporophores are mushrooms (but you probably knew that).
 
 In the paper the authors suggest two things which we can look at using PPA. First, they suggest that there "were distinct arcs around the tree which were not occupied by sporophores of any species." Second, they say that there is "no consistent evidence of spatial inhibition between species." We just have one of the five years of data to look at here. But with the data we have, is there any suggestion of inhibition between species?
 

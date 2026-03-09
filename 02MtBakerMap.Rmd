@@ -12,7 +12,7 @@ For the past couple of years there has been major upheaval underway in how proje
 
 Ok. Let's go. 
 
-```{r,results='hide'}
+```{r, message=FALSE}
 library(terra)
 library(sf)
 library(tidyverse)
@@ -31,7 +31,6 @@ Because some of you are GIS experts and some of you have only done a tiny bit of
 I've been working on a cool spatial analysis project up at the Mt Baker ski hill. I won't go into it now, but it is a project to improve geolocation for skiers and riders using very inexpensive RFID equipment. We will look at some of those data later in class but let's start with just making a map of some of the features at the ski hill. Many of you are familiar with the area from recreating. 
 
 ## The Data
-All of these data are on Canvas.
 
 First we have a digital elevation model (DEM) of the area near the ski hill. I'll read this in here using `raster` from the `terra` library. Note that these data are projected in UTM (EPSG:32610) so the units are in meters. The DEM has five meter resolution.
 

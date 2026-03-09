@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>10 References | Spatial Analysis for Environmental Scientists</title>
+  <title>Aside: Understanding Methods and Generics in R | Spatial Analysis for Environmental Scientists</title>
   <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="10 References | Spatial Analysis for Environmental Scientists" />
+  <meta property="og:title" content="Aside: Understanding Methods and Generics in R | Spatial Analysis for Environmental Scientists" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="10 References | Spatial Analysis for Environmental Scientists" />
+  <meta name="twitter:title" content="Aside: Understanding Methods and Generics in R | Spatial Analysis for Environmental Scientists" />
   
   <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="aside-ols-via-algebra-and-matrices.html"/>
-
+<link rel="prev" href="introduction-getting-your-bearings.html"/>
+<link rel="next" href="mt-baker-map.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1147,47 +1147,562 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 hasAnchor" number="10">
-<h1><span class="header-section-number">10</span> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This document was built using the R packages listed below. Citations are automatically generated from the file <code>packages.bib</code>.</p>
+<div id="aside-understanding-methods-and-generics-in-r" class="section level1 unnumbered aside-chapter hasAnchor">
+<h1>Aside: Understanding Methods and Generics in R<a href="aside-understanding-methods-and-generics-in-r.html#aside-understanding-methods-and-generics-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="youve-come-a-long-way-in-r" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> You’ve Come a Long Way in R<a href="aside-understanding-methods-and-generics-in-r.html#youve-come-a-long-way-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In your journey through the curriculum, you’ve learned a lot of R. You can wrangle data, fit models, make plots, write functions, etc. But you might also be starting to wonder: <strong>What’s actually going on under the hood?</strong></p>
+<p>For example, how does <code>summary()</code> know what to do when you give it the output from <code>lm</code>? Or why does <code>plot()</code> sometimes give you a histogram and other times a scatterplot?</p>
+<p>A good way to start answering those questions is to learn about <strong>methods</strong> and <strong>generic functions</strong>.</p>
+</div>
+<div id="why-use-generics" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Why Use Generics?<a href="aside-understanding-methods-and-generics-in-r.html#why-use-generics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>It’s nice when a function does the <em>right thing</em> depending on the kind of object you give it. You don’t want to memorize different function names for every kind of model—you just want to call <code>summary()</code>, <code>plot()</code>, or <code>print()</code> and get something useful. That’s what <strong>generic functions</strong> are for.</p>
+<p>In R, many common functions like <code>summary()</code>, <code>plot()</code>, and <code>print()</code> are <em>generic</em>—they automatically call the version that matches the class of your object.</p>
+<p>Let’s run a linear model and use that as an example.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb3-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars)</span></code></pre></div>
+<p>Ok. We have a new object called <code>fit</code> that is a <code>list</code> with a bunch of stuff in it that authors of the <code>lm</code> function think will be useful to you. Look at its structure to see what’s in there.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb4-1" tabindex="-1"></a><span class="fu">str</span>(fit)</span></code></pre></div>
+<pre><code>## List of 12
+##  $ coefficients : Named num [1:2] 37.29 -5.34
+##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;wt&quot;
+##  $ residuals    : Named num [1:32] -2.28 -0.92 -2.09 1.3 -0.2 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:32] &quot;Mazda RX4&quot; &quot;Mazda RX4 Wag&quot; &quot;Datsun 710&quot; &quot;Hornet 4 Drive&quot; ...
+##  $ effects      : Named num [1:32] -113.65 -29.116 -1.661 1.631 0.111 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:32] &quot;(Intercept)&quot; &quot;wt&quot; &quot;&quot; &quot;&quot; ...
+##  $ rank         : int 2
+##  $ fitted.values: Named num [1:32] 23.3 21.9 24.9 20.1 18.9 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:32] &quot;Mazda RX4&quot; &quot;Mazda RX4 Wag&quot; &quot;Datsun 710&quot; &quot;Hornet 4 Drive&quot; ...
+##  $ assign       : int [1:2] 0 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:32, 1:2] -5.657 0.177 0.177 0.177 0.177 ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:32] &quot;Mazda RX4&quot; &quot;Mazda RX4 Wag&quot; &quot;Datsun 710&quot; &quot;Hornet 4 Drive&quot; ...
+##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;wt&quot;
+##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
+##   ..$ qraux: num [1:2] 1.18 1.05
+##   ..$ pivot: int [1:2] 1 2
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 2
+##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+##  $ df.residual  : int 30
+##  $ xlevels      : Named list()
+##  $ call         : language lm(formula = mpg ~ wt, data = mtcars)
+##  $ terms        :Classes &#39;terms&#39;, &#39;formula&#39;  language mpg ~ wt
+##   .. ..- attr(*, &quot;variables&quot;)= language list(mpg, wt)
+##   .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. ..$ : chr [1:2] &quot;mpg&quot; &quot;wt&quot;
+##   .. .. .. ..$ : chr &quot;wt&quot;
+##   .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;wt&quot;
+##   .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. ..- attr(*, &quot;predvars&quot;)= language list(mpg, wt)
+##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;mpg&quot; &quot;wt&quot;
+##  $ model        :&#39;data.frame&#39;:   32 obs. of  2 variables:
+##   ..$ mpg: num [1:32] 21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##   ..$ wt : num [1:32] 2.62 2.88 2.32 3.21 3.44 ...
+##   ..- attr(*, &quot;terms&quot;)=Classes &#39;terms&#39;, &#39;formula&#39;  language mpg ~ wt
+##   .. .. ..- attr(*, &quot;variables&quot;)= language list(mpg, wt)
+##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. ..$ : chr [1:2] &quot;mpg&quot; &quot;wt&quot;
+##   .. .. .. .. ..$ : chr &quot;wt&quot;
+##   .. .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;wt&quot;
+##   .. .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(mpg, wt)
+##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;mpg&quot; &quot;wt&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;lm&quot;</code></pre>
+<p>That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn’t obvious. For instance, the object <code>fit</code> doesn’t directly contain the <span class="math inline">\(R^2\)</span> or p-values. Those are computed when you call <code>summary(fit)</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb6-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ wt, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.5432 -2.3647 -0.1252  1.4096  6.8727 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  37.2851     1.8776  19.858  &lt; 2e-16 ***
+## wt           -5.3445     0.5591  -9.559 1.29e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.046 on 30 degrees of freedom
+## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
+## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
+<p>Ok. Check that out. We got a really nice formatted output that helps us interpret the linear model using the <code>summary</code> function. But note that the output of <code>summary(fit)</code> is really different than getting a summary of a numeric vector like the <code>mpg</code> in the <code>mtcars</code> data that went into the model.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb8-1" tabindex="-1"></a><span class="fu">summary</span>(mtcars<span class="sc">$</span>mpg)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   10.40   15.43   19.20   20.09   22.80   33.90</code></pre>
+<div id="same-function-different-behavior-what-gives" class="section level3 hasAnchor" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> Same Function, Different Behavior — What Gives?<a href="aside-understanding-methods-and-generics-in-r.html#same-function-different-behavior-what-gives" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We used the same function (<code>summary</code>) and got two very different results.<br />
+Answer? <strong>Generics and methods.</strong></p>
+<p>When we used <code>summary(fit)</code>, we’re not calling some one-size-fits-all summary function. We’re calling a <strong>specific method</strong> written for objects of class <code>"lm"</code>.</p>
+</div>
+</div>
+<div id="how-this-works" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> How This Works<a href="aside-understanding-methods-and-generics-in-r.html#how-this-works" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here’s what R does when you call <code>summary(fit)</code>:</p>
+<ol style="list-style-type: decimal">
+<li>It checks the class of the object (<code>class(fit)</code>).</li>
+<li>It looks for a function named <code>summary.classname</code>—in this case, <code>summary.lm</code>.</li>
+<li>If it finds that method, it runs it.</li>
+<li>If not, it falls back to <code>summary.default()</code>.</li>
+</ol>
+<p>You can look under the hood:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb10-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
+<pre><code>## [1] &quot;lm&quot;</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb12-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
+<pre><code>##  [1] summary.aov                         summary.aovlist*                   
+##  [3] summary.aspell*                     summary.check_packages_in_dir*     
+##  [5] summary.connection                  summary.data.frame                 
+##  [7] summary.Date                        summary.default                    
+##  [9] summary.difftime                    summary.ecdf*                      
+## [11] summary.factor                      summary.glm                        
+## [13] summary.infl*                       summary.lm                         
+## [15] summary.loess*                      summary.manova                     
+## [17] summary.matrix                      summary.mlm*                       
+## [19] summary.nls*                        summary.packageStatus*             
+## [21] summary.POSIXct                     summary.POSIXlt                    
+## [23] summary.ppr*                        summary.prcomp*                    
+## [25] summary.princomp*                   summary.proc_time                  
+## [27] summary.rlang_error*                summary.rlang_message*             
+## [29] summary.rlang_trace*                summary.rlang_warning*             
+## [31] summary.rlang:::list_of_conditions* summary.srcfile                    
+## [33] summary.srcref                      summary.stepfun                    
+## [35] summary.stl*                        summary.table                      
+## [37] summary.tukeysmooth*                summary.warnings                   
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb14-1" tabindex="-1"></a>summary.lm</span></code></pre></div>
+<pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
+##     ...) 
+## {
+##     z &lt;- object
+##     p &lt;- z$rank
+##     rdf &lt;- z$df.residual
+##     if (p == 0) {
+##         r &lt;- z$residuals
+##         n &lt;- length(r)
+##         w &lt;- z$weights
+##         if (is.null(w)) {
+##             rss &lt;- sum(r^2)
+##         }
+##         else {
+##             rss &lt;- sum(w * r^2)
+##             r &lt;- sqrt(w) * r
+##         }
+##         resvar &lt;- rss/rdf
+##         ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##         class(ans) &lt;- &quot;summary.lm&quot;
+##         ans$aliased &lt;- is.na(coef(object))
+##         ans$residuals &lt;- r
+##         ans$df &lt;- c(0L, n, length(ans$aliased))
+##         ans$coefficients &lt;- matrix(NA_real_, 0L, 4L, dimnames = list(NULL, 
+##             c(&quot;Estimate&quot;, &quot;Std. Error&quot;, &quot;t value&quot;, &quot;Pr(&gt;|t|)&quot;)))
+##         ans$sigma &lt;- sqrt(resvar)
+##         ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##         ans$cov.unscaled &lt;- matrix(NA_real_, 0L, 0L)
+##         if (correlation) 
+##             ans$correlation &lt;- ans$cov.unscaled
+##         return(ans)
+##     }
+##     if (is.null(z$terms)) 
+##         stop(&quot;invalid &#39;lm&#39; object:  no &#39;terms&#39; component&quot;)
+##     if (!inherits(object, &quot;lm&quot;)) 
+##         warning(&quot;calling summary.lm(&lt;fake-lm-object&gt;) ...&quot;)
+##     Qr &lt;- qr.lm(object)
+##     n &lt;- NROW(Qr$qr)
+##     if (is.na(z$df.residual) || n - p != z$df.residual) 
+##         warning(&quot;residual degrees of freedom in object suggest this is not an \&quot;lm\&quot; fit&quot;)
+##     r &lt;- z$residuals
+##     f &lt;- z$fitted.values
+##     if (!is.null(z$offset)) {
+##         f &lt;- f - z$offset
+##     }
+##     w &lt;- z$weights
+##     if (is.null(w)) {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             sum((f - mean(f))^2)
+##         else sum(f^2)
+##         rss &lt;- sum(r^2)
+##     }
+##     else {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) {
+##             m &lt;- sum(w * f/sum(w))
+##             sum(w * (f - m)^2)
+##         }
+##         else sum(w * f^2)
+##         rss &lt;- sum(w * r^2)
+##         r &lt;- sqrt(w) * r
+##     }
+##     resvar &lt;- rss/rdf
+##     if (is.finite(resvar) &amp;&amp; resvar &lt; (mean(f)^2 + var(c(f))) * 
+##         1e-30) 
+##         warning(&quot;essentially perfect fit: summary may be unreliable&quot;)
+##     p1 &lt;- 1L:p
+##     R &lt;- chol2inv(Qr$qr[p1, p1, drop = FALSE])
+##     se &lt;- sqrt(diag(R) * resvar)
+##     est &lt;- z$coefficients[Qr$pivot[p1]]
+##     tval &lt;- est/se
+##     ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##     ans$residuals &lt;- r
+##     ans$coefficients &lt;- cbind(Estimate = est, `Std. Error` = se, 
+##         `t value` = tval, `Pr(&gt;|t|)` = 2 * pt(abs(tval), rdf, 
+##             lower.tail = FALSE))
+##     ans$aliased &lt;- is.na(z$coefficients)
+##     ans$sigma &lt;- sqrt(resvar)
+##     ans$df &lt;- c(p, rdf, NCOL(Qr$qr))
+##     if (p != attr(z$terms, &quot;intercept&quot;)) {
+##         df.int &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             1L
+##         else 0L
+##         ans$r.squared &lt;- mss/(mss + rss)
+##         ans$adj.r.squared &lt;- 1 - (1 - ans$r.squared) * ((n - 
+##             df.int)/rdf)
+##         ans$fstatistic &lt;- c(value = (mss/(p - df.int))/resvar, 
+##             numdf = p - df.int, dendf = rdf)
+##     }
+##     else ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##     ans$cov.unscaled &lt;- R
+##     dimnames(ans$cov.unscaled) &lt;- dimnames(ans$coefficients)[c(1, 
+##         1)]
+##     if (correlation) {
+##         ans$correlation &lt;- (R * resvar)/outer(se, se)
+##         dimnames(ans$correlation) &lt;- dimnames(ans$cov.unscaled)
+##         ans$symbolic.cor &lt;- symbolic.cor
+##     }
+##     if (!is.null(z$na.action)) 
+##         ans$na.action &lt;- z$na.action
+##     class(ans) &lt;- &quot;summary.lm&quot;
+##     ans
+## }
+## &lt;bytecode: 0x1422bae40&gt;
+## &lt;environment: namespace:stats&gt;</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb16-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
+##     ...) 
+## {
+##     z &lt;- object
+##     p &lt;- z$rank
+##     rdf &lt;- z$df.residual
+##     if (p == 0) {
+##         r &lt;- z$residuals
+##         n &lt;- length(r)
+##         w &lt;- z$weights
+##         if (is.null(w)) {
+##             rss &lt;- sum(r^2)
+##         }
+##         else {
+##             rss &lt;- sum(w * r^2)
+##             r &lt;- sqrt(w) * r
+##         }
+##         resvar &lt;- rss/rdf
+##         ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##         class(ans) &lt;- &quot;summary.lm&quot;
+##         ans$aliased &lt;- is.na(coef(object))
+##         ans$residuals &lt;- r
+##         ans$df &lt;- c(0L, n, length(ans$aliased))
+##         ans$coefficients &lt;- matrix(NA_real_, 0L, 4L, dimnames = list(NULL, 
+##             c(&quot;Estimate&quot;, &quot;Std. Error&quot;, &quot;t value&quot;, &quot;Pr(&gt;|t|)&quot;)))
+##         ans$sigma &lt;- sqrt(resvar)
+##         ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##         ans$cov.unscaled &lt;- matrix(NA_real_, 0L, 0L)
+##         if (correlation) 
+##             ans$correlation &lt;- ans$cov.unscaled
+##         return(ans)
+##     }
+##     if (is.null(z$terms)) 
+##         stop(&quot;invalid &#39;lm&#39; object:  no &#39;terms&#39; component&quot;)
+##     if (!inherits(object, &quot;lm&quot;)) 
+##         warning(&quot;calling summary.lm(&lt;fake-lm-object&gt;) ...&quot;)
+##     Qr &lt;- qr.lm(object)
+##     n &lt;- NROW(Qr$qr)
+##     if (is.na(z$df.residual) || n - p != z$df.residual) 
+##         warning(&quot;residual degrees of freedom in object suggest this is not an \&quot;lm\&quot; fit&quot;)
+##     r &lt;- z$residuals
+##     f &lt;- z$fitted.values
+##     if (!is.null(z$offset)) {
+##         f &lt;- f - z$offset
+##     }
+##     w &lt;- z$weights
+##     if (is.null(w)) {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             sum((f - mean(f))^2)
+##         else sum(f^2)
+##         rss &lt;- sum(r^2)
+##     }
+##     else {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) {
+##             m &lt;- sum(w * f/sum(w))
+##             sum(w * (f - m)^2)
+##         }
+##         else sum(w * f^2)
+##         rss &lt;- sum(w * r^2)
+##         r &lt;- sqrt(w) * r
+##     }
+##     resvar &lt;- rss/rdf
+##     if (is.finite(resvar) &amp;&amp; resvar &lt; (mean(f)^2 + var(c(f))) * 
+##         1e-30) 
+##         warning(&quot;essentially perfect fit: summary may be unreliable&quot;)
+##     p1 &lt;- 1L:p
+##     R &lt;- chol2inv(Qr$qr[p1, p1, drop = FALSE])
+##     se &lt;- sqrt(diag(R) * resvar)
+##     est &lt;- z$coefficients[Qr$pivot[p1]]
+##     tval &lt;- est/se
+##     ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##     ans$residuals &lt;- r
+##     ans$coefficients &lt;- cbind(Estimate = est, `Std. Error` = se, 
+##         `t value` = tval, `Pr(&gt;|t|)` = 2 * pt(abs(tval), rdf, 
+##             lower.tail = FALSE))
+##     ans$aliased &lt;- is.na(z$coefficients)
+##     ans$sigma &lt;- sqrt(resvar)
+##     ans$df &lt;- c(p, rdf, NCOL(Qr$qr))
+##     if (p != attr(z$terms, &quot;intercept&quot;)) {
+##         df.int &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             1L
+##         else 0L
+##         ans$r.squared &lt;- mss/(mss + rss)
+##         ans$adj.r.squared &lt;- 1 - (1 - ans$r.squared) * ((n - 
+##             df.int)/rdf)
+##         ans$fstatistic &lt;- c(value = (mss/(p - df.int))/resvar, 
+##             numdf = p - df.int, dendf = rdf)
+##     }
+##     else ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##     ans$cov.unscaled &lt;- R
+##     dimnames(ans$cov.unscaled) &lt;- dimnames(ans$coefficients)[c(1, 
+##         1)]
+##     if (correlation) {
+##         ans$correlation &lt;- (R * resvar)/outer(se, se)
+##         dimnames(ans$correlation) &lt;- dimnames(ans$cov.unscaled)
+##         ans$symbolic.cor &lt;- symbolic.cor
+##     }
+##     if (!is.null(z$na.action)) 
+##         ans$na.action &lt;- z$na.action
+##     class(ans) &lt;- &quot;summary.lm&quot;
+##     ans
+## }
+## &lt;bytecode: 0x1422bae40&gt;
+## &lt;environment: namespace:stats&gt;</code></pre>
+</div>
+<div id="whats-the-difference-between-a-generic-and-a-method" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> What’s the Difference Between a Generic and a Method?<a href="aside-understanding-methods-and-generics-in-r.html#whats-the-difference-between-a-generic-and-a-method" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>A <strong>generic function</strong> is the function you call—like <code>summary()</code> or <code>plot()</code>.<br />
+It doesn’t actually do the work itself. Instead, it decides <strong>which method to run</strong> based on the class of the object.</p></li>
+<li><p>A <strong>method</strong> is the specific function written for a particular class.<br />
+For example:</p>
+<ul>
+<li><code>summary.lm()</code> handles linear models.</li>
+<li><code>summary.data.frame()</code> handles data frames.</li>
+<li><code>summary.default()</code> is the fallback if no class-specific method is found.</li>
+</ul></li>
+</ul>
+<p>You can look at the generic directly:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb18-1" tabindex="-1"></a>summary</span></code></pre></div>
+<pre><code>## function (object, ...) 
+## UseMethod(&quot;summary&quot;)
+## &lt;bytecode: 0x1422d8c78&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<p>This call to <code>UseMethod("summary")</code> tells R to dispatch to the right method depending on the class of the object.</p>
+<hr />
+</div>
+<div id="common-generic-functions" class="section level2 hasAnchor" number="2.8">
+<h2><span class="header-section-number">2.8</span> Common Generic Functions<a href="aside-understanding-methods-and-generics-in-r.html#common-generic-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here are some other generic functions you’re likely to run into:</p>
+<ul>
+<li><code>print()</code> – display a human-readable version<br />
+</li>
+<li><code>summary()</code> – provide a richer summary<br />
+</li>
+<li><code>plot()</code> – show plots<br />
+</li>
+<li><code>predict()</code> – make predictions<br />
+</li>
+<li><code>residuals()</code> – return residuals<br />
+</li>
+<li><code>fitted()</code> – return fitted values<br />
+</li>
+<li><code>coef()</code> – extract coefficients<br />
+</li>
+<li><code>update()</code> – refit a model with changes<br />
+</li>
+<li><code>AIC()</code> / <code>BIC()</code> – compare model fit<br />
+</li>
+<li><code>anova()</code> – compare nested models<br />
+</li>
+<li><code>terms()</code> / <code>formula()</code> – extract parts of model structure</li>
+</ul>
+</div>
+<div id="how-to-explore-and-understand-methods" class="section level2 hasAnchor" number="2.9">
+<h2><span class="header-section-number">2.9</span> How to Explore and Understand Methods<a href="aside-understanding-methods-and-generics-in-r.html#how-to-explore-and-understand-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Want to know what’s going on behind a function call? Here are a few tools:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb20-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
+<pre><code>##  [1] summary.aov                         summary.aovlist*                   
+##  [3] summary.aspell*                     summary.check_packages_in_dir*     
+##  [5] summary.connection                  summary.data.frame                 
+##  [7] summary.Date                        summary.default                    
+##  [9] summary.difftime                    summary.ecdf*                      
+## [11] summary.factor                      summary.glm                        
+## [13] summary.infl*                       summary.lm                         
+## [15] summary.loess*                      summary.manova                     
+## [17] summary.matrix                      summary.mlm*                       
+## [19] summary.nls*                        summary.packageStatus*             
+## [21] summary.POSIXct                     summary.POSIXlt                    
+## [23] summary.ppr*                        summary.prcomp*                    
+## [25] summary.princomp*                   summary.proc_time                  
+## [27] summary.rlang_error*                summary.rlang_message*             
+## [29] summary.rlang_trace*                summary.rlang_warning*             
+## [31] summary.rlang:::list_of_conditions* summary.srcfile                    
+## [33] summary.srcref                      summary.stepfun                    
+## [35] summary.stl*                        summary.table                      
+## [37] summary.tukeysmooth*                summary.warnings                   
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb22-1" tabindex="-1"></a><span class="fu">methods</span>(plot)</span></code></pre></div>
+<pre><code>##  [1] plot.acf*           plot.data.frame*    plot.decomposed.ts*
+##  [4] plot.default        plot.dendrogram*    plot.density*      
+##  [7] plot.ecdf           plot.factor*        plot.formula*      
+## [10] plot.function       plot.hclust*        plot.histogram*    
+## [13] plot.HoltWinters*   plot.isoreg*        plot.lm*           
+## [16] plot.medpolish*     plot.mlm*           plot.ppr*          
+## [19] plot.prcomp*        plot.princomp*      plot.profile*      
+## [22] plot.profile.nls*   plot.R6*            plot.raster*       
+## [25] plot.spec*          plot.stepfun        plot.stl*          
+## [28] plot.table*         plot.ts             plot.tskernel*     
+## [31] plot.TukeyHSD*     
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb24-1" tabindex="-1"></a><span class="fu">methods</span>(<span class="at">class =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<pre><code>##  [1] add1           alias          anova          case.names     coerce        
+##  [6] confint        cooks.distance deviance       dfbeta         dfbetas       
+## [11] drop1          dummy.coef     effects        extractAIC     family        
+## [16] formula        hatvalues      influence      initialize     kappa         
+## [21] labels         logLik         model.frame    model.matrix   nobs          
+## [26] plot           predict        print          proj           qr            
+## [31] residuals      rstandard      rstudent       show           simulate      
+## [36] slotsFromS3    summary        variable.names vcov          
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb26-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
+##     ...) 
+## {
+##     z &lt;- object
+##     p &lt;- z$rank
+##     rdf &lt;- z$df.residual
+##     if (p == 0) {
+##         r &lt;- z$residuals
+##         n &lt;- length(r)
+##         w &lt;- z$weights
+##         if (is.null(w)) {
+##             rss &lt;- sum(r^2)
+##         }
+##         else {
+##             rss &lt;- sum(w * r^2)
+##             r &lt;- sqrt(w) * r
+##         }
+##         resvar &lt;- rss/rdf
+##         ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##         class(ans) &lt;- &quot;summary.lm&quot;
+##         ans$aliased &lt;- is.na(coef(object))
+##         ans$residuals &lt;- r
+##         ans$df &lt;- c(0L, n, length(ans$aliased))
+##         ans$coefficients &lt;- matrix(NA_real_, 0L, 4L, dimnames = list(NULL, 
+##             c(&quot;Estimate&quot;, &quot;Std. Error&quot;, &quot;t value&quot;, &quot;Pr(&gt;|t|)&quot;)))
+##         ans$sigma &lt;- sqrt(resvar)
+##         ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##         ans$cov.unscaled &lt;- matrix(NA_real_, 0L, 0L)
+##         if (correlation) 
+##             ans$correlation &lt;- ans$cov.unscaled
+##         return(ans)
+##     }
+##     if (is.null(z$terms)) 
+##         stop(&quot;invalid &#39;lm&#39; object:  no &#39;terms&#39; component&quot;)
+##     if (!inherits(object, &quot;lm&quot;)) 
+##         warning(&quot;calling summary.lm(&lt;fake-lm-object&gt;) ...&quot;)
+##     Qr &lt;- qr.lm(object)
+##     n &lt;- NROW(Qr$qr)
+##     if (is.na(z$df.residual) || n - p != z$df.residual) 
+##         warning(&quot;residual degrees of freedom in object suggest this is not an \&quot;lm\&quot; fit&quot;)
+##     r &lt;- z$residuals
+##     f &lt;- z$fitted.values
+##     if (!is.null(z$offset)) {
+##         f &lt;- f - z$offset
+##     }
+##     w &lt;- z$weights
+##     if (is.null(w)) {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             sum((f - mean(f))^2)
+##         else sum(f^2)
+##         rss &lt;- sum(r^2)
+##     }
+##     else {
+##         mss &lt;- if (attr(z$terms, &quot;intercept&quot;)) {
+##             m &lt;- sum(w * f/sum(w))
+##             sum(w * (f - m)^2)
+##         }
+##         else sum(w * f^2)
+##         rss &lt;- sum(w * r^2)
+##         r &lt;- sqrt(w) * r
+##     }
+##     resvar &lt;- rss/rdf
+##     if (is.finite(resvar) &amp;&amp; resvar &lt; (mean(f)^2 + var(c(f))) * 
+##         1e-30) 
+##         warning(&quot;essentially perfect fit: summary may be unreliable&quot;)
+##     p1 &lt;- 1L:p
+##     R &lt;- chol2inv(Qr$qr[p1, p1, drop = FALSE])
+##     se &lt;- sqrt(diag(R) * resvar)
+##     est &lt;- z$coefficients[Qr$pivot[p1]]
+##     tval &lt;- est/se
+##     ans &lt;- z[c(&quot;call&quot;, &quot;terms&quot;, if (!is.null(z$weights)) &quot;weights&quot;)]
+##     ans$residuals &lt;- r
+##     ans$coefficients &lt;- cbind(Estimate = est, `Std. Error` = se, 
+##         `t value` = tval, `Pr(&gt;|t|)` = 2 * pt(abs(tval), rdf, 
+##             lower.tail = FALSE))
+##     ans$aliased &lt;- is.na(z$coefficients)
+##     ans$sigma &lt;- sqrt(resvar)
+##     ans$df &lt;- c(p, rdf, NCOL(Qr$qr))
+##     if (p != attr(z$terms, &quot;intercept&quot;)) {
+##         df.int &lt;- if (attr(z$terms, &quot;intercept&quot;)) 
+##             1L
+##         else 0L
+##         ans$r.squared &lt;- mss/(mss + rss)
+##         ans$adj.r.squared &lt;- 1 - (1 - ans$r.squared) * ((n - 
+##             df.int)/rdf)
+##         ans$fstatistic &lt;- c(value = (mss/(p - df.int))/resvar, 
+##             numdf = p - df.int, dendf = rdf)
+##     }
+##     else ans$r.squared &lt;- ans$adj.r.squared &lt;- 0
+##     ans$cov.unscaled &lt;- R
+##     dimnames(ans$cov.unscaled) &lt;- dimnames(ans$coefficients)[c(1, 
+##         1)]
+##     if (correlation) {
+##         ans$correlation &lt;- (R * resvar)/outer(se, se)
+##         dimnames(ans$correlation) &lt;- dimnames(ans$cov.unscaled)
+##         ans$symbolic.cor &lt;- symbolic.cor
+##     }
+##     if (!is.null(z$na.action)) 
+##         ans$na.action &lt;- z$na.action
+##     class(ans) &lt;- &quot;summary.lm&quot;
+##     ans
+## }
+## &lt;bytecode: 0x1422bae40&gt;
+## &lt;environment: namespace:stats&gt;</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb28-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
+<pre><code>## [1] &quot;lm&quot;</code></pre>
+</div>
+<div id="why-this-matters" class="section level2 hasAnchor" number="2.10">
+<h2><span class="header-section-number">2.10</span> Why This Matters<a href="aside-understanding-methods-and-generics-in-r.html#why-this-matters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Understanding how generics and methods work helps you read other people’s code, write better functions, and make sense of R’s behavior when things feel a little magic.</p>
 
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-R-spatstat" class="csl-entry">
-Baddeley, Adrian, Rolf Turner, and Ege Rubak. 2026. <em>Spatstat: Spatial Point Pattern Analysis, Model-Fitting, Simulation, Tests</em>. <a href="http://spatstat.org/">http://spatstat.org/</a>.
-</div>
-<div id="ref-R-spdep" class="csl-entry">
-Bivand, Roger. 2026. <em>Spdep: Spatial Dependence: Weighting Schemes, Statistics</em>. <a href="https://github.com/r-spatial/spdep/">https://github.com/r-spatial/spdep/</a>.
-</div>
-<div id="ref-R-ncf" class="csl-entry">
-Bjornstad, Ottar N. 2026. <em>Ncf: Spatial Covariance Functions</em>. <a href="https://ento.psu.edu/directory/onb1">https://ento.psu.edu/directory/onb1</a>.
-</div>
-<div id="ref-R-ggnewscale" class="csl-entry">
-Campitelli, Elio. 2025. <em>Ggnewscale: Multiple Fill and Colour Scales in Ggplot2</em>. <a href="https://eliocamp.github.io/ggnewscale/">https://eliocamp.github.io/ggnewscale/</a>.
-</div>
-<div id="ref-R-tidyterra" class="csl-entry">
-Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span> Objects: The <span class="nocase">tidyterra</span> Package.”</span> <em>Journal of Open Source Software</em> 8 (91): 5751. <a href="https://doi.org/10.21105/joss.05751">https://doi.org/10.21105/joss.05751</a>.
-</div>
-<div id="ref-R-terra" class="csl-entry">
-Hijmans, Robert J. 2026. <em>Terra: Spatial Data Analysis</em>. <a href="https://rspatial.org/">https://rspatial.org/</a>.
-</div>
-<div id="ref-R-sf" class="csl-entry">
-Pebesma, Edzer. 2026. <em>Sf: Simple Features for r</em>. <a href="https://r-spatial.github.io/sf/">https://r-spatial.github.io/sf/</a>.
-</div>
-<div id="ref-R-sp" class="csl-entry">
-Pebesma, Edzer, and Roger Bivand. 2026. <em>Sp: Classes and Methods for Spatial Data</em>. <a href="https://github.com/edzer/sp/">https://github.com/edzer/sp/</a>.
-</div>
-<div id="ref-R-gstat" class="csl-entry">
-Pebesma, Edzer, and Benedikt Graeler. 2026. <em>Gstat: Spatial and Spatio-Temporal Geostatistical Modelling, Prediction and Simulation</em>. <a href="https://github.com/r-spatial/gstat/">https://github.com/r-spatial/gstat/</a>.
-</div>
-<div id="ref-R-nlme" class="csl-entry">
-Pinheiro, José, Douglas Bates, and R Core Team. 2025. <em>Nlme: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>.
-</div>
-<div id="ref-R-tmap" class="csl-entry">
-Tennekes, Martijn. 2025. <em>Tmap: Thematic Maps</em>. <a href="https://github.com/r-tmap/tmap">https://github.com/r-tmap/tmap</a>.
-</div>
-<div id="ref-R-tidyverse" class="csl-entry">
-Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>. <a href="https://tidyverse.tidyverse.org">https://tidyverse.tidyverse.org</a>.
-</div>
 </div>
 </div>
             </section>
@@ -1195,8 +1710,8 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
           </div>
         </div>
       </div>
-<a href="aside-ols-via-algebra-and-matrices.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="introduction-getting-your-bearings.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="mt-baker-map.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>10 References | Spatial Analysis for Environmental Scientists</title>
+  <title>2 Introduction: Getting Your Bearings | Spatial Analysis for Environmental Scientists</title>
   <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="10 References | Spatial Analysis for Environmental Scientists" />
+  <meta property="og:title" content="2 Introduction: Getting Your Bearings | Spatial Analysis for Environmental Scientists" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="10 References | Spatial Analysis for Environmental Scientists" />
+  <meta name="twitter:title" content="2 Introduction: Getting Your Bearings | Spatial Analysis for Environmental Scientists" />
   
   <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="aside-ols-via-algebra-and-matrices.html"/>
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="aside-understanding-methods-and-generics-in-r.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1147,47 +1147,27 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 hasAnchor" number="10">
-<h1><span class="header-section-number">10</span> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This document was built using the R packages listed below. Citations are automatically generated from the file <code>packages.bib</code>.</p>
+<div id="introduction-getting-your-bearings" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Introduction: Getting Your Bearings<a href="introduction-getting-your-bearings.html#introduction-getting-your-bearings" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="big-idea" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Big Idea<a href="introduction-getting-your-bearings.html#big-idea" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before we can do spatial analysis, we need to be able to handle spatial data. The two Data Carpentry workshops below will get you there. Think of this as building the workbench before we start making things.</p>
+</div>
+<div id="your-toolkit-for-the-course" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Your Toolkit for the Course<a href="introduction-getting-your-bearings.html#your-toolkit-for-the-course" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We will be using R throughout this course for spatial analysis. This is not a GIS course — we are not going to spend a lot of time on cartography or data management — but we do need to be comfortable enough with spatial data in R to do the analytical work that follows.</p>
+<p>For those of you who want to go deeper on the GIS and mapping side of things, <a href="https://r.geocompx.org">Geocomputation with R</a> by Lovelace et al. is an outstanding resource. It’s freely available online and covers everything from basic spatial data handling to advanced mapping and geoprocessing. I’ll point you to specific chapters from time to time, and it’s worth bookmarking as a reference you’ll return to throughout the course — especially if you find yourself wanting more out of your maps or needing to wrangle spatial data in ways we don’t cover in class.</p>
+</div>
+<div id="your-work" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Your Work<a href="introduction-getting-your-bearings.html#your-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Complete both of the Data Carpentry workshops below before our next meeting. These are excellent, well-crafted workshops and I mean it when I say excellent. Run the code as you go — don’t just read through it. This is one of those cases where the difference between passively reading and actually typing the commands into R is the difference between thinking you understand something and actually understanding it.</p>
+<p>How long will this take? It depends. Some of you are GIS veterans and some of you are very comfortable in R. Others are newer to one or both. The workshops are designed to be accessible regardless of your background, but your time will vary. Budget accordingly and don’t leave it until the night before.</p>
+<p>You don’t need to turn anything in, but you are responsible for the material. The Mt Baker assignment in the next chapter will assume you’ve done this work.</p>
+<p><strong><a href="https://datacarpentry.org/organization-geospatial/">Introduction to Geospatial Concepts</a></strong>
+We are going to continue working with the good folks at Data Carpentry for this intro to the organization of geospatial data. The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros and conversant with different data types and spatial schemas. Others are spatial novices. Finishing this will help establish a common baseline of knowledge.</p>
+<p><strong><a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction to Geospatial Raster and Vector Data with R</a></strong>
+Here we go — we are actually going to start working in R with geospatial data and begin to get comfortable using R as a GIS. Learning these skills will build the bridge we need to get to doing formal spatial analysis in subsequent modules.</p>
 
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-R-spatstat" class="csl-entry">
-Baddeley, Adrian, Rolf Turner, and Ege Rubak. 2026. <em>Spatstat: Spatial Point Pattern Analysis, Model-Fitting, Simulation, Tests</em>. <a href="http://spatstat.org/">http://spatstat.org/</a>.
-</div>
-<div id="ref-R-spdep" class="csl-entry">
-Bivand, Roger. 2026. <em>Spdep: Spatial Dependence: Weighting Schemes, Statistics</em>. <a href="https://github.com/r-spatial/spdep/">https://github.com/r-spatial/spdep/</a>.
-</div>
-<div id="ref-R-ncf" class="csl-entry">
-Bjornstad, Ottar N. 2026. <em>Ncf: Spatial Covariance Functions</em>. <a href="https://ento.psu.edu/directory/onb1">https://ento.psu.edu/directory/onb1</a>.
-</div>
-<div id="ref-R-ggnewscale" class="csl-entry">
-Campitelli, Elio. 2025. <em>Ggnewscale: Multiple Fill and Colour Scales in Ggplot2</em>. <a href="https://eliocamp.github.io/ggnewscale/">https://eliocamp.github.io/ggnewscale/</a>.
-</div>
-<div id="ref-R-tidyterra" class="csl-entry">
-Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span> Objects: The <span class="nocase">tidyterra</span> Package.”</span> <em>Journal of Open Source Software</em> 8 (91): 5751. <a href="https://doi.org/10.21105/joss.05751">https://doi.org/10.21105/joss.05751</a>.
-</div>
-<div id="ref-R-terra" class="csl-entry">
-Hijmans, Robert J. 2026. <em>Terra: Spatial Data Analysis</em>. <a href="https://rspatial.org/">https://rspatial.org/</a>.
-</div>
-<div id="ref-R-sf" class="csl-entry">
-Pebesma, Edzer. 2026. <em>Sf: Simple Features for r</em>. <a href="https://r-spatial.github.io/sf/">https://r-spatial.github.io/sf/</a>.
-</div>
-<div id="ref-R-sp" class="csl-entry">
-Pebesma, Edzer, and Roger Bivand. 2026. <em>Sp: Classes and Methods for Spatial Data</em>. <a href="https://github.com/edzer/sp/">https://github.com/edzer/sp/</a>.
-</div>
-<div id="ref-R-gstat" class="csl-entry">
-Pebesma, Edzer, and Benedikt Graeler. 2026. <em>Gstat: Spatial and Spatio-Temporal Geostatistical Modelling, Prediction and Simulation</em>. <a href="https://github.com/r-spatial/gstat/">https://github.com/r-spatial/gstat/</a>.
-</div>
-<div id="ref-R-nlme" class="csl-entry">
-Pinheiro, José, Douglas Bates, and R Core Team. 2025. <em>Nlme: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>.
-</div>
-<div id="ref-R-tmap" class="csl-entry">
-Tennekes, Martijn. 2025. <em>Tmap: Thematic Maps</em>. <a href="https://github.com/r-tmap/tmap">https://github.com/r-tmap/tmap</a>.
-</div>
-<div id="ref-R-tidyverse" class="csl-entry">
-Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>. <a href="https://tidyverse.tidyverse.org">https://tidyverse.tidyverse.org</a>.
-</div>
 </div>
 </div>
             </section>
@@ -1195,8 +1175,8 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
           </div>
         </div>
       </div>
-<a href="aside-ols-via-algebra-and-matrices.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aside-understanding-methods-and-generics-in-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

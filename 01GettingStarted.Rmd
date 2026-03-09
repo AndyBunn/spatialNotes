@@ -1,0 +1,22 @@
+# Introduction: Getting Your Bearings
+
+## Big Idea
+Before we can do spatial analysis, we need to be able to handle spatial data. The two Data Carpentry workshops below will get you there. Think of this as building the workbench before we start making things.
+
+## Your Toolkit for the Course
+We will be using R throughout this course for spatial analysis. This is not a GIS course — we are not going to spend a lot of time on cartography or data management — but we do need to be comfortable enough with spatial data in R to do the analytical work that follows. 
+
+For those of you who want to go deeper on the GIS and mapping side of things, [Geocomputation with R](https://r.geocompx.org) by Lovelace et al. is an outstanding resource. It's freely available online and covers everything from basic spatial data handling to advanced mapping and geoprocessing. I'll point you to specific chapters from time to time, and it's worth bookmarking as a reference you'll return to throughout the course — especially if you find yourself wanting more out of your maps or needing to wrangle spatial data in ways we don't cover in class.
+
+## Your Work
+Complete both of the Data Carpentry workshops below before our next meeting. These are excellent, well-crafted workshops and I mean it when I say excellent. Run the code as you go — don't just read through it. This is one of those cases where the difference between passively reading and actually typing the commands into R is the difference between thinking you understand something and actually understanding it.
+
+How long will this take? It depends. Some of you are GIS veterans and some of you are very comfortable in R. Others are newer to one or both. The workshops are designed to be accessible regardless of your background, but your time will vary. Budget accordingly and don't leave it until the night before.
+
+You don't need to turn anything in, but you are responsible for the material. The Mt Baker assignment in the next chapter will assume you've done this work.
+
+**[Introduction to Geospatial Concepts](https://datacarpentry.org/organization-geospatial/)**
+We are going to continue working with the good folks at Data Carpentry for this intro to the organization of geospatial data. The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros and conversant with different data types and spatial schemas. Others are spatial novices. Finishing this will help establish a common baseline of knowledge.
+
+**[Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/)**
+Here we go — we are actually going to start working in R with geospatial data and begin to get comfortable using R as a GIS. Learning these skills will build the bridge we need to get to doing formal spatial analysis in subsequent modules.
