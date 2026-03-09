@@ -1,7 +1,7 @@
 # ESCI 504 Notes
 
-This is a collection of course notes for ESCI 504. It's drafty as all get out.
+This is a collection of course notes for ESCI 505. It's drafty as all get out.
 
-📘 **Live site:** [https://andybunn.github.io/timeSeriesNotes/](https://andybunn.github.io/timeSeriesNotes/)
+📘 **Live site:** [https://andybunn.github.io/spatialNotes/](https://andybunn.github.io/spatialNotes/)
 
 The book is written using [bookdown](https://bookdown.org/) in R.

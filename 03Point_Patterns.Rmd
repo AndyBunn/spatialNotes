@@ -18,9 +18,9 @@ Bivand R (2008) Spatial Point Pattern Analysis. In: Applied Spatial Data Analysi
 Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
 
 ## Packages
-We will use `spatstat`[@r-spatstat] for point pattern analysis and I've thrown in some tidyverse[@R-tidyverse] syntax as well. 
+We will use `spatstat`[@R-spatstat] for point pattern analysis and I've thrown in some tidyverse[@R-tidyverse] syntax as well. 
 
-```{r, message=FALSE}
+```{r, include=FALSE}
 library(tidyverse)
 library(spatstat)
 ```
@@ -350,6 +350,13 @@ plot(patternD)
 
 ### Mycorrhizal fungi
 Let's look at an example of three species of [ectomycorrhizae](https://en.wikipedia.org/wiki/Ectomycorrhiza) distributed around a tree. 
+
+Here are three of the beauties.
+
+| ![Hebloma](assets/Hebloma.jpeg) | ![L_lac](assets/L_lac.jpeg) | ![L_pub](assets/L_pub.jpeg) |
+|:---:|:---:|:---:|
+| *Hebloma crustuliniforme* | *Lactarius laccata* | *Lactarius pubescens* |
+
 
 ```{r}
 data(sporophores)

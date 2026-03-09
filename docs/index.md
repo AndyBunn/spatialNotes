@@ -2,7 +2,7 @@
 title: "Spatial Analysis for Environmental Scientists"
 subtitle: "Notes for ESCI 505"
 author: "Andy Bunn"
-date: "08-March-2026"
+date: "09-March-2026"
 description: "Spatial analysis notes and exercises for ESCI 505"
 documentclass: book
 bibliography: [packages.bib,otherRefs.bib]
@@ -71,15 +71,15 @@ Once it's unzipped your folder structure should look something like this:
    ```
    spatial-course/
    ├── data/
-   │   ├── stuff.csv
-   │   ├── morestuff.rds
+   │   ├── birdRichnessMexico.rds
+   │   ├── mtbDEM.tif
    │   └── ...
    └── spatial-course.Rproj
    ```
 
 3.  **Refer to data files using relative paths**
 
-In your code, use paths like `"data/stuff.csv"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `fishcatch <- read.csv("data/stuff.csv")`.
+In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `birdRichness <-  readRDS("data/birdRichnessMexico.rds")`.
 
 
 

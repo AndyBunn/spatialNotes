@@ -71,25 +71,25 @@ Once it's unzipped your folder structure should look something like this:
    ```
    spatial-course/
    ├── data/
-   │   ├── stuff.csv
-   │   ├── morestuff.rds
+   │   ├── birdRichnessMexico.rds
+   │   ├── mtbDEM.tif
    │   └── ...
    └── spatial-course.Rproj
    ```
 
 3.  **Refer to data files using relative paths**
 
-In your code, use paths like `"data/stuff.csv"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `fishcatch <- read.csv("data/stuff.csv")`.
+In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `birdRichness <-  readRDS("data/birdRichnessMexico.rds")`.
 
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'tidyverse', 'terra', 'sf', 'ggnewscale','tidyterra',
-  'spatstat'),
+  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap'),
 'packages.bib')
 # to build everything in docs/.
 # bookdown::render_book() 
 # to build a chapter only
-# bookdown::preview_chapter("05SoManyChoices.Rmd")
+# bookdown::preview_chapter("03Point_Patterns.Rmd")
 ```

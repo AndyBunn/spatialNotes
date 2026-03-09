@@ -1,0 +1,117 @@
+# An Aside: Understanding Methods and Generics in R
+
+## You’ve Come a Long Way in R
+
+In your journey through the curriculum, you’ve learned a lot of R. You can wrangle data, fit models, make plots, write functions, etc. But you might also be starting to wonder:  **What’s actually going on under the hood?**
+
+For example, how does `summary()` know what to do when you give it the output from `lm`? Or why does `plot()` sometimes give you a histogram and other times a scatterplot?
+
+A good way to start answering those questions is to learn about **methods** and **generic functions**.
+
+## Why Use Generics?
+
+It’s nice when a function does the *right thing* depending on the kind of object you give it. You don’t want to memorize different function names for every kind of model—you just want to call `summary()`, `plot()`, or `print()` and get something useful. That’s what **generic functions** are for.
+
+In R, many common functions like `summary()`, `plot()`, and `print()` are *generic*—they automatically call the version that matches the class of your object.
+
+Let's run a linear model and use that as an example.
+
+```{r}
+fit <- lm(mpg ~ wt, data = mtcars)
+```
+
+Ok. We have a new object called `fit` that is a `list` with a bunch of stuff in it that authors of the `lm` function think will be useful to you. Look at its structure to see what's in there.
+
+```{r}
+str(fit)
+```
+
+That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn't obvious. For instance, the object `fit` doesn’t directly contain the $R^2$ or p-values. Those are computed when you call `summary(fit)`.
+
+```{r}
+summary(fit)
+```
+
+Ok. Check that out. We got a really nice formatted output that helps us interpret the linear model using the `summary` function. But note that the output of `summary(fit)` is really different than getting a summary of a numeric vector like the `mpg` in the `mtcars` data that went into the model.
+
+```{r}
+summary(mtcars$mpg)
+```
+
+### Same Function, Different Behavior — What Gives?
+
+We used the same function (`summary`) and got two very different results.  
+Answer? **Generics and methods.**
+
+When we used `summary(fit)`, we're not calling some one-size-fits-all summary function. We're calling a **specific method** written for objects of class `"lm"`.
+
+## How This Works
+
+Here’s what R does when you call `summary(fit)`:
+
+1. It checks the class of the object (`class(fit)`).
+2. It looks for a function named `summary.classname`—in this case, `summary.lm`.
+3. If it finds that method, it runs it.
+4. If not, it falls back to `summary.default()`.
+
+You can look under the hood:
+
+```{r}
+class(fit)
+methods(summary)
+summary.lm
+getS3method("summary", "lm")
+```
+
+## What’s the Difference Between a Generic and a Method?
+
+- A **generic function** is the function you call—like `summary()` or `plot()`.  
+  It doesn’t actually do the work itself. Instead, it decides **which method to run** based on the class of the object.
+
+- A **method** is the specific function written for a particular class.  
+  For example:
+  - `summary.lm()` handles linear models.
+  - `summary.data.frame()` handles data frames.
+  - `summary.default()` is the fallback if no class-specific method is found.
+
+You can look at the generic directly:
+
+```{r}
+summary
+```
+
+This call to `UseMethod("summary")` tells R to dispatch to the right method depending on the class of the object.
+
+---
+
+## Common Generic Functions
+
+Here are some other generic functions you're likely to run into:
+
+- `print()` – display a human-readable version  
+- `summary()` – provide a richer summary  
+- `plot()` – show plots  
+- `predict()` – make predictions  
+- `residuals()` – return residuals  
+- `fitted()` – return fitted values  
+- `coef()` – extract coefficients  
+- `update()` – refit a model with changes  
+- `AIC()` / `BIC()` – compare model fit  
+- `anova()` – compare nested models  
+- `terms()` / `formula()` – extract parts of model structure  
+
+## How to Explore and Understand Methods
+
+Want to know what’s going on behind a function call? Here are a few tools:
+
+```{r}
+methods(summary)
+methods(plot)
+methods(class = "lm")
+getS3method("summary", "lm")
+class(fit)
+```
+
+## Why This Matters
+
+Understanding how generics and methods work helps you read other people’s code, write better functions, and make sense of R’s behavior when things feel a little magic.

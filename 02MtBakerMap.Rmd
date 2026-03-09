@@ -12,7 +12,7 @@ For the past couple of years there has been major upheaval underway in how proje
 
 Ok. Let's go. 
 
-```{r}
+```{r,results='hide'}
 library(terra)
 library(sf)
 library(tidyverse)
