@@ -88,7 +88,11 @@ Once it's unzipped your folder structure should look something like this:
 
 3.  **Refer to data files using relative paths**
 
-In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g., `birdRichness <-  readRDS("data/birdRichnessMexico.rds")`.
+In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g.,
+
+```
+birdRichness <-  readRDS("data/birdRichnessMexico.rds")
+```
 
 
 ```{r include=FALSE}
