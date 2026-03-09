@@ -3,7 +3,9 @@
 
 
 ## Big Idea
-Space matters: Spatial pattern lets us understand process. That is, knowing where samples come from is the first step to understanding the underlying mechanisms.
+Space matters: Spatial pattern lets us understand process. That is, knowing where things are 
+(and whether their locations are random, clustered, or repulsed) is the first step to 
+understanding the underlying mechanisms that put them there.
 
 We can quantify the pattern of points themselves or in the presence of an explanatory variable. 
 
@@ -19,6 +21,10 @@ Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology.
 We will use `spatstat`[@R-spatstat] for point pattern analysis and I've thrown in some tidyverse[@R-tidyverse] syntax as well. 
 
 
+``` r
+library(tidyverse)
+library(spatstat)
+```
 
 ## Point Patterns
 Point pattern analysis (PPA) is the study of the spatial arrangements of points in space. It fundamentally deals with whether or not points are randomly distributed, clumped, or repulsed from each other. 

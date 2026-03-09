@@ -20,58 +20,10 @@ The `gstat`[@R-gstat] package is your friend. But we will need some of our recen
 ``` r
 library(sp)
 library(sf)
-```
-
-```
-## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
-```
-
-``` r
 library(gstat)
 library(tidyverse)
-```
-
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.2.0     ✔ readr     2.2.0
-## ✔ forcats   1.0.1     ✔ stringr   1.6.0
-## ✔ ggplot2   4.0.2     ✔ tibble    3.3.1
-## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-## ✔ purrr     1.2.1
-```
-
-```
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-```
-
-``` r
 library(terra)
-```
-
-```
-## terra 1.8.93
-## 
-## Attaching package: 'terra'
-## 
-## The following object is masked from 'package:tidyr':
-## 
-##     extract
-```
-
-``` r
 library(tidyterra)
-```
-
-```
-## 
-## Attaching package: 'tidyterra'
-## 
-## The following object is masked from 'package:stats':
-## 
-##     filter
 ```
 
 ## Some Kriging Theory

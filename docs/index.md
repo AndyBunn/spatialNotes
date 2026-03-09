@@ -42,6 +42,7 @@ This isn’t a comprehensive or final text. It’s a live document, shaped by yo
 
 The notes move through the core ideas of spatial analysis in roughly this order:
 
+- **Introduction to Geospatial Concepts** *(Data Carpentry)* — A common baseline on how geospatial data are organized, stored, and projected, for students coming in with varying levels of GIS experience.
 - **An Aside: Methods and Generics in R** — A conceptual primer on how R uses generic functions and dispatch, which will help you make sense of why the same function behaves differently depending on the object you give it.
 - **Mt Baker Map** — A practical introduction to handling raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
 - **Point Patterns** — How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.

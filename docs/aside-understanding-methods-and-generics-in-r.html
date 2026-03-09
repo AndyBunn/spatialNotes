@@ -1387,7 +1387,7 @@ Answer? <strong>Generics and methods.</strong></p>
 ##     class(ans) &lt;- &quot;summary.lm&quot;
 ##     ans
 ## }
-## &lt;bytecode: 0x1422bae40&gt;
+## &lt;bytecode: 0x12a068e40&gt;
 ## &lt;environment: namespace:stats&gt;</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb16-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
 <pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
@@ -1492,7 +1492,7 @@ Answer? <strong>Generics and methods.</strong></p>
 ##     class(ans) &lt;- &quot;summary.lm&quot;
 ##     ans
 ## }
-## &lt;bytecode: 0x1422bae40&gt;
+## &lt;bytecode: 0x12a068e40&gt;
 ## &lt;environment: namespace:stats&gt;</code></pre>
 </div>
 <div id="whats-the-difference-between-a-generic-and-a-method" class="section level2 hasAnchor" number="2.7">
@@ -1512,7 +1512,7 @@ For example:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb18-1" tabindex="-1"></a>summary</span></code></pre></div>
 <pre><code>## function (object, ...) 
 ## UseMethod(&quot;summary&quot;)
-## &lt;bytecode: 0x1422d8c78&gt;
+## &lt;bytecode: 0x12a086c78&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <p>This call to <code>UseMethod("summary")</code> tells R to dispatch to the right method depending on the class of the object.</p>
 <hr />
@@ -1694,7 +1694,7 @@ For example:</p>
 ##     class(ans) &lt;- &quot;summary.lm&quot;
 ##     ans
 ## }
-## &lt;bytecode: 0x1422bae40&gt;
+## &lt;bytecode: 0x12a068e40&gt;
 ## &lt;environment: namespace:stats&gt;</code></pre>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb28-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
 <pre><code>## [1] &quot;lm&quot;</code></pre>
