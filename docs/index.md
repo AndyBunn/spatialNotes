@@ -12,6 +12,7 @@ link-citations: yes
 site: bookdown::bookdown_site
 output: 
   bookdown::gitbook:
+    css: style.css
     includes:
       in_header: hide_code.html # inspired by: https://stackoverflow.com/questions/45360998/code-folding-in-bookdown
     config:

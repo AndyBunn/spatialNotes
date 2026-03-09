@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Spatial Analysis for Environmental Scientists</title>
+  <title>8 Regression: GLS with Autocorrelated Residuals | Spatial Analysis for Environmental Scientists</title>
   <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Spatial Analysis for Environmental Scientists" />
+  <meta property="og:title" content="8 Regression: GLS with Autocorrelated Residuals | Spatial Analysis for Environmental Scientists" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Spatial Analysis for Environmental Scientists" />
+  <meta name="twitter:title" content="8 Regression: GLS with Autocorrelated Residuals | Spatial Analysis for Environmental Scientists" />
   
   <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="aside-geostats-ii-kriging-variance-by-hand.html"/>
+<link rel="next" href="aside-ols-via-algebra-and-matrices.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1141,19 +1141,244 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="regression-gls-with-autocorrelated-residuals" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">8</span> Regression: GLS with Autocorrelated Residuals<a href="regression-gls-with-autocorrelated-residuals.html#regression-gls-with-autocorrelated-residuals" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="big-idea-5" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Big Idea<a href="regression-gls-with-autocorrelated-residuals.html#big-idea-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the big picture, identifying spatial patterns in data lets us understand process. In practical terms, standard ordinary least squares regression can be problematic with spatial data but there are other approaches that are useful.</p>
+</div>
+<div id="reading-5" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Reading<a href="regression-gls-with-autocorrelated-residuals.html#reading-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dormann et al. (2007) provide a review of several methods for accounting for spatial structure in species distribution data. The paper does a good job of explaining the big picture on why space is important in a regression context. Much of the paper uses matrix notation that you might not be familiar with and the mathematical details are not critical. In this module, we will focus on using generalized least squares (GLS). For this paper, I suggest reading the intro and then skimming the rest. Pay attention to the first part of section three on on spatial models based on GLS regression but don’t sweat the details more than you want to.</p>
+<p>Keitt et al. (2002) is also worth a heavy skim. They don’t use GLS in their approach but do show how spatial methods outperform standard methods in a few case studies. Focus on the implications rather than the methods in that paper. I worked with Tim Keitt when I was a masters student and my goodness, he is a smarty pants. It’s worth reading anything he’s written.</p>
+<p>Dormann, C F et al. (2007) Methods to account for spatial autocorrelation in the analysis of species distributional data: a review. Ecography 30: 609-628, doi: 10.1111/j.2007.0906-7590.05171.x.</p>
+<p>Keitt T H et al. (2002) Accounting for Spatial Pattern When Modeling Organism-Environment Interactions Ecography 25: 616-625.</p>
+</div>
+<div id="packages-6" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> Packages<a href="regression-gls-with-autocorrelated-residuals.html#packages-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>You’ll want to install the packages below. We are going to fit a linear model using GLS as opposed to ordinary least squares and thus need <code>nlme</code><span class="citation">(<a href="references.html#ref-R-nlme">Pinheiro, Bates, and R Core Team 2025</a>)</span> as well as some of our other spatial standards.</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-1" tabindex="-1"></a><span class="fu">library</span>(automap)</span>
+<span id="cb318-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-2" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb318-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-3" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb318-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-4" tabindex="-1"></a><span class="fu">library</span>(spdep)</span>
+<span id="cb318-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-5" tabindex="-1"></a><span class="fu">library</span>(ncf)</span>
+<span id="cb318-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb318-6" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+</div>
+<div id="regression" class="section level2 hasAnchor" number="8.4">
+<h2><span class="header-section-number">8.4</span> Regression<a href="regression-gls-with-autocorrelated-residuals.html#regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A very common situation with environmental data is to want to do an ordinary least squares (OLS) regression using spatial data. If your data are explicitly spatial, you are doing spatial regression. And that has different pitfalls than standard regression.</p>
+<p>The biggest issue is that if the residuals (errors) are autocorrelated, you have violated the assumption of <a href="https://en.wikipedia.org/wiki/Independent_and_identically_distributed_random_variables">independence</a>. What does this mean? Well, <a href="https://en.wikipedia.org/wiki/Autocorrelation#Regression_analysis">the standard errors on the coefficient estimates tend to be underestimated (and the t-scores overestimated) when autocorrelation of the errors at short distances are positive</a>. This means that any statistical inference could be wrong, e.g., the the p-values from a t-test will be artificially low. But despair not! If we take the the spatial structure of the errors into account we can usually still model the association between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> effectively.</p>
+<p>Is this a little opaque? Let’s make up an example. Let’s say you wanted to build a model of tree growth as a function of plant-available nitrogen in the soil. Your idea is that trees with more nitrogen will grow better. So, you make a nice linear model <span class="math inline">\(y=\beta_0 + \beta_1 x + \epsilon\)</span> where <span class="math inline">\(y\)</span> is the basal area increment of the tree, <span class="math inline">\(\beta_0\)</span> is the intercept and <span class="math inline">\(\beta_1\)</span> is the coefficient on the variable <span class="math inline">\(x\)</span> which is plant-available N, and <span class="math inline">\(\epsilon\)</span> is the residual. You have a gorgeous data set with 75 trees mapped which makes this a spatial regression: <span class="math inline">\(y_i=\beta_0 + \beta_1 x_i + \epsilon_i\)</span> where <span class="math inline">\(i\)</span> is the location specified by northing and easting coordinates. You run an OLS regression and get a positive slope and a t-test says that your model has skill (good <span class="math inline">\(R^2\)</span>, <span class="math inline">\(p&lt;0.05\)</span>, etc). Great – you fire off a letter to Nature, or write your thesis, or go dump some salmon carcasses on the trees, or just bathe in the satisfaction of a job well done. But of course your model won’t fit perfectly so you’ll have residuals or errors from the model (<span class="math inline">\(\epsilon\)</span>). Now, if those residuals are not independent and identically distributed (iid), you have violated the assumptions of the OLS regression. The coefficients might be inefficiently estimated, standard errors might be wrong, the p-values might be inflated. Alas. The classic reason that residuals are not ~iid in spatial data is because they are not independent and that means autocorrelation.</p>
+<p>In general here is a good approach when dealing with spatial data in a regression.</p>
+<ol style="list-style-type: decimal">
+<li><p>Start by assuming iid (e.g., doing an ordinary least squares regression).</p></li>
+<li><p>Look at the spatial structure of the residuals with Moran’s I.</p></li>
+<li><p>If the residuals look clean then carry on. Note that it’s OK for the variable <span class="math inline">\(y\)</span> or <span class="math inline">\(x\)</span> to be autocorrelated – watch the residuals. If the residuals have spatial structure, quantify the degree of spatial structure using Moran’s I. Spatial structure might or might not be a problem. But if your life/thesis/soul depends on having a clean model you’ll want to deal with it.</p></li>
+<li><p>Fit a variogram to the residuals. We can use this information to fit a GLS model where we specify the spatial structure in the error term using a variogram model fit from the the semivariance on the residuals.</p></li>
+</ol>
+</div>
+<div id="gls-and-ols" class="section level2 hasAnchor" number="8.5">
+<h2><span class="header-section-number">8.5</span> GLS and OLS<a href="regression-gls-with-autocorrelated-residuals.html#gls-and-ols" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We have all been taught OLS. OLS is a <strong>method</strong> for estimating the unknown parameters in a linear regression model – e.g., estimating the intercept (<span class="math inline">\(\beta_0\)</span>) and slope (<span class="math inline">\(\beta_1\)</span>) of a line in the formula <span class="math inline">\(y=\beta_0 + \beta_1x\)</span>. OLS works by choosing the parameters of a linear function by minimizing the sum of the squares of the differences between the observed dependent variable (<span class="math inline">\(y\)</span>) in the given data set and those predicted by the linear function (e.g., <span class="math inline">\(y=\beta_0 + \beta_1x\)</span> in the example above, but note that you can have more than one independent variable in a multiple regression). If conditions like homoscedasticty, independence, and normality are met, the OLS estimators are optimal (often called BLUE – Best Linear Unbiased Estimators). In other words, when the assumptions are met, OLS works. OLS has a nice property that teaching it is relatively simple and can be done without a bunch of matrix algebra. You can calculate the sum of squares by hand and in intro stats courses we relate OLS to simpler concepts like correlation.</p>
+<p>The other common least squares approach is generalized least squares (GLS). GLS is a <strong>method</strong> of estimation of a linear process which accounts for heteroscedasticity and structure in the error term. If OLS is used for homoscedastic regressions (i.e. <span class="math inline">\(y\)</span> has the same variance for each <span class="math inline">\(x\)</span>), GLS is used for heteroscedastic regression (different variances). GLS can also be used for correlated (non-independent) residuals. The theory with GLS is that the residuals can be transformed so that the variances are equal and uncorrelated. We will let the math happen behind the scene, but you can think of it like this: OLS minimizes the sum of the squares of the differences between the observed dependent variable and GLS minimizes distances relative to the covariance matrix of the residuals. The calculation for GLS is more involved than for OLS (the GLS function is fit from restricted maximum likelihood rather than sums of squares) and relies on specifying the nature of the errors (i.e., how are they not normal and independent?). For those reasons, and mostly from lack of time, GLS tends not to be taught alongside OLS. We typically encounter it when we learn mixed effects modeling.</p>
+<p>In spatial and time-series analysis, the error term is often autocorrelated. So, if the important difference between OLS and GLS is the assumptions made about the error term of the model, we can use GLS to allow for autocorrelated errors and avoid having inefficient estimation of the unknown parameters in a linear model. <a href="https://www.reddit.com/r/AskStatistics/comments/36ocl1/why_not_always_use_gls_over_ols/">Why not always use GLS over OLS?</a>. It’s a good question and I think of it along the lines of the <a href="https://en.wikipedia.org/wiki/KISS_principle">KISS principle</a>. If you meet the OLS assumptions, use it. If you don’t then look for alternatives like GLS.</p>
+</div>
+<div id="toy-example-2" class="section level2 hasAnchor" number="8.6">
+<h2><span class="header-section-number">8.6</span> Toy Example<a href="regression-gls-with-autocorrelated-residuals.html#toy-example-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here is our goal: We will create a variable <code>y</code> that is a function of <code>x</code> but will have spatially autocorrelated noise (<span class="math inline">\(\epsilon\)</span>). We will regress <code>y</code> on <code>x</code> and find to our horror that the residuals from this model are not iid. We will then apply a GLS model with an appropriate correlation structure and feel good about ourselves.</p>
+<div id="data-5" class="section level3 hasAnchor" number="8.6.1">
+<h3><span class="header-section-number">8.6.1</span> Data<a href="regression-gls-with-autocorrelated-residuals.html#data-5" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>First, I’m going to make some autocorrelated noise <span class="math inline">\(\epsilon\)</span>. This bit of code here is not for the faint of heart. You can hum your way through this and know that at the end the variable <span class="math inline">\(\epsilon\)</span> will be spatially autocorrelated. You can follow the code below if you are interested in the process but it’s significantly more complicated that we usually do in this class. We we are doing is making a variable <span class="math inline">\(\epsilon\)</span> that has spatial autocorrelation <span class="math inline">\(\rho\)</span> in the form <span class="math inline">\(\epsilon = \rho W + e\)</span> where <span class="math inline">\(W\)</span> is a weights matrix following an inverse distance weights process and <span class="math inline">\(e\)</span> is random noise (<span class="math inline">\(N(0,1)\)</span>). We make <code>n</code> random points following complete spatial randomness (using <code>runif</code>) and then do some tedious calculations to determine how each points is linked based their distances (<code>dnearneigh</code> and <code>nbdists</code>). Based on the distances we make a weights matrix following IDW with power <code>p</code>. We get the spatial autocorrelation generating operator for <span class="math inline">\(\rho\)</span> via the weights matrix and then multiply by some white noise (<code>rnorm</code>) to get <span class="math inline">\(\epsilon\)</span>. The details on this last step involve some matrix inversions that we don’t need to unpack.</p>
+<div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-1" tabindex="-1"></a><span class="co"># We will do n points</span></span>
+<span id="cb319-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">75</span></span>
+<span id="cb319-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-3" tabindex="-1"></a></span>
+<span id="cb319-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-4" tabindex="-1"></a><span class="co"># CSR. Our mapped points.</span></span>
+<span id="cb319-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-5" tabindex="-1"></a>easting <span class="ot">&lt;-</span> <span class="fu">runif</span>(n,<span class="dv">0</span>,<span class="dv">100</span>)</span>
+<span id="cb319-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-6" tabindex="-1"></a>northing <span class="ot">&lt;-</span> <span class="fu">runif</span>(n,<span class="dv">0</span>,<span class="dv">100</span>)</span>
+<span id="cb319-7"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-7" tabindex="-1"></a>points <span class="ot">&lt;-</span> <span class="fu">cbind</span>(easting,northing)</span>
+<span id="cb319-8"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-8" tabindex="-1"></a></span>
+<span id="cb319-9"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-9" tabindex="-1"></a><span class="co"># Generate the spatially autocorrelated error term, epsilon.</span></span>
+<span id="cb319-10"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-10" tabindex="-1"></a><span class="co"># Build neighbor objects with an inclusive distance threshold</span></span>
+<span id="cb319-11"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-11" tabindex="-1"></a>dnb <span class="ot">&lt;-</span> <span class="fu">dnearneigh</span>(<span class="at">x =</span> points, <span class="at">d1 =</span> <span class="dv">0</span>, <span class="at">d2 =</span> <span class="dv">150</span>)</span>
+<span id="cb319-12"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-12" tabindex="-1"></a>dsts <span class="ot">&lt;-</span> <span class="fu">nbdists</span>(<span class="at">nb =</span> dnb, <span class="at">coords =</span> points)</span>
+<span id="cb319-13"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-13" tabindex="-1"></a><span class="co"># And follow an IDW process</span></span>
+<span id="cb319-14"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-14" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">2.25</span> <span class="co"># IDW power</span></span>
+<span id="cb319-15"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-15" tabindex="-1"></a>idw <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dsts, <span class="cf">function</span>(x) x<span class="sc">^-</span>p)</span>
+<span id="cb319-16"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-16" tabindex="-1"></a><span class="co"># Weights matrix as a list</span></span>
+<span id="cb319-17"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-17" tabindex="-1"></a>wList <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(<span class="at">neighbours =</span> dnb, <span class="at">glist=</span>idw, <span class="at">style=</span><span class="st">&quot;W&quot;</span>) </span>
+<span id="cb319-18"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-18" tabindex="-1"></a></span>
+<span id="cb319-19"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-19" tabindex="-1"></a><span class="co"># Compute SAR generating operator via a weights matrix</span></span>
+<span id="cb319-20"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-20" tabindex="-1"></a>inv <span class="ot">&lt;-</span> spatialreg<span class="sc">::</span><span class="fu">invIrW</span>(<span class="at">x =</span> wList, <span class="at">rho =</span> <span class="fl">0.75</span>)</span>
+<span id="cb319-21"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-21" tabindex="-1"></a></span>
+<span id="cb319-22"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-22" tabindex="-1"></a><span class="co"># Calculate epsilon and rescale as z scores</span></span>
+<span id="cb319-23"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-23" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> inv <span class="sc">%*%</span> <span class="fu">rnorm</span>(n) </span>
+<span id="cb319-24"><a href="regression-gls-with-autocorrelated-residuals.html#cb319-24" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fu">scale</span>(epsilon[,<span class="dv">1</span>])[,<span class="dv">1</span>]</span></code></pre></div>
+<p>OK, by great magic we now have a variable that is from random spatial points but has spatially autocorrelated values (that follow an IDW process). If you want, you can imagine that <span class="math inline">\(\epsilon\)</span> is a variable in nature that is spatially autocorrelated (maybe soil moisture availability following the tree example above) that we didn’t measure. How intense is the spatial autocorrelation? Think <span class="math inline">\(\rho\)</span> following an IDW process. E.g.,</p>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb320-1" tabindex="-1"></a><span class="fu">moran.test</span>(epsilon, wList)</span></code></pre></div>
+<pre><code>## 
+##  Moran I test under randomisation
+## 
+## data:  epsilon  
+## weights: wList    
+## 
+## Moran I statistic standard deviate = 8.4772, p-value &lt; 2.2e-16
+## alternative hypothesis: greater
+## sample estimates:
+## Moran I statistic       Expectation          Variance 
+##       0.723530049      -0.013513514       0.007559259</code></pre>
+<p>We are going to use <span class="math inline">\(\epsilon\)</span> as the error term in a model. Oh, I’ll use the terms “errors” and “residuals” interchangeably throughout these notes.</p>
+<p>We’ll now make <code>x</code> and then <span class="math inline">\(y=\beta_0 + \beta_1(x) + \epsilon\)</span>. We will run a linear model and look at the residuals of that model using Moran’s I.</p>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-1" tabindex="-1"></a><span class="co"># Generate x as noise.</span></span>
+<span id="cb322-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb322-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-3" tabindex="-1"></a><span class="co"># Generate y as a function of x and epsilon (which is spatially autocorrelated)</span></span>
+<span id="cb322-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-4" tabindex="-1"></a>B0 <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># intercept</span></span>
+<span id="cb322-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-5" tabindex="-1"></a>B1 <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="co"># slope</span></span>
+<span id="cb322-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-6" tabindex="-1"></a>y <span class="ot">&lt;-</span> B0 <span class="sc">+</span> B1<span class="sc">*</span>x <span class="sc">+</span> epsilon</span>
+<span id="cb322-7"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-7" tabindex="-1"></a></span>
+<span id="cb322-8"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-8" tabindex="-1"></a><span class="co"># Make a data.frame</span></span>
+<span id="cb322-9"><a href="regression-gls-with-autocorrelated-residuals.html#cb322-9" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(easting,northing,y,x)</span></code></pre></div>
+<p>So in our thought experiment here are the data. The independent variable <code>x</code>:</p>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb323-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-2" tabindex="-1"></a>                                 <span class="at">size=</span>x, <span class="at">fill=</span>x)) <span class="sc">+</span> </span>
+<span id="cb323-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span><span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb323-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-4" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb323-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-5" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb323-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb323-6" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;x&quot;</span>)</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
+<p>And the dependent variable <code>y</code>:</p>
+<div class="sourceCode" id="cb324"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb324-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb324-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb324-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb324-2" tabindex="-1"></a>                                 <span class="at">size=</span>y, <span class="at">fill=</span>y)) <span class="sc">+</span></span>
+<span id="cb324-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb324-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span> <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb324-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb324-4" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span> </span>
+<span id="cb324-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb324-5" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;y&quot;</span>)</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
+</div>
+<div id="analysis" class="section level3 hasAnchor" number="8.6.2">
+<h3><span class="header-section-number">8.6.2</span> Analysis<a href="regression-gls-with-autocorrelated-residuals.html#analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Following our imagined example above we have a dependent variable <code>y</code> (tree growth) that we want to model using an independent variable <code>x</code> (nitrogen). The points (trees) are mapped using coordinates (<code>easting</code> and <code>northing</code>) and we can imagine those are in meters. Because we made up these data we know that the residual term on this model is autocorrelated noise (<code>epsilon</code>). If you don’t like having the errors be something theoretical in your head, you can imagine that this term is mostly some variable we haven’t measured that might provide explanatory power (e.g., a topographic variable relating to soil moisture availability).</p>
+<p>We will start by assuming <code>epsilon</code> follows an iid process (e.g., <span class="math inline">\(N(0,1)\)</span>) and we will fit a model with uncorrelated errors. E.g., here we use <code>gls</code> but this gives the same info as <code>lm</code> would because <code>gls</code> assumes iid errors unless told otherwise.</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb325-1" tabindex="-1"></a><span class="co"># Fit a model using gls</span></span>
+<span id="cb325-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb325-2" tabindex="-1"></a>glsNaive <span class="ot">&lt;-</span> <span class="fu">gls</span>(y<span class="sc">~</span>x, dat)</span>
+<span id="cb325-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb325-3" tabindex="-1"></a><span class="fu">summary</span>(glsNaive)</span></code></pre></div>
+<pre><code>## Generalized least squares fit by REML
+##   Model: y ~ x 
+##   Data: dat 
+##        AIC      BIC    logLik
+##   220.5108 227.3822 -107.2554
+## 
+## Coefficients:
+##                 Value Std.Error   t-value p-value
+## (Intercept) 3.0279132 0.1159938 26.104090       0
+## x           0.6770339 0.1177377  5.750359       0
+## 
+##  Correlation: 
+##   (Intr)
+## x 0.16  
+## 
+## Standardized residuals:
+##         Min          Q1         Med          Q3         Max 
+## -2.30917106 -0.58948266  0.04617216  0.52758487  3.64494767 
+## 
+## Residual standard error: 0.9915877 
+## Degrees of freedom: 75 total; 73 residual</code></pre>
+<p>We fit a linear model of the form <span class="math inline">\(y=\beta_0 + \beta_1x\)</span> using GLS and got out estimates for the intercept (<span class="math inline">\(\hat\beta_0\)</span>) and slope (<span class="math inline">\(\hat\beta_1\)</span>). We assumed that the error term was uncorrelated. Looking at summary, we can see the the estimate of the slope (<span class="math inline">\(\hat\beta_1\)</span>) is 0.677 and significantly different than zero. We also have a variety of goodness of fit statistics and some other goodies. I’ll walk through those in the video. The important thing to wrap your head around here is that we just fit GLS with uncorrelated errors meaning it’s essentially identical to OLS. Compare the above to the more familiar <code>summary(lm(y~x,data=dat))</code>.</p>
+<p>Since these data are spatial. the key for us is to look at the residuals and see if they are autocorrelated. Let’s map them first.</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-1" tabindex="-1"></a><span class="co"># Add residuals to dat -- think epsilon</span></span>
+<span id="cb327-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-2" tabindex="-1"></a>dat<span class="sc">$</span>glsNaiveResids <span class="ot">&lt;-</span> <span class="fu">residuals</span>(glsNaive,<span class="at">type=</span><span class="st">&quot;normalized&quot;</span>)</span>
+<span id="cb327-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-3" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb327-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-4" tabindex="-1"></a>                                 <span class="at">size=</span>glsNaiveResids, <span class="at">fill=</span>glsNaiveResids)) <span class="sc">+</span></span>
+<span id="cb327-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb327-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-6" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>() <span class="sc">+</span></span>
+<span id="cb327-7"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-7" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb327-8"><a href="regression-gls-with-autocorrelated-residuals.html#cb327-8" tabindex="-1"></a>  <span class="fu">coord_fixed</span>()</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-9-1.png" alt="" width="672" /></p>
+<p>From the map, the residuals look aggressively non-random. Positive values are near positive values and negative ones near negative values. Let’s quantify that with a correlogram.</p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb328-1" tabindex="-1"></a><span class="co"># Test them for spatial autocorrelation using a correlogram.</span></span>
+<span id="cb328-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb328-2" tabindex="-1"></a>residsI <span class="ot">&lt;-</span> <span class="fu">spline.correlog</span>(<span class="at">x=</span>dat<span class="sc">$</span>easting, <span class="at">y=</span>dat<span class="sc">$</span>northing,</span>
+<span id="cb328-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb328-3" tabindex="-1"></a>                           <span class="at">z=</span>dat<span class="sc">$</span>glsNaiveResids, <span class="at">resamp=</span><span class="dv">50</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb328-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb328-4" tabindex="-1"></a><span class="fu">plot</span>(residsI,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(<span class="fu">dist</span>(points))<span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-10-1.png" alt="" width="672" /></p>
+<p>The residuals of this model are not clean and autocorrelated at short distances. Thus, we have violated the assumption of independent residuals. But do not despair. We will use a GLS model that allows us to specify a spatial correlation structure for the residuals and perform hypothesis testing in the presence of spatial structure. Doing so, will give us new and improved estimates of the parameters. We will thus sleep well knowing in our hearts that we have done good.</p>
+<p>We need to determine an appropriate theoretical model for the spatial structure of the residuals. Once we have a model, we can pass it to the <code>gls</code> function with a <code>corStruct</code> object. The models that we have at our disposal include the theoretical variogram models we used with kriging. So, let’s fit a variogram to the residuals and see which model might fit best.</p>
+<p>Here we’ll cheat a little and use <code>autofitVariogram</code> to get a model suggestion rather than go through the fitting process by hand with <code>variogram</code>, <code>vgm</code>, and <code>fit.variogram</code> from <code>gstat</code>.</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb329-1" tabindex="-1"></a>datSF <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;easting&quot;</span>,<span class="st">&quot;northing&quot;</span>))</span>
+<span id="cb329-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb329-2" tabindex="-1"></a><span class="co"># A variogram of the residuals</span></span>
+<span id="cb329-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb329-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">autofitVariogram</span>(glsNaiveResids<span class="sc">~</span><span class="dv">1</span>, <span class="at">input_data =</span> datSF, <span class="at">model =</span> <span class="fu">c</span>(<span class="st">&quot;Gau&quot;</span>,<span class="st">&quot;Sph&quot;</span>,<span class="st">&quot;Exp&quot;</span>)))</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" /></p>
+<p>The experimental variogram (dots) above is fit with a spherical theoretical model (line) and we can use that spherical model as a correlation structure with <code>gls</code> by initializing the correlation structure with <code>corSpatial</code>. We can then use <code>update</code> to re-fit the model. Note that this is the same as fitting a new model via <code>gls(model = y~x, data = dat, correlation = csSpatial)</code> but I like <code>update</code> as a way of making sure the model specification is the same for the sake of comparison.</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb330-1" tabindex="-1"></a>csSpatial <span class="ot">&lt;-</span> <span class="fu">corSpatial</span>(<span class="at">form=</span><span class="sc">~</span>easting<span class="sc">+</span>northing,<span class="at">nugget=</span><span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">&quot;spherical&quot;</span>)</span>
+<span id="cb330-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb330-2" tabindex="-1"></a>glsUpdated <span class="ot">&lt;-</span> <span class="fu">update</span>(glsNaive,<span class="at">correlation=</span>csSpatial)</span>
+<span id="cb330-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb330-3" tabindex="-1"></a><span class="fu">summary</span>(glsUpdated)</span></code></pre></div>
+<pre><code>## Generalized least squares fit by REML
+##   Model: y ~ x 
+##   Data: dat 
+##        AIC      BIC    logLik
+##   200.7105 212.1628 -95.35527
+## 
+## Correlation Structure: Spherical spatial correlation
+##  Formula: ~easting + northing 
+##  Parameter estimate(s):
+##       range      nugget 
+## 74.04107726  0.06465118 
+## 
+## Coefficients:
+##                Value Std.Error  t-value p-value
+## (Intercept) 3.249872 0.6437820 5.048094       0
+## x           0.538845 0.0862102 6.250369       0
+## 
+##  Correlation: 
+##   (Intr)
+## x 0.044 
+## 
+## Standardized residuals:
+##        Min         Q1        Med         Q3        Max 
+## -1.6635015 -0.5306524 -0.1391361  0.1675900  2.2775546 
+## 
+## Residual standard error: 1.564058 
+## Degrees of freedom: 75 total; 73 residual</code></pre>
+<p>This is interesting. We will interpret more below but note that the slope coefficient is different from <code>glsNaive</code> to <code>glsUpdated</code>. Let’s look at the spatial structure of the residuals from <code>glsUpdated</code>.</p>
+<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-1" tabindex="-1"></a><span class="co"># add the residuals to the spatial dat object</span></span>
+<span id="cb332-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-2" tabindex="-1"></a>dat<span class="sc">$</span>glsResids <span class="ot">&lt;-</span> <span class="fu">residuals</span>(glsUpdated,<span class="at">type=</span><span class="st">&quot;normalized&quot;</span>)</span>
+<span id="cb332-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-3" tabindex="-1"></a><span class="co"># Map the residuals from gls</span></span>
+<span id="cb332-4"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-4" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb332-5"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-5" tabindex="-1"></a>                                 <span class="at">size=</span>glsResids, <span class="at">fill=</span>glsResids)) <span class="sc">+</span></span>
+<span id="cb332-6"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb332-7"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-7" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>() <span class="sc">+</span></span>
+<span id="cb332-8"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-8" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb332-9"><a href="regression-gls-with-autocorrelated-residuals.html#cb332-9" tabindex="-1"></a>  <span class="fu">coord_fixed</span>()</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" /></p>
+<p>They don’t look to be autocorrelated. But we should test them:</p>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="regression-gls-with-autocorrelated-residuals.html#cb333-1" tabindex="-1"></a>residsI <span class="ot">&lt;-</span> <span class="fu">spline.correlog</span>(<span class="at">x=</span>dat<span class="sc">$</span>easting, <span class="at">y=</span>dat<span class="sc">$</span>northing,</span>
+<span id="cb333-2"><a href="regression-gls-with-autocorrelated-residuals.html#cb333-2" tabindex="-1"></a>                           <span class="at">z=</span>dat<span class="sc">$</span>glsResids, <span class="at">resamp=</span><span class="dv">50</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb333-3"><a href="regression-gls-with-autocorrelated-residuals.html#cb333-3" tabindex="-1"></a><span class="fu">plot</span>(residsI,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(<span class="fu">dist</span>(points))<span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div>
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" /></p>
+<p>And the correlogram shows that they are clean – autocorrelation has been accounted for.</p>
+</div>
+<div id="interpretation" class="section level3 hasAnchor" number="8.6.3">
+<h3><span class="header-section-number">8.6.3</span> Interpretation<a href="regression-gls-with-autocorrelated-residuals.html#interpretation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>So what’s the big deal? We started with a model that showed <code>x</code> as a significant predictor of <code>y</code>. We ended up, after much wailing and rending of garments, with a model that showed <code>x</code> as a significant predictor of <code>y</code>. Is it a better model? Was it worth the trouble. Let’s consider a few things.</p>
+<ol style="list-style-type: decimal">
+<li><p>The GLS model with the correlated residuals has a lower AIC than the naive uncorrelated model (201 vs. 221)</p></li>
+<li><p>The original function we used to make <span class="math inline">\(y\)</span> was <span class="math inline">\(y=\beta_0 + \beta_1x + \epsilon\)</span> where <span class="math inline">\(\beta_0\)</span> = 3 and <span class="math inline">\(\beta_1\)</span> = 0.5. Both the GLS models got the intercept right (3.25 for <code>glsUpdated</code> and 3.03 for <code>glsNaive</code>). But the GLS model with the correlated residuals does a better job of getting the true value of the slope (0.54 vs 0.68).</p></li>
+<li><p>The error estimate on <span class="math inline">\(\beta_1\)</span> was lower on the model with correlated residuals than the naive uncorrelated model (0.0862 vs 0.1177).</p></li>
+</ol>
+<p>Finally, we did it “right” – that should be satisfying. What would have happened if <span class="math inline">\(\beta_1\)</span> had been lower? That is, what if <span class="math inline">\(y\)</span> was made up of more noise and less <span class="math inline">\(x\)</span>? E.g., <span class="math inline">\(y=\beta_0 + 0.5(\beta_1)x + 2(\epsilon)\)</span>? This model, with 75 points should be pretty robust on the simple hypothesis test on the slope (H<span class="math inline">\(_1\)</span>: <span class="math inline">\(\beta_1 \neq 0\)</span>) but we know that parameter estimation is inefficient with autocorrelated residuals so having clean residuals and good parameter estimation is important.</p>
+</div>
+</div>
+<div id="your-work-6" class="section level2 hasAnchor" number="8.7">
+<h2><span class="header-section-number">8.7</span> Your work<a href="regression-gls-with-autocorrelated-residuals.html#your-work-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The joy of simulated data is, of course, that we know the real answer going in. We knew above, that <span class="math inline">\(y=\beta_0 + \beta_1x + \epsilon\)</span> and we knew that the residual term was spatially autocorrelated. Obviously, that’s a luxury that we don’t have when making inference about data we collect.</p>
+<p>The file <code>birdDiv.csv</code> has data on bird diversity and plant community diversity (unitless, with higher numbers indicating greater diversity) and coordinates for 64, 1-ha plots Coordinates are UTM and thus in meters. Your work is to model bird diversity as a function of plant diversity with the expectation that higher plant diversity is associated with high bird diversity. Watch those residuals and interpret carefully!</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="aside-geostats-ii-kriging-variance-by-hand.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aside-ols-via-algebra-and-matrices.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Spatial Analysis for Environmental Scientists</title>
+  <title>Aside: Geostats II: Kriging Variance By Hand | Spatial Analysis for Environmental Scientists</title>
   <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Spatial Analysis for Environmental Scientists" />
+  <meta property="og:title" content="Aside: Geostats II: Kriging Variance By Hand | Spatial Analysis for Environmental Scientists" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Spatial Analysis for Environmental Scientists" />
+  <meta name="twitter:title" content="Aside: Geostats II: Kriging Variance By Hand | Spatial Analysis for Environmental Scientists" />
   
   <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="geostats-ii-kriging.html"/>
+<link rel="next" href="regression-gls-with-autocorrelated-residuals.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1141,19 +1141,231 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="aside-geostats-ii-kriging-variance-by-hand" class="section level1 unnumbered aside-chapter hasAnchor">
+<h1>Aside: Geostats II: Kriging Variance By Hand<a href="aside-geostats-ii-kriging-variance-by-hand.html#aside-geostats-ii-kriging-variance-by-hand" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="calculating-variance-by-hand" class="section level2 hasAnchor" number="7.16">
+<h2><span class="header-section-number">7.16</span> Calculating Variance By Hand<a href="aside-geostats-ii-kriging-variance-by-hand.html#calculating-variance-by-hand" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This is a very quick adaptation of calculating the variance in kriging by hand. This came from used Prof Ashton Shortridge at MSU and he gave me permission to share this with you. It was hosted on his univ web page but as he told me:</p>
+<p>“Unfortunately MSU, in its wisdom, decided to eliminate home pages, and I have had to move to our course management software…When I have time (hah!), I’d like to post the course stuff somewhere public. For now I’ll just pass along the updated manual kriging pages - feel free to use as you see fit.”</p>
+<p>What a cool guy!</p>
+<p>So, here is an example of how to get the variance on ordinary and simple kriging by hand if you want to go down this particular rabbit hole. There is nothing specifically for you to do here, but I think it’s fun to work through these calculations manually. But I’m odd like that.</p>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-1" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-2" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-3" tabindex="-1"></a><span class="co"># Manual krig example: code for manual simple and ordinary </span></span>
+<span id="cb301-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-4" tabindex="-1"></a><span class="co"># kriging using the coordinates in Box 6.2 in Burrough &amp; </span></span>
+<span id="cb301-5"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-5" tabindex="-1"></a><span class="co"># McDonnell, Principles of GIS (1998). However, </span></span>
+<span id="cb301-6"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-6" tabindex="-1"></a><span class="co"># results are a bit different, as there was a typo in the book.</span></span>
+<span id="cb301-7"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-7" tabindex="-1"></a><span class="co">#  written by A. Shortridge 3/2004, 3/2007, 10/2013, 10/2014</span></span>
+<span id="cb301-8"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-8" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-9"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-9" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-10"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-10" tabindex="-1"></a></span>
+<span id="cb301-11"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-11" tabindex="-1"></a></span>
+<span id="cb301-12"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-12" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-13"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-13" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-14"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-14" tabindex="-1"></a><span class="co"># Covar funcs for spherical, exponential, and Gaussian models</span></span>
+<span id="cb301-15"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-15" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-16"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-16" tabindex="-1"></a><span class="co"># Given a set of parameters and a matrix of distances, these </span></span>
+<span id="cb301-17"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-17" tabindex="-1"></a><span class="co"># functions will spit out covariances.</span></span>
+<span id="cb301-18"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-18" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-19"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-19" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-20"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-20" tabindex="-1"></a></span>
+<span id="cb301-21"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-21" tabindex="-1"></a>spher.covar <span class="ot">&lt;-</span> <span class="cf">function</span>(dist, nugget, sill, range) {</span>
+<span id="cb301-22"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-22" tabindex="-1"></a>   sigma <span class="ot">&lt;-</span> sill <span class="sc">+</span> nugget</span>
+<span id="cb301-23"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-23" tabindex="-1"></a>   <span class="co"># Covariance(h) = Sigma + Gamma(h)</span></span>
+<span id="cb301-24"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-24" tabindex="-1"></a>   covar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(dist), <span class="at">ncol=</span><span class="fu">ncol</span>(dist))</span>
+<span id="cb301-25"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-25" tabindex="-1"></a>   <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(covar)) {</span>
+<span id="cb301-26"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-26" tabindex="-1"></a>      <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(covar)) {</span>
+<span id="cb301-27"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-27" tabindex="-1"></a>         <span class="cf">if</span> (dist[i,j] <span class="sc">&gt;</span> range) </span>
+<span id="cb301-28"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-28" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb301-29"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-29" tabindex="-1"></a>         <span class="cf">else</span> <span class="cf">if</span> (dist[i,j] <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb301-30"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-30" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> sigma</span>
+<span id="cb301-31"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-31" tabindex="-1"></a>         <span class="cf">else</span> covar[i,j] <span class="ot">&lt;-</span> sigma <span class="sc">-</span> (nugget <span class="sc">+</span> (sigma <span class="sc">-</span> nugget) <span class="sc">*</span> </span>
+<span id="cb301-32"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-32" tabindex="-1"></a>                                        (((<span class="dv">3</span><span class="sc">*</span>dist[i,j])<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>range)) <span class="sc">-</span> ((dist[i,j]<span class="sc">^</span><span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>range<span class="sc">^</span><span class="dv">3</span>))))</span>
+<span id="cb301-33"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-33" tabindex="-1"></a>      }</span>
+<span id="cb301-34"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-34" tabindex="-1"></a>   }</span>
+<span id="cb301-35"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-35" tabindex="-1"></a>   <span class="fu">return</span>(covar)</span>
+<span id="cb301-36"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-36" tabindex="-1"></a>}</span>
+<span id="cb301-37"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-37" tabindex="-1"></a></span>
+<span id="cb301-38"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-38" tabindex="-1"></a></span>
+<span id="cb301-39"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-39" tabindex="-1"></a>exp.covar <span class="ot">&lt;-</span> <span class="cf">function</span>(dist, nugget, sill, range) {</span>
+<span id="cb301-40"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-40" tabindex="-1"></a>   sigma <span class="ot">&lt;-</span> sill <span class="sc">+</span> nugget</span>
+<span id="cb301-41"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-41" tabindex="-1"></a>   covar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(dist), <span class="at">ncol=</span><span class="fu">ncol</span>(dist))</span>
+<span id="cb301-42"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-42" tabindex="-1"></a>   <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(covar)) {</span>
+<span id="cb301-43"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-43" tabindex="-1"></a>      <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(covar)) {</span>
+<span id="cb301-44"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-44" tabindex="-1"></a>         <span class="cf">if</span> (dist[i,j] <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb301-45"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-45" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> sigma</span>
+<span id="cb301-46"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-46" tabindex="-1"></a>         }</span>
+<span id="cb301-47"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-47" tabindex="-1"></a>         <span class="cf">else</span> </span>
+<span id="cb301-48"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-48" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> sill <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>dist[i,j]<span class="sc">/</span>range)</span>
+<span id="cb301-49"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-49" tabindex="-1"></a>      }</span>
+<span id="cb301-50"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-50" tabindex="-1"></a>   }</span>
+<span id="cb301-51"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-51" tabindex="-1"></a>   <span class="fu">return</span>(covar)</span>
+<span id="cb301-52"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-52" tabindex="-1"></a>}</span>
+<span id="cb301-53"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-53" tabindex="-1"></a></span>
+<span id="cb301-54"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-54" tabindex="-1"></a></span>
+<span id="cb301-55"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-55" tabindex="-1"></a>gauss.covar <span class="ot">&lt;-</span> <span class="cf">function</span>(dist, nugget, sill, range) {</span>
+<span id="cb301-56"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-56" tabindex="-1"></a>   sigma <span class="ot">&lt;-</span> sill <span class="sc">+</span> nugget</span>
+<span id="cb301-57"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-57" tabindex="-1"></a>   covar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(dist), <span class="at">ncol=</span><span class="fu">ncol</span>(dist))</span>
+<span id="cb301-58"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-58" tabindex="-1"></a>   <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(covar)) {</span>
+<span id="cb301-59"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-59" tabindex="-1"></a>      <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(covar)) {</span>
+<span id="cb301-60"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-60" tabindex="-1"></a>         <span class="cf">if</span> (dist[i,j] <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb301-61"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-61" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> sigma</span>
+<span id="cb301-62"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-62" tabindex="-1"></a>         }</span>
+<span id="cb301-63"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-63" tabindex="-1"></a>         <span class="cf">else</span> </span>
+<span id="cb301-64"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-64" tabindex="-1"></a>            covar[i,j] <span class="ot">&lt;-</span> sill <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>dist[i,j]<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>range<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb301-65"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-65" tabindex="-1"></a>      }</span>
+<span id="cb301-66"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-66" tabindex="-1"></a>   }</span>
+<span id="cb301-67"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-67" tabindex="-1"></a>   <span class="fu">return</span>(covar)</span>
+<span id="cb301-68"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-68" tabindex="-1"></a>}</span>
+<span id="cb301-69"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-69" tabindex="-1"></a></span>
+<span id="cb301-70"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-70" tabindex="-1"></a></span>
+<span id="cb301-71"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-71" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-72"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-72" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-73"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-73" tabindex="-1"></a><span class="co"># Worked example</span></span>
+<span id="cb301-74"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-74" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb301-75"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-75" tabindex="-1"></a><span class="do">#################################################################</span></span>
+<span id="cb301-76"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-76" tabindex="-1"></a></span>
+<span id="cb301-77"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-77" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb301-78"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb301-78" tabindex="-1"></a><span class="fu">library</span>(fields)</span></code></pre></div>
+<pre><code>## Loading required package: spam</code></pre>
+<pre><code>## Spam version 2.11-3 (2026-01-05) is loaded.
+## Type &#39;help( Spam)&#39; or &#39;demo( spam)&#39; for a short introduction 
+## and overview of this package.
+## Help for individual functions is also obtained by adding the
+## suffix &#39;.spam&#39; to the function name, e.g. &#39;help( chol.spam)&#39;.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;spam&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     backsolve, forwardsolve</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre><code>## Loading required package: RColorBrewer</code></pre>
+<pre><code>## 
+## Try help(fields) to get started.</code></pre>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb309-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-2" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb309-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-3" tabindex="-1"></a></span>
+<span id="cb309-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-4" tabindex="-1"></a><span class="do">## Set up data and distance matrix/vector</span></span>
+<span id="cb309-5"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-5" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">9</span>,<span class="dv">6</span>,<span class="dv">5</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">5</span>,<span class="dv">3</span>), <span class="at">z=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">6</span>))</span>
+<span id="cb309-6"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-6" tabindex="-1"></a>dmat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">rdist</span>(<span class="fu">cbind</span>(dat<span class="sc">$</span>x,dat<span class="sc">$</span>y)), <span class="at">digits=</span><span class="dv">4</span>)  <span class="co"># covariance matrix</span></span>
+<span id="cb309-7"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-7" tabindex="-1"></a>dvec <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">rdist</span>(<span class="fu">cbind</span>(dat<span class="sc">$</span>x,dat<span class="sc">$</span>y), <span class="fu">cbind</span>(<span class="dv">5</span>,<span class="dv">5</span>)), <span class="at">digits=</span><span class="dv">4</span>) <span class="co"># cov vector</span></span>
+<span id="cb309-8"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-8" tabindex="-1"></a></span>
+<span id="cb309-9"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-9" tabindex="-1"></a><span class="do">## Map</span></span>
+<span id="cb309-10"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-10" tabindex="-1"></a>dat2 <span class="ot">&lt;-</span> dat</span>
+<span id="cb309-11"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-11" tabindex="-1"></a>dat2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(dat,<span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">5</span>,<span class="at">y=</span><span class="dv">5</span>,<span class="at">z=</span><span class="st">&quot;?&quot;</span>))</span>
+<span id="cb309-12"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-12" tabindex="-1"></a></span>
+<span id="cb309-13"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-13" tabindex="-1"></a>dat2<span class="sc">$</span>lbls <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;(&quot;</span>,dat2<span class="sc">$</span>x,<span class="st">&quot;,&quot;</span>,dat2<span class="sc">$</span>y, <span class="st">&quot;) z=&quot;</span>,dat2<span class="sc">$</span>z,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb309-14"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-14" tabindex="-1"></a>dat2<span class="sc">$</span>cols <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;black&quot;</span>,<span class="dv">5</span>),<span class="st">&quot;purple&quot;</span>))</span>
+<span id="cb309-15"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-15" tabindex="-1"></a></span>
+<span id="cb309-16"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-16" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dat2,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>y,<span class="at">col=</span>cols,<span class="at">label=</span>lbls)) <span class="sc">+</span> </span>
+<span id="cb309-17"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-17" tabindex="-1"></a>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb309-18"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-18" tabindex="-1"></a>   <span class="fu">geom_label_repel</span>() <span class="sc">+</span></span>
+<span id="cb309-19"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-19" tabindex="-1"></a>   <span class="fu">lims</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb309-20"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-20" tabindex="-1"></a>   <span class="fu">scale_color_identity</span>() <span class="sc">+</span></span>
+<span id="cb309-21"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-21" tabindex="-1"></a>   <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb309-22"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-22" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Kriging: X marks the spot&quot;</span>)</span>
+<span id="cb309-23"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb309-23" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-1" tabindex="-1"></a><span class="do">## Define the model</span></span>
+<span id="cb310-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-2" tabindex="-1"></a>vmod<span class="ot">=</span><span class="st">&quot;Gau&quot;</span></span>
+<span id="cb310-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-3" tabindex="-1"></a>nugget <span class="ot">&lt;-</span> <span class="fl">2.5</span></span>
+<span id="cb310-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-4" tabindex="-1"></a>sill <span class="ot">&lt;-</span> <span class="fl">7.5</span></span>
+<span id="cb310-5"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-5" tabindex="-1"></a>range <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb310-6"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-6" tabindex="-1"></a></span>
+<span id="cb310-7"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-7" tabindex="-1"></a><span class="do">## Build matrix and vector of covariances using gauss.covar()</span></span>
+<span id="cb310-8"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-8" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">gauss.covar</span>(dmat, nugget, sill, range)  </span>
+<span id="cb310-9"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-9" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">gauss.covar</span>(dvec, nugget, sill, range)</span>
+<span id="cb310-10"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-10" tabindex="-1"></a></span>
+<span id="cb310-11"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-11" tabindex="-1"></a></span>
+<span id="cb310-12"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-12" tabindex="-1"></a><span class="do">## First Simple Kriging</span></span>
+<span id="cb310-13"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-13" tabindex="-1"></a>wts.sk<span class="ot">&lt;-</span> <span class="fu">solve</span>(K)<span class="sc">%*%</span>k</span>
+<span id="cb310-14"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-14" tabindex="-1"></a>est.sk <span class="ot">&lt;-</span> <span class="fu">sum</span>(wts.sk<span class="sc">*</span>(dat<span class="sc">$</span>z<span class="sc">-</span><span class="fu">mean</span>(dat<span class="sc">$</span>z)))<span class="sc">+</span><span class="fu">mean</span>(dat<span class="sc">$</span>z)  <span class="co"># note the business with the mean.</span></span>
+<span id="cb310-15"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-15" tabindex="-1"></a>var.sk <span class="ot">&lt;-</span> (sill <span class="sc">+</span> nugget) <span class="sc">-</span> <span class="fu">t</span>(k)<span class="sc">%*%</span><span class="fu">solve</span>(K)<span class="sc">%*%</span>k</span>
+<span id="cb310-16"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-16" tabindex="-1"></a></span>
+<span id="cb310-17"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-17" tabindex="-1"></a><span class="do">## Now Ordinary Kriging</span></span>
+<span id="cb310-18"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-18" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">cbind</span>(K, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(K)))</span>
+<span id="cb310-19"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-19" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">rbind</span>(K, <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">ncol</span>(K)<span class="sc">-</span><span class="dv">1</span>),<span class="dv">0</span>))</span>
+<span id="cb310-20"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-20" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">c</span>(k,<span class="dv">1</span>)</span>
+<span id="cb310-21"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-21" tabindex="-1"></a>wts.ok <span class="ot">&lt;-</span> <span class="fu">solve</span>(K)<span class="sc">%*%</span>k</span>
+<span id="cb310-22"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-22" tabindex="-1"></a>est.ok <span class="ot">&lt;-</span> <span class="fu">sum</span>(wts.ok[<span class="sc">-</span><span class="fu">length</span>(wts.ok)]<span class="sc">*</span>dat<span class="sc">$</span>z)  <span class="co"># minus length bit excludes the lagrangian</span></span>
+<span id="cb310-23"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-23" tabindex="-1"></a>var.ok <span class="ot">&lt;-</span> (sill <span class="sc">+</span> nugget) <span class="sc">-</span> <span class="fu">t</span>(k)<span class="sc">%*%</span><span class="fu">solve</span>(K)<span class="sc">%*%</span>k</span>
+<span id="cb310-24"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-24" tabindex="-1"></a></span>
+<span id="cb310-25"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-25" tabindex="-1"></a><span class="do">## Check the estimates with gstat&#39;s krige() function</span></span>
+<span id="cb310-26"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-26" tabindex="-1"></a>dat.vgram <span class="ot">&lt;-</span> <span class="fu">vgm</span>(<span class="at">model=</span>vmod, <span class="at">psill=</span>sill, </span>
+<span id="cb310-27"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-27" tabindex="-1"></a>                 <span class="at">nugget=</span>nugget, <span class="at">range=</span>range)</span>
+<span id="cb310-28"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-28" tabindex="-1"></a>est2.sk <span class="ot">&lt;-</span> <span class="fu">krige</span>(z<span class="sc">~</span><span class="dv">1</span>, <span class="sc">~</span>x<span class="sc">+</span>y, <span class="at">data=</span>dat, <span class="at">model=</span>dat.vgram, </span>
+<span id="cb310-29"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-29" tabindex="-1"></a>                 <span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">5</span>,<span class="at">y=</span><span class="dv">5</span>), </span>
+<span id="cb310-30"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb310-30" tabindex="-1"></a>                 <span class="at">beta=</span><span class="fu">mean</span>(dat<span class="sc">$</span>z))</span></code></pre></div>
+<pre><code>## [using simple kriging]</code></pre>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb312-1" tabindex="-1"></a>est2.ok <span class="ot">&lt;-</span> <span class="fu">krige</span>(z<span class="sc">~</span><span class="dv">1</span>, <span class="sc">~</span>x<span class="sc">+</span>y, <span class="at">data=</span>dat, <span class="at">model=</span>dat.vgram, </span>
+<span id="cb312-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb312-2" tabindex="-1"></a>                 <span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">5</span>,<span class="at">y=</span><span class="dv">5</span>))</span></code></pre></div>
+<pre><code>## [using ordinary kriging]</code></pre>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb314-1" tabindex="-1"></a>res.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">type=</span><span class="fu">c</span>(<span class="st">&#39;manual SK&#39;</span>, <span class="st">&#39;gstat SK&#39;</span>, <span class="st">&#39;manual OK&#39;</span>, <span class="st">&#39;gstat OK&#39;</span>),</span>
+<span id="cb314-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb314-2" tabindex="-1"></a>                     <span class="at">est =</span> <span class="fu">c</span>(<span class="fu">round</span>(est.sk, <span class="dv">3</span>),<span class="fu">round</span>(est2.sk<span class="sc">$</span>var1.pred, <span class="dv">3</span>), <span class="fu">round</span>(est.ok, <span class="dv">3</span>), <span class="fu">round</span>(est2.ok<span class="sc">$</span>var1.pred, <span class="dv">3</span>)),</span>
+<span id="cb314-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb314-3" tabindex="-1"></a>                     <span class="at">var=</span><span class="fu">c</span>(<span class="fu">round</span>(var.sk, <span class="dv">3</span>),<span class="fu">round</span>(est2.sk<span class="sc">$</span>var1.var, <span class="dv">3</span>), <span class="fu">round</span>(var.ok, <span class="dv">3</span>), <span class="fu">round</span>(est2.ok<span class="sc">$</span>var1.var, <span class="dv">3</span>)))</span>
+<span id="cb314-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb314-4" tabindex="-1"></a>res.df  <span class="co"># They&#39;d better match up here</span></span></code></pre></div>
+<pre><code>##        type   est   var
+## 1 manual SK 4.071 3.157
+## 2  gstat SK 4.071 3.157
+## 3 manual OK 4.072 3.157
+## 4  gstat OK 4.072 3.157</code></pre>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-1" tabindex="-1"></a><span class="do">## Plot SK Graph</span></span>
+<span id="cb316-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-2" tabindex="-1"></a>dat3 <span class="ot">&lt;-</span> dat2</span>
+<span id="cb316-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-3" tabindex="-1"></a></span>
+<span id="cb316-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-4" tabindex="-1"></a></span>
+<span id="cb316-5"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-5" tabindex="-1"></a>dat3<span class="sc">$</span>lbls <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;(&quot;</span>,</span>
+<span id="cb316-6"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-6" tabindex="-1"></a>                   dat3<span class="sc">$</span>x,</span>
+<span id="cb316-7"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-7" tabindex="-1"></a>                   <span class="st">&quot;,&quot;</span>,</span>
+<span id="cb316-8"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-8" tabindex="-1"></a>                   dat3<span class="sc">$</span>y, </span>
+<span id="cb316-9"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-9" tabindex="-1"></a>                   <span class="st">&quot;) z=&quot;</span>,</span>
+<span id="cb316-10"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-10" tabindex="-1"></a>                   dat3<span class="sc">$</span>z,</span>
+<span id="cb316-11"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-11" tabindex="-1"></a>                   <span class="st">&quot;, wt=&quot;</span>,</span>
+<span id="cb316-12"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-12" tabindex="-1"></a>                   <span class="fu">c</span>(<span class="fu">round</span>(wts.sk, <span class="dv">2</span>)[,<span class="dv">1</span>],<span class="st">&quot;&quot;</span>),</span>
+<span id="cb316-13"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-13" tabindex="-1"></a>                   <span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb316-14"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-14" tabindex="-1"></a>dat3<span class="sc">$</span>lbls[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;(5,5) z=&quot;</span>,</span>
+<span id="cb316-15"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-15" tabindex="-1"></a>                      <span class="fu">round</span>(est.sk,<span class="dv">3</span>),</span>
+<span id="cb316-16"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-16" tabindex="-1"></a>                      <span class="st">&quot;, var=&quot;</span>,</span>
+<span id="cb316-17"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-17" tabindex="-1"></a>                      <span class="fu">round</span>(<span class="fu">sqrt</span>(var.sk), <span class="dv">3</span>),</span>
+<span id="cb316-18"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-18" tabindex="-1"></a>                      <span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb316-19"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-19" tabindex="-1"></a></span>
+<span id="cb316-20"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-20" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dat3,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>y,<span class="at">col=</span>cols,<span class="at">label=</span>lbls)) <span class="sc">+</span> </span>
+<span id="cb316-21"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-21" tabindex="-1"></a>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb316-22"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-22" tabindex="-1"></a>   <span class="fu">geom_label_repel</span>() <span class="sc">+</span></span>
+<span id="cb316-23"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-23" tabindex="-1"></a>   <span class="fu">lims</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb316-24"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-24" tabindex="-1"></a>   <span class="fu">scale_color_identity</span>() <span class="sc">+</span></span>
+<span id="cb316-25"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-25" tabindex="-1"></a>   <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb316-26"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-26" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">&quot;Simple Kriging; Model=&quot;</span>, vmod, <span class="st">&quot;, nug=&quot;</span>, nugget, </span>
+<span id="cb316-27"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-27" tabindex="-1"></a>                         <span class="st">&quot;, psill=&quot;</span>, sill, <span class="st">&quot;, range=&quot;</span>, range, <span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
+<span id="cb316-28"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb316-28" tabindex="-1"></a>p2</span></code></pre></div>
+<p><img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-2.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-1" tabindex="-1"></a><span class="do">## Change the weights vectors for plotting</span></span>
+<span id="cb317-2"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-2" tabindex="-1"></a>dat3<span class="sc">$</span>lbls[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;(5,5) z=&quot;</span>,</span>
+<span id="cb317-3"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-3" tabindex="-1"></a>                      <span class="fu">round</span>(est.ok,<span class="dv">3</span>),</span>
+<span id="cb317-4"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-4" tabindex="-1"></a>                      <span class="st">&quot;, var=&quot;</span>,</span>
+<span id="cb317-5"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-5" tabindex="-1"></a>                      <span class="fu">round</span>(<span class="fu">sqrt</span>(var.ok), <span class="dv">3</span>),</span>
+<span id="cb317-6"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-6" tabindex="-1"></a>                      <span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb317-7"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-7" tabindex="-1"></a></span>
+<span id="cb317-8"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-8" tabindex="-1"></a><span class="do">## Plot OK Graph</span></span>
+<span id="cb317-9"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-9" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dat3,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>y,<span class="at">col=</span>cols,<span class="at">label=</span>lbls)) <span class="sc">+</span> </span>
+<span id="cb317-10"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-10" tabindex="-1"></a>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb317-11"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-11" tabindex="-1"></a>   <span class="fu">geom_label_repel</span>() <span class="sc">+</span></span>
+<span id="cb317-12"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-12" tabindex="-1"></a>   <span class="fu">lims</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb317-13"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-13" tabindex="-1"></a>   <span class="fu">scale_color_identity</span>() <span class="sc">+</span></span>
+<span id="cb317-14"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-14" tabindex="-1"></a>   <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb317-15"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-15" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">&quot;Ordinary Kriging; Model=&quot;</span>, vmod, <span class="st">&quot;, nug=&quot;</span>, nugget, </span>
+<span id="cb317-16"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-16" tabindex="-1"></a>                         <span class="st">&quot;, psill=&quot;</span>, sill, <span class="st">&quot;, range=&quot;</span>, range, <span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
+<span id="cb317-17"><a href="aside-geostats-ii-kriging-variance-by-hand.html#cb317-17" tabindex="-1"></a>p3</span></code></pre></div>
+<p><img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-3.png" alt="" width="672" /></p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="geostats-ii-kriging.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="regression-gls-with-autocorrelated-residuals.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

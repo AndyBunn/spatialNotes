@@ -13,12 +13,13 @@ Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analys
 We often want to estimate phenomena at locations where we do not have measurements. Geostatistics is the field that we use to make (hopefully) accurate and reliable models of spatial data. We will use these models for prediction. We can use both deterministic and probabilistic models and this module will focus on deterministic methods.
 
 ## Packages
-The `gstat` package is your friend. But we will need some of our recent collaborators as well including `sp` so we can load the `meuse` data easily. And I'm going to plot in `ggplot`. 
+The `gstat`[@R-gstat] package is your friend. But we will need some of our recent collaborators as well including `sp`[@R-sp] so we can load the `meuse` data easily. And I'm going to plot in `ggplot` via `tidyverse`[@R-tidyverse] with `sf`[@R-sf], `terra`[@R-terra] and `tidyterra`[@R-tidyterra]. 
 
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 library(sf)
+library(sp)
 library(gstat)
 library(terra)
 library(tidyterra)

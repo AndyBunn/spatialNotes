@@ -11,61 +11,17 @@ Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analys
 We often want to estimate phenomena at locations where we do not have measurements. Geostatistics is the field that we use to make (hopefully) accurate and reliable models of spatial data. We will use these models for prediction. We can use both deterministic and probabilistic models and this module will focus on deterministic methods.
 
 ## Packages
-The `gstat` package is your friend. But we will need some of our recent collaborators as well including `sp` so we can load the `meuse` data easily. And I'm going to plot in `ggplot`. 
+The `gstat`[@R-gstat] package is your friend. But we will need some of our recent collaborators as well including `sp`[@R-sp] so we can load the `meuse` data easily. And I'm going to plot in `ggplot` via `tidyverse`[@R-tidyverse] with `sf`[@R-sf], `terra`[@R-terra] and `tidyterra`[@R-tidyterra]. 
 
 
 
 ``` r
 library(tidyverse)
-```
-
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.2.0     ✔ readr     2.2.0
-## ✔ forcats   1.0.1     ✔ stringr   1.6.0
-## ✔ ggplot2   4.0.2     ✔ tibble    3.3.1
-## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-## ✔ purrr     1.2.1     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-```
-
-``` r
 library(sf)
-```
-
-```
-## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
-```
-
-``` r
+library(sp)
 library(gstat)
 library(terra)
-```
-
-```
-## terra 1.8.93
-## 
-## Attaching package: 'terra'
-## 
-## The following object is masked from 'package:tidyr':
-## 
-##     extract
-```
-
-``` r
 library(tidyterra)
-```
-
-```
-## 
-## Attaching package: 'tidyterra'
-## 
-## The following object is masked from 'package:stats':
-## 
-##     filter
 ```
 
 

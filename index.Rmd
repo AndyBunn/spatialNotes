@@ -12,6 +12,7 @@ link-citations: yes
 site: bookdown::bookdown_site
 output: 
   bookdown::gitbook:
+    css: style.css
     includes:
       in_header: hide_code.html # inspired by: https://stackoverflow.com/questions/45360998/code-folding-in-bookdown
     config:
@@ -86,7 +87,7 @@ In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full fi
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'tidyverse', 'terra', 'sf', 'ggnewscale','tidyterra',
-  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap'),
+  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap','nlme','sp'),
 'packages.bib')
 # to build everything in docs/.
 # bookdown::render_book() 

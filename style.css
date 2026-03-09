@@ -1,0 +1,148 @@
+/* ============================================================
+   style.css  —  Time Series Analysis for Environmental Scientists
+   ============================================================ */
+
+
+/* ── 1. CONTENT WIDTH ───────────────────────────────────────
+   Keeps long lines readable on wide monitors.                */
+
+.book .book-body .page-wrapper .page-inner {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+
+/* ── 2. LINKS ───────────────────────────────────────────────
+   Warm accent colour from hide_code.html palette.           */
+
+.book .book-body a {
+  color: #c0392b;
+}
+
+.book .book-body a:hover {
+  color: #e95420;
+  text-decoration: underline;
+}
+
+
+/* ── 3. CODE BLOCKS ─────────────────────────────────────────
+   Softer background, subtle left border, gentle rounding.   */
+
+pre {
+  background-color: #f7f4f1;
+  border-left: 3px solid #aea79f;
+  border-radius: 0 4px 4px 0;
+  padding: 1em 1em 1em 1.2em;
+}
+
+/* Inline code */
+code {
+  background-color: #f7f4f1;
+  color: #5a3e2b;
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+
+/* Don't double-style code inside pre blocks */
+pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+
+/* ── 4. FIGURE CAPTIONS ─────────────────────────────────────
+   Smaller, italic, centred — distinguishes caption from body.*/
+
+.figure p,
+p.caption,
+caption {
+  font-size: 0.88em;
+  font-style: italic;
+  color: #6d6d6d;
+  text-align: center;
+  margin-top: 0.4em;
+}
+
+
+/* ── 5. BLOCKQUOTES ─────────────────────────────────────────
+   Warm left border, muted text — good for asides/quotes.    */
+
+blockquote {
+  border-left: 4px solid #aea79f;
+  background-color: #faf7f4;
+  margin: 1.5em 0;
+  padding: 0.8em 1.2em;
+  color: #555;
+  font-style: italic;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+
+/* ── 6. CALLOUT BOXES ───────────────────────────────────────
+   Use in your .Rmd with:
+     ::: {.callout-note}
+     Your note text here.
+     :::
+   Three flavours: note (blue), tip (green), warning (orange).*/
+
+.callout-note,
+.callout-tip,
+.callout-warning {
+  border-left: 4px solid;
+  border-radius: 0 4px 4px 0;
+  padding: 0.8em 1.2em;
+  margin: 1.5em 0;
+}
+
+.callout-note {
+  background-color: #eef4fb;
+  border-color: #5b8db8;
+  color: #2c4a6e;
+}
+
+.callout-tip {
+  background-color: #eef7f0;
+  border-color: #5a9e6f;
+  color: #2d5a3d;
+}
+
+.callout-warning {
+  background-color: #fdf3ec;
+  border-color: #e95420;
+  color: #7a2d0e;
+}
+
+/* Bold label at the start of callouts, e.g. **Note:** */
+.callout-note strong,
+.callout-tip strong,
+.callout-warning strong {
+  display: block;
+  margin-bottom: 0.3em;
+  font-size: 0.95em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+
+/* ── 7. ASIDE CHAPTERS ──────────────────────────────────────
+   Unnumbered chapters marked with {- .aside-chapter}        */
+
+.aside-chapter h1 {
+  color: #6d6d6d;
+  font-style: italic;
+  border-left: 4px solid #aea79f;
+  padding-left: 0.6em;
+}
+
+/* TOC entries for aside files (matched by filename convention) */
+.book .book-summary ul.summary li a[href*="xAside"] {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
