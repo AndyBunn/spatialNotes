@@ -1,5 +1,5 @@
 --- 
-title: "Spatial Analysis for Environmental Scientists"
+title: "Spatial Analysis for Environmental Science"
 subtitle: "Notes for ESCI 505"
 author: "Andy Bunn"
 date: "09-March-2026"
