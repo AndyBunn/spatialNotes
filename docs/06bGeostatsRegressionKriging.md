@@ -1,4 +1,4 @@
-# Regression Kriging
+# Probabilistic Interpolation: Regression Kriging
 
 
 
@@ -526,7 +526,7 @@ ggplot() + geom_spatraster(data = omHatVar_rast,
 The RK approach looks quite a bit different than the OLS prediction. Now our job is to look at the differences carefully and assess skill. 
 
 ## Your Work
-Take some time to figure out how to use `gstat.cv` and perform k-fold cross validation on the `omGstat_w_variogram` object and object with just the linear model (`omGstat`). Compare the skill of a k-fold cross validated OLS model and the k-fold cross validated RK model. Use R$^2$ and RMSE as your measures of skill. Did the RK approach improve the predictions?
+None. This is kind of an add on to introduce you to RK. But you should be able to apply by following the workflow above. I suggest taking some time to figure out how to use `gstat.cv` and perform k-fold cross validation on the `omGstat_w_variogram` object and object with just the linear model (`omGstat`). Compare the skill of a k-fold cross validated OLS model and the k-fold cross validated RK model. Use R$^2$ and RMSE as your measures of skill. Did the RK approach improve the predictions?
 
 
 

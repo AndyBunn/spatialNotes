@@ -161,5 +161,8 @@ We see now that the skill of the model is decreased with R$^2$ = `r round(rsq,3)
 In terms of skill this seems similar to IDW. Qualitatively, it seems like IDW wasn't smooth enough. It might well be that TPS is too smooth. If you were concerned with the low values in the middle of the study area you might want the craters that IDW makes rather than the systematic overpredcition that TPS gives. If you were after a smooth-looking surface that gets the big picture right, then TPS might be a good choice. Sadly, there isn't one right answer.
 
 ## Your work
-None. This is kind of an add on to introduce you to TPS. But you should be able to apply to the precip data from the IDW assignment by following the workflow above.
+None. This is kind of an add on to introduce you to TPS. But you should be able to apply this to the precip data from the IDW assignment by following the workflow above.
+
+
+
 

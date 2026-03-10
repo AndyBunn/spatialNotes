@@ -1,4 +1,4 @@
-# Geostats II: Kriging
+# Probabilistic Interpolation: Kriging
 
 
 

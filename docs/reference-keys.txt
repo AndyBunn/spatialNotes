@@ -94,7 +94,7 @@ tps
 skill-1
 is-this-an-improvement
 your-work-5
-geostats-ii-kriging
+probabilistic-interpolation-kriging
 reading-4
 big-idea-5
 packages-5
@@ -112,7 +112,7 @@ other-types-of-kriging
 cross-validation
 your-work-6
 postscript-automap
-regression-kriging
+probabilistic-interpolation-regression-kriging
 big-idea-6
 reading-5
 packages-6

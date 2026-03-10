@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>3 Mt Baker Map | Spatial Analysis for Environmental Science</title>
+  <title>9 Probabilistic Interpolation: Regression Kriging | Spatial Analysis for Environmental Science</title>
   <meta name="description" content="Spatial analysis notes and exercises for ESCI 505" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="3 Mt Baker Map | Spatial Analysis for Environmental Science" />
+  <meta property="og:title" content="9 Probabilistic Interpolation: Regression Kriging | Spatial Analysis for Environmental Science" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="3 Mt Baker Map | Spatial Analysis for Environmental Science" />
+  <meta name="twitter:title" content="9 Probabilistic Interpolation: Regression Kriging | Spatial Analysis for Environmental Science" />
   
   <meta name="twitter:description" content="Spatial analysis notes and exercises for ESCI 505" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="aside-understanding-methods-and-generics-in-r.html"/>
-<link rel="next" href="point-patterns.html"/>
+<link rel="prev" href="probabilistic-interpolation-kriging.html"/>
+<link rel="next" href="aside-geostats-ii-kriging-variance-by-hand.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1163,134 +1163,367 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="mt-baker-map" class="section level1 hasAnchor" number="3">
-<h1><span class="header-section-number">3</span> Mt Baker Map<a href="mt-baker-map.html#mt-baker-map" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="big-idea-1" class="section level2 hasAnchor" number="3.1">
-<h2><span class="header-section-number">3.1</span> Big Idea<a href="mt-baker-map.html#big-idea-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The nuts and bolts of working with spatial data are critical to get right. Being able to use raster and vector data are going to be important as we learn spatial analytic methods.</p>
+<div id="probabilistic-interpolation-regression-kriging" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">9</span> Probabilistic Interpolation: Regression Kriging<a href="probabilistic-interpolation-regression-kriging.html#probabilistic-interpolation-regression-kriging" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="big-idea-6" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Big Idea<a href="probabilistic-interpolation-regression-kriging.html#big-idea-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>With kriging we used limited spatial data to make predictions (interpolation) over larger areas. Regression kriging is going to use the same theory but incorporate ancillary data to make better predictions.</p>
 </div>
-<div id="packages" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> Packages<a href="mt-baker-map.html#packages" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Install these if you need them: <code>sf</code><span class="citation">(<a href="references.html#ref-R-sf">Pebesma 2026</a>)</span>, <code>terra</code><span class="citation">(<a href="references.html#ref-R-terra">Hijmans 2026</a>)</span>, and <code>tidyverse</code><span class="citation">(<a href="references.html#ref-R-tidyverse">Wickham 2023</a>)</span> but if you completed the workshop from Data Carpentry they should be all good to go on your system. We’ll use <code>tidyterra</code><span class="citation">(<a href="references.html#ref-R-tidyterra">Hernangómez 2023</a>)</span> and <code>ggnewscale</code><span class="citation">(<a href="references.html#ref-R-ggnewscale">Campitelli 2025</a>)</span> as well.</p>
-<p>But first…</p>
-<p>For the past couple of years there has been major upheaval underway in how projection information is getting stored and how R is working with spatial data in general (e.g., the <code>PROJ</code> projection standard is being replaced by <code>WKT</code> and the <code>raster</code> library is being superseded by <code>terra</code>. It’s both complicated and extremely boring. But while the details are getting worked out, many of the different R libraries that work with the old projection scheme are throwing warnings sometimes. I’ll try to anticipate that and give you workarounds if we need them.</p>
-<p>Ok. Let’s go.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="mt-baker-map.html#cb31-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb31-2"><a href="mt-baker-map.html#cb31-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb31-3"><a href="mt-baker-map.html#cb31-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb31-4"><a href="mt-baker-map.html#cb31-4" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
-<span id="cb31-5"><a href="mt-baker-map.html#cb31-5" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
+<div id="reading-5" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Reading<a href="probabilistic-interpolation-regression-kriging.html#reading-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Meng et al. (2013) provide a (mostly) readable description of regression kriging and compare it to the kind of interpolation approaches we’ve looked at already. Give it a heavy skim.</p>
+<p>Meng et al. (2013) Assessment of regression kriging for spatial interpolation – comparisons of seven GIS interpolation methods. Cartography and Geographic Information Science, 40:1, 28-39, doi:
+10.1080/15230406.2013.762138.</p>
 </div>
-<div id="prepratory-work" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Prepratory Work<a href="mt-baker-map.html#prepratory-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Before continuing you should have completed <a href="https://datacarpentry.org/organization-geospatial/">this Introduction to Geospatial Concepts</a> from the good folks at Data Carpentry as well as <a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction to Geospatial Raster and Vector Data with R</a>.</p>
-<p>The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros (literally) and conversant with different data types and spatial schemas. Others are spatial novices. Finishing both of these will help establish a common baseline of knowledge.</p>
+<div id="packages-6" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Packages<a href="probabilistic-interpolation-regression-kriging.html#packages-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>gstat</code> package is your friend. But we will need some of our recent collaborators as well including <code>terra</code> and `tidyterra’.</p>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="probabilistic-interpolation-regression-kriging.html#cb279-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb279-2"><a href="probabilistic-interpolation-regression-kriging.html#cb279-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb279-3"><a href="probabilistic-interpolation-regression-kriging.html#cb279-3" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb279-4"><a href="probabilistic-interpolation-regression-kriging.html#cb279-4" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb279-5"><a href="probabilistic-interpolation-regression-kriging.html#cb279-5" tabindex="-1"></a><span class="fu">library</span>(gstat)</span></code></pre></div>
 </div>
-<div id="introduction" class="section level2 hasAnchor" number="3.4">
-<h2><span class="header-section-number">3.4</span> Introduction<a href="mt-baker-map.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Because some of you are GIS experts and some of you have only done a tiny bit of GIS, we a tough dynamic in class. This is because a lot of working with spatial data is in the mechanics of displaying and handling data from different sources as well as the whole idea of projecting data from a roundish planet onto a plane. We will focus as much as we can on the big picture of how spatial patterns let us make inference about environmental processes. But we need to be able to do some basic GIS work in R. This assignment builds on what you’ve done in the Data Carpentry workshops and has you make a map using data you haven’t seen before.</p>
-<p>I’ve been working on a cool spatial analysis project up at the Mt Baker ski hill. I won’t go into it now, but it is a project to improve geolocation for skiers and riders using very inexpensive RFID equipment. We will look at some of those data later in class but let’s start with just making a map of some of the features at the ski hill. Many of you are familiar with the area from recreating.</p>
+<div id="overview-of-rk" class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> Overview of RK<a href="probabilistic-interpolation-regression-kriging.html#overview-of-rk" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Regression kriging (RK) is a spatial interpolation technique (like IDW, thin-plate splines, and kriging) that allows for estimation of a variable across a spatial domain. Like the name suggests, RK combines regression and kriging. It is a probabilistic method and produces a variance surface like kriging.</p>
+<p>RK uses a regression of the dependent variable (<span class="math inline">\(y\)</span>) on predictor variables (<span class="math inline">\(x_1\)</span>,<span class="math inline">\(x_2\)</span>, etc.) with standard kriging of the errors on the regression. By fitting a variogram to the residuals of the model, predictors influence the kriging weights (recall <span class="math inline">\(\lambda\)</span> from the kriging module?). The advantage of RK over either kriging or regression is that it combines the use of spatial structure for prediction (as kriging does) with the addition of ancillary variables (like regression does). In other words, RK exploits the spatial correlation between variables for making predictions.</p>
+<p>RK is used more and more commonly as cheap and powerful covariates can be derived from remote sensing and GIS data. I’ll give some examples in the video.</p>
 </div>
-<div id="the-data" class="section level2 hasAnchor" number="3.5">
-<h2><span class="header-section-number">3.5</span> The Data<a href="mt-baker-map.html#the-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>First we have a digital elevation model (DEM) of the area near the ski hill. I’ll read this in here using <code>raster</code> from the <code>terra</code> library. Note that these data are projected in UTM (EPSG:32610) so the units are in meters. The DEM has five meter resolution.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="mt-baker-map.html#cb32-1" tabindex="-1"></a>mtbDEM <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;data/mtbDEM.tif&quot;</span>)</span>
-<span id="cb32-2"><a href="mt-baker-map.html#cb32-2" tabindex="-1"></a>mtbDEM</span></code></pre></div>
-<pre><code>## class       : SpatRaster 
-## size        : 409, 628, 1  (nrow, ncol, nlyr)
-## resolution  : 5, 5  (x, y)
-## extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
-## coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
-## source      : mtbDEM.tif 
-## name        :      elev 
-## min value   :  826.4308 
-## max value   : 1689.3694</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="mt-baker-map.html#cb34-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb34-2"><a href="mt-baker-map.html#cb34-2" tabindex="-1"></a>mtbDEM_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mtbDEM, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb34-3"><a href="mt-baker-map.html#cb34-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb34-4"><a href="mt-baker-map.html#cb34-4" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> mtbDEM_df , <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
-<span id="cb34-5"><a href="mt-baker-map.html#cb34-5" tabindex="-1"></a>                                               <span class="at">fill =</span> elev)) <span class="sc">+</span> </span>
-<span id="cb34-6"><a href="mt-baker-map.html#cb34-6" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">100</span>)) <span class="sc">+</span></span>
-<span id="cb34-7"><a href="mt-baker-map.html#cb34-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Easting (m)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Northing (m)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb34-8"><a href="mt-baker-map.html#cb34-8" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
-<p>This is very similar to the way that the carpentries workshop approached mapping where you take the raster layer from <code>rast</code> and then turn it into a <code>data.frame</code> for plotting. And that works fine. I’ve using the <code>tidyterra</code> library which has a <code>ggplot</code> geometry for the <code>SpatRaster</code> class. That seems easier to me. So here is a simpler approach using <code>geom_spatraster</code>. Oh, and <code>tidyterra</code> has some very cool color schemes. Look at <code>?hypso.colors</code>.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="mt-baker-map.html#cb35-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb35-2"><a href="mt-baker-map.html#cb35-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb35-3"><a href="mt-baker-map.html#cb35-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>)</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
-<p>Note that unlike <code>geom_raster()</code>, <code>geom_spatraster()</code> uses the projection information and shows us the plot using latitude and longitude. That can mess us up if we aren’t careful because the projection for <code>mtbDEM</code> is un UTM. If we wanted to we can plot in the original projection with <code>coord_sf()</code>.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="mt-baker-map.html#cb36-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb36-2"><a href="mt-baker-map.html#cb36-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb36-3"><a href="mt-baker-map.html#cb36-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb36-4"><a href="mt-baker-map.html#cb36-4" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">datum =</span> <span class="dv">32610</span>)</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
-<p>Next, I made a hillshade layer from the elevation model.This is a common way to get a 3D representation of a surface that basically shines a light onto a surface at a specified angle and elevation to create shading the image. We need make a slope raster and an aspect raster in order to be able to calculate hillshade.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="mt-baker-map.html#cb37-1" tabindex="-1"></a>mtbSlope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;slope&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
-<span id="cb37-2"><a href="mt-baker-map.html#cb37-2" tabindex="-1"></a>mtbAspect <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;aspect&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
-<span id="cb37-3"><a href="mt-baker-map.html#cb37-3" tabindex="-1"></a>mtbHillshade <span class="ot">&lt;-</span> <span class="fu">shade</span>(mtbSlope, mtbAspect, <span class="at">angle =</span> <span class="dv">40</span>, <span class="at">direction =</span> <span class="dv">270</span>)</span>
-<span id="cb37-4"><a href="mt-baker-map.html#cb37-4" tabindex="-1"></a>mtbHillshade[mtbHillshade <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb37-5"><a href="mt-baker-map.html#cb37-5" tabindex="-1"></a><span class="fu">names</span>(mtbHillshade) <span class="ot">&lt;-</span> <span class="st">&quot;value&quot;</span> <span class="co"># these are unitless</span></span>
-<span id="cb37-6"><a href="mt-baker-map.html#cb37-6" tabindex="-1"></a>mtbHillshade</span></code></pre></div>
-<pre><code>## class       : SpatRaster 
-## size        : 409, 628, 1  (nrow, ncol, nlyr)
-## resolution  : 5, 5  (x, y)
-## extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
-## coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
-## source(s)   : memory
-## varname     : mtbDEM 
-## name        :    value 
-## min value   : 0.000000 
-## max value   : 0.999856</code></pre>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="mt-baker-map.html#cb39-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb39-2"><a href="mt-baker-map.html#cb39-2" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb39-3"><a href="mt-baker-map.html#cb39-3" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade)</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
-<p>You can combine these with and show both rasters using transparency.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="mt-baker-map.html#cb40-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb40-2"><a href="mt-baker-map.html#cb40-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade) <span class="sc">+</span></span>
-<span id="cb40-3"><a href="mt-baker-map.html#cb40-3" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> <span class="fu">gray.colors</span>(<span class="dv">100</span>,</span>
-<span id="cb40-4"><a href="mt-baker-map.html#cb40-4" tabindex="-1"></a>                                            <span class="at">start =</span> <span class="fl">0.1</span>,</span>
-<span id="cb40-5"><a href="mt-baker-map.html#cb40-5" tabindex="-1"></a>                                            <span class="at">end =</span> <span class="fl">0.9</span>), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
-<span id="cb40-6"><a href="mt-baker-map.html#cb40-6" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
-<span id="cb40-7"><a href="mt-baker-map.html#cb40-7" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb40-8"><a href="mt-baker-map.html#cb40-8" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">name =</span> <span class="st">&quot;Elevation (m)&quot;</span>, </span>
-<span id="cb40-9"><a href="mt-baker-map.html#cb40-9" tabindex="-1"></a>                     <span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>,<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb40-10"><a href="mt-baker-map.html#cb40-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb40-11"><a href="mt-baker-map.html#cb40-11" tabindex="-1"></a>p1</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
-<p>Walk through the code and note how I added the hillshade in grey first and then added the elevation layer afterwards with a transparency. I used <code>new_scale_fill</code> from the <code>ggnewscale</code> library to allow for more than one scale for the fill aesthetic. Refer back to the last module for mapping hillshades for a different approach.</p>
-<p>Next, we have a shapefile of line data showing where the chairlifts are. I’ll read that in using <code>st_read()</code> from the <code>sf</code> library. These data are also projected in UTM.</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="mt-baker-map.html#cb41-1" tabindex="-1"></a>chairs <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/mtbChairLines.shp&quot;</span>)</span></code></pre></div>
-<pre><code>## Reading layer `mtbChairLines&#39; from data source 
-##   `/Users/andybunn/Documents/teaching/current/ESCI505/spatialNotes/data/mtbChairLines.shp&#39; 
-##   using driver `ESRI Shapefile&#39;
-## Simple feature collection with 8 features and 1 field
-## Geometry type: LINESTRING
+<div id="prediction-review-ols-regression-with-new-data" class="section level2 hasAnchor" number="9.5">
+<h2><span class="header-section-number">9.5</span> Prediction Review: OLS Regression with New Data<a href="probabilistic-interpolation-regression-kriging.html#prediction-review-ols-regression-with-new-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This is likely serious review for all of you so roll your eyes as needed. But I just want to be sure we are on the same page. I want to make sure you are hip to the idea of passing new data (e.g., into a <code>predict</code> function) for extending a model (e.g., <code>lm</code>) to new data. We’ve done this already a few times, but it never hurts to get it again.</p>
+<p>Here we create a <code>data.frame</code> called <code>originalDat</code> with three variables: <code>x1</code> and <code>x2</code> are <code>n</code> draws from a normal distribution (<span class="math inline">\(N(0,1)\)</span>) and <code>y</code> is a function of <code>x1</code>and <code>x2</code> following a linear model with coefficients <code>b0</code>, <code>b1</code>, and <code>b2</code> plus some more noise (<code>epsilon</code>) (<span class="math inline">\(N(0,2)\)</span>).</p>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="probabilistic-interpolation-regression-kriging.html#cb280-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb280-2"><a href="probabilistic-interpolation-regression-kriging.html#cb280-2" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb280-3"><a href="probabilistic-interpolation-regression-kriging.html#cb280-3" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
+<span id="cb280-4"><a href="probabilistic-interpolation-regression-kriging.html#cb280-4" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb280-5"><a href="probabilistic-interpolation-regression-kriging.html#cb280-5" tabindex="-1"></a>originalDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n), <span class="at">x2=</span><span class="fu">rnorm</span>(n), <span class="at">epsilon =</span> <span class="fu">rnorm</span>(n,<span class="at">sd =</span> <span class="dv">2</span>))</span>
+<span id="cb280-6"><a href="probabilistic-interpolation-regression-kriging.html#cb280-6" tabindex="-1"></a>originalDat<span class="sc">$</span>y <span class="ot">&lt;-</span> b0 <span class="sc">+</span> b1 <span class="sc">*</span> originalDat<span class="sc">$</span>x1 <span class="sc">+</span> b2 <span class="sc">*</span> originalDat<span class="sc">$</span>x2 <span class="sc">+</span> originalDat<span class="sc">$</span>epsilon</span></code></pre></div>
+<p>We then fit a linear model (OLS) with <code>lm</code>:</p>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="probabilistic-interpolation-regression-kriging.html#cb281-1" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x1 <span class="sc">+</span> x2,<span class="at">data =</span> originalDat)</span>
+<span id="cb281-2"><a href="probabilistic-interpolation-regression-kriging.html#cb281-2" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x1 + x2, data = originalDat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9446 -1.4464 -0.3522  1.2004  4.5087 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   3.5699     0.2841  12.567  &lt; 2e-16 ***
+## x1            0.4794     0.2650   1.809   0.0768 .  
+## x2            2.8109     0.3556   7.904 3.55e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.968 on 47 degrees of freedom
+## Multiple R-squared:  0.5788, Adjusted R-squared:  0.5609 
+## F-statistic: 32.29 on 2 and 47 DF,  p-value: 1.497e-09</code></pre>
+<p>OK. We have one definitely helpful predictor, and one borderline predictor. Now let’s say we want to extend that model to predict a new data set. The object <code>lm1</code> is class <code>lm</code> and most every model class has a <code>predict</code> function, or a <code>newdata</code> argument to the original function, that allows you feed it new data. So let’s imagine we have a new data set with <code>x1</code> and <code>x2</code> but no <code>y</code>.</p>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="probabilistic-interpolation-regression-kriging.html#cb283-1" tabindex="-1"></a>newDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n),<span class="at">x2=</span><span class="fu">rnorm</span>(n))</span>
+<span id="cb283-2"><a href="probabilistic-interpolation-regression-kriging.html#cb283-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
+<pre><code>##           x1         x2
+## 1 -0.9107046  0.1053673
+## 2 -1.9548906 -0.2345276
+## 3 -0.5561183  0.1375432
+## 4 -0.7254766  0.3132995
+## 5 -0.5021313  1.1485350
+## 6  0.1749991  0.8071396</code></pre>
+<p>We can use <code>predict.lm</code> (we just need to type <code>predict</code> since the object we are feeding is class <code>lm</code>, R knows to use <code>predict.lm</code>) to model new estimates of <code>y</code> by pointing to <code>newDat</code> using the <code>newdata</code> argument. Note that I’m sticking the predicted values right into a new column <code>yhat</code>. Why the hat? Because it’s an estimate.</p>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="probabilistic-interpolation-regression-kriging.html#cb285-1" tabindex="-1"></a>newDat<span class="sc">$</span>yhat <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> lm1,<span class="at">newdata =</span> newDat)</span>
+<span id="cb285-2"><a href="probabilistic-interpolation-regression-kriging.html#cb285-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
+<pre><code>##           x1         x2     yhat
+## 1 -0.9107046  0.1053673 3.429497
+## 2 -1.9548906 -0.2345276 1.973452
+## 3 -0.5561183  0.1375432 3.689944
+## 4 -0.7254766  0.3132995 4.102786
+## 5 -0.5021313  1.1485350 6.557656
+## 6  0.1749991  0.8071396 5.922660</code></pre>
+<p>If we call <code>predict</code> without new data, the fits from the original model are returned. In the above <code>predict(lm1)</code>, <code>fitted(lm1)</code>, and <code>lm1$fitted.values</code> all do the same thing.</p>
+<p>I know that most of you are familiar with this. I just wanted to spell it all out.</p>
+</div>
+<div id="back-to-the-netherlands" class="section level2 hasAnchor" number="9.6">
+<h2><span class="header-section-number">9.6</span> Back to the Netherlands<a href="probabilistic-interpolation-regression-kriging.html#back-to-the-netherlands" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Let’s look at a real-world example of RK using, you guessed it, the Meuse River data. I’m pretty sick of these data but they are familiar to us. We’ve used the data in <code>meuse.all</code> quite a bit and we’ve used <code>meuse.grid</code> as an empty grid to interpolate into. But <code>meuse.grid</code> has other data in it that we can use in a regression kriging approach.</p>
+<div id="the-data-1" class="section level3 hasAnchor" number="9.6.1">
+<h3><span class="header-section-number">9.6.1</span> The Data<a href="probabilistic-interpolation-regression-kriging.html#the-data-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="probabilistic-interpolation-regression-kriging.html#cb287-1" tabindex="-1"></a><span class="fu">data</span>(meuse.all)</span>
+<span id="cb287-2"><a href="probabilistic-interpolation-regression-kriging.html#cb287-2" tabindex="-1"></a><span class="fu">str</span>(meuse.all)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    164 obs. of  17 variables:
+##  $ sample     : num  1 2 3 4 5 6 7 8 9 10 ...
+##  $ x          : num  181072 181025 181165 181298 181307 ...
+##  $ y          : num  333611 333558 333537 333484 333330 ...
+##  $ cadmium    : num  11.7 8.6 6.5 2.6 2.8 3 3.2 2.8 2.4 1.6 ...
+##  $ copper     : num  85 81 68 81 48 61 31 29 37 24 ...
+##  $ lead       : num  299 277 199 116 117 137 132 150 133 80 ...
+##  $ zinc       : num  1022 1141 640 257 269 ...
+##  $ elev       : num  7.91 6.98 7.8 7.66 7.48 ...
+##  $ dist.m     : num  50 30 150 270 380 470 240 120 240 420 ...
+##  $ om         : num  13.6 14 13 8 8.7 7.8 9.2 9.5 10.6 6.3 ...
+##  $ ffreq      : num  1 1 1 1 1 1 1 1 1 1 ...
+##  $ soil       : num  1 1 1 2 2 2 2 1 1 2 ...
+##  $ lime       : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ landuse    : Factor w/ 16 levels &quot;Aa&quot;,&quot;Ab&quot;,&quot;Ag&quot;,..: 4 4 4 11 4 11 4 2 2 16 ...
+##  $ in.pit     : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  $ in.meuse155: logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+##  $ in.BMcD    : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...</code></pre>
+<p>We know all too well by now that <code>meuse.all</code> is a <code>data.frame</code> with 164 point measurements of 17 variables.</p>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="probabilistic-interpolation-regression-kriging.html#cb289-1" tabindex="-1"></a><span class="fu">data</span>(meuse.grid, <span class="at">package =</span> <span class="st">&quot;sp&quot;</span>)</span>
+<span id="cb289-2"><a href="probabilistic-interpolation-regression-kriging.html#cb289-2" tabindex="-1"></a><span class="fu">str</span>(meuse.grid)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    3103 obs. of  7 variables:
+##  $ x     : num  181180 181140 181180 181220 181100 ...
+##  $ y     : num  333740 333700 333700 333700 333660 ...
+##  $ part.a: num  1 1 1 1 1 1 1 1 1 1 ...
+##  $ part.b: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ dist  : num  0 0 0.0122 0.0435 0 ...
+##  $ soil  : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ffreq : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<p>And, we know all too well by now that <code>meuse.grid</code> is a <code>data.frame</code> with 3103 points on a grid and 7 variables.</p>
+<p>However, we have three variables from <code>meuse.all</code> that overlap in <code>meuse.grid</code> and we haven’t used those much (or at all) in this class yet. Thus, if we create a model from <code>meuse.all</code> that includes <code>dist</code>, <code>soil</code>, or <code>ffreq</code> as predictors we could predict over <code>meuse.grid</code> without doing IDW or kriging. Those variables held in common between <code>meuse.all</code> and <code>meuse.grid</code> are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See <code>?meuse.all</code> and <code>?meuse.grid</code> for details on the variables.</p>
+<p>Don’t worry, we will skip cadmium, zinc, and lead and work with modeling <code>om</code> which is percent organic matter in the soil. We will model <code>om</code> as a function of <code>dist</code> and <code>soil</code> and predict it over the entire study site. We will do this naively with ordinary least squares regression (OLS) and then again with RK.</p>
+</div>
+<div id="make-data-as-sf-and-clean-it-up" class="section level3 hasAnchor" number="9.6.2">
+<h3><span class="header-section-number">9.6.2</span> Make data as <code>sf</code> and clean it up<a href="probabilistic-interpolation-regression-kriging.html#make-data-as-sf-and-clean-it-up" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Fist we will make both data sets in <code>sf</code> objects.</p>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="probabilistic-interpolation-regression-kriging.html#cb291-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.all,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb291-2"><a href="probabilistic-interpolation-regression-kriging.html#cb291-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.grid,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb291-3"><a href="probabilistic-interpolation-regression-kriging.html#cb291-3" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
+<pre><code>## Simple feature collection with 164 features and 15 fields
+## Geometry type: POINT
 ## Dimension:     XY
-## Bounding box:  xmin: 596713.7 ymin: 5411451 xmax: 599131.5 ymax: 5412970
-## Projected CRS: UTM_Zone_10_Northern_Hemisphere</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="mt-baker-map.html#cb43-1" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data=</span>chairs)</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
-<p>And finally, here is the location of the three lodges stored in a simple csv file.The coordinates are in UTM as above.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="mt-baker-map.html#cb44-1" tabindex="-1"></a>buildings <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/mtbLodges.csv&quot;</span>)</span>
-<span id="cb44-2"><a href="mt-baker-map.html#cb44-2" tabindex="-1"></a>buildings</span></code></pre></div>
-<pre><code>##          X       Y                    id
-## 1 598732.6 5412985    White Salmon Lodge
-## 2 596891.9 5412928 Heather Meadows Lodge
-## 3 598253.1 5412510           Raven&#39;s Hut</code></pre>
-<p>Note that I’ve given you three different kinds of spatial data. As geospatially-explicit raster in an external file (a GeoTif), a shapefile (shp) of lines, and a text file of points. The first two are already projected. The last is not (but the units are at least the same).</p>
+## Bounding box:  xmin: 178605 ymin: 329714 xmax: 181390 ymax: 333611
+## Projected CRS: Amersfoort / RD New
+## First 10 features:
+##    sample cadmium copper lead zinc  elev dist.m   om ffreq soil lime landuse
+## 1       1    11.7     85  299 1022 7.909     50 13.6     1    1    1      Ah
+## 2       2     8.6     81  277 1141 6.983     30 14.0     1    1    1      Ah
+## 3       3     6.5     68  199  640 7.800    150 13.0     1    1    1      Ah
+## 4       4     2.6     81  116  257 7.655    270  8.0     1    2    0      Ga
+## 5       5     2.8     48  117  269 7.480    380  8.7     1    2    0      Ah
+## 6       6     3.0     61  137  281 7.791    470  7.8     1    2    0      Ga
+## 7       7     3.2     31  132  346 8.217    240  9.2     1    2    0      Ah
+## 8       8     2.8     29  150  406 8.490    120  9.5     1    1    0      Ab
+## 9       9     2.4     37  133  347 8.668    240 10.6     1    1    0      Ab
+## 10     10     1.6     24   80  183 9.049    420  6.3     1    2    0       W
+##    in.pit in.meuse155 in.BMcD              geometry
+## 1   FALSE        TRUE   FALSE POINT (181072 333611)
+## 2   FALSE        TRUE   FALSE POINT (181025 333558)
+## 3   FALSE        TRUE   FALSE POINT (181165 333537)
+## 4   FALSE        TRUE   FALSE POINT (181298 333484)
+## 5   FALSE        TRUE   FALSE POINT (181307 333330)
+## 6   FALSE        TRUE   FALSE POINT (181390 333260)
+## 7   FALSE        TRUE   FALSE POINT (181165 333370)
+## 8   FALSE        TRUE   FALSE POINT (181027 333363)
+## 9   FALSE        TRUE   FALSE POINT (181060 333231)
+## 10  FALSE        TRUE   FALSE POINT (181232 333168)</code></pre>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="probabilistic-interpolation-regression-kriging.html#cb293-1" tabindex="-1"></a>meuseGrid_sf</span></code></pre></div>
+<pre><code>## Simple feature collection with 3103 features and 5 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 178460 ymin: 329620 xmax: 181540 ymax: 333740
+## Projected CRS: Amersfoort / RD New
+## First 10 features:
+##    part.a part.b       dist soil ffreq              geometry
+## 1       1      0 0.00000000    1     1 POINT (181180 333740)
+## 2       1      0 0.00000000    1     1 POINT (181140 333700)
+## 3       1      0 0.01222430    1     1 POINT (181180 333700)
+## 4       1      0 0.04346780    1     1 POINT (181220 333700)
+## 5       1      0 0.00000000    1     1 POINT (181100 333660)
+## 6       1      0 0.01222430    1     1 POINT (181140 333660)
+## 7       1      0 0.03733950    1     1 POINT (181180 333660)
+## 8       1      0 0.05936620    1     1 POINT (181220 333660)
+## 9       1      0 0.00135803    1     1 POINT (181060 333620)
+## 10      1      0 0.01222430    1     1 POINT (181100 333620)</code></pre>
+<p>One thing to note here is that the <code>dist.m</code> column in <code>meusePoints_sf</code> is the distance to the river in meters while <code>meuseGrid_sf</code> has distance to the river in relative units (scaled zero to one). To make life easier we will add the relative distances to the point data unsing the <code>dist</code> values from <code>meuseGrid_sf</code>.</p>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="probabilistic-interpolation-regression-kriging.html#cb295-1" tabindex="-1"></a><span class="co"># get the relative distance from meuseGrid_sf and add it to meusePoints_sf</span></span>
+<span id="cb295-2"><a href="probabilistic-interpolation-regression-kriging.html#cb295-2" tabindex="-1"></a>meuseGrid_dist_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">select</span>(dist)</span>
+<span id="cb295-3"><a href="probabilistic-interpolation-regression-kriging.html#cb295-3" tabindex="-1"></a><span class="co"># join the two objects by the nearest point</span></span>
+<span id="cb295-4"><a href="probabilistic-interpolation-regression-kriging.html#cb295-4" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_join</span>(meusePoints_sf,meuseGrid_dist_sf, <span class="at">join =</span> st_nearest_feature)</span>
+<span id="cb295-5"><a href="probabilistic-interpolation-regression-kriging.html#cb295-5" tabindex="-1"></a><span class="co"># note that we now have relative dist for each point now in the column `dist`</span></span>
+<span id="cb295-6"><a href="probabilistic-interpolation-regression-kriging.html#cb295-6" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
+<pre><code>## Simple feature collection with 164 features and 16 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 178605 ymin: 329714 xmax: 181390 ymax: 333611
+## Projected CRS: Amersfoort / RD New
+## First 10 features:
+##    sample cadmium copper lead zinc  elev dist.m   om ffreq soil lime landuse
+## 1       1    11.7     85  299 1022 7.909     50 13.6     1    1    1      Ah
+## 2       2     8.6     81  277 1141 6.983     30 14.0     1    1    1      Ah
+## 3       3     6.5     68  199  640 7.800    150 13.0     1    1    1      Ah
+## 4       4     2.6     81  116  257 7.655    270  8.0     1    2    0      Ga
+## 5       5     2.8     48  117  269 7.480    380  8.7     1    2    0      Ah
+## 6       6     3.0     61  137  281 7.791    470  7.8     1    2    0      Ga
+## 7       7     3.2     31  132  346 8.217    240  9.2     1    2    0      Ah
+## 8       8     2.8     29  150  406 8.490    120  9.5     1    1    0      Ab
+## 9       9     2.4     37  133  347 8.668    240 10.6     1    1    0      Ab
+## 10     10     1.6     24   80  183 9.049    420  6.3     1    2    0       W
+##    in.pit in.meuse155 in.BMcD       dist              geometry
+## 1   FALSE        TRUE   FALSE 0.00135803 POINT (181072 333611)
+## 2   FALSE        TRUE   FALSE 0.01222430 POINT (181025 333558)
+## 3   FALSE        TRUE   FALSE 0.10302900 POINT (181165 333537)
+## 4   FALSE        TRUE   FALSE 0.19009400 POINT (181298 333484)
+## 5   FALSE        TRUE   FALSE 0.27709000 POINT (181307 333330)
+## 6   FALSE        TRUE   FALSE 0.36406700 POINT (181390 333260)
+## 7   FALSE        TRUE   FALSE 0.19009400 POINT (181165 333370)
+## 8   FALSE        TRUE   FALSE 0.09215160 POINT (181027 333363)
+## 9   FALSE        TRUE   FALSE 0.18461400 POINT (181060 333231)
+## 10  FALSE        TRUE   FALSE 0.30970200 POINT (181232 333168)</code></pre>
+<p>We will go a step further and use the square root of the distance to the river as a predictor. This just helps us get a little more leverage on very short distances by stretching out the scale.</p>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="probabilistic-interpolation-regression-kriging.html#cb297-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span>
+<span id="cb297-2"><a href="probabilistic-interpolation-regression-kriging.html#cb297-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span></code></pre></div>
+<p>Next, the column <code>om</code> in <code>meusePoints_sf</code> has two missing data points (<code>NA</code>) in it. I’m going to toss those rows to make things easier. Note the new number of rows in <code>meusePoints_sf</code> after you run this.</p>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="probabilistic-interpolation-regression-kriging.html#cb298-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(om)</span></code></pre></div>
+<p>And finally, we are going to be using the soil type as a predictor. That is a categorical variable so we need to change it to be a <code>factor</code>.</p>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="probabilistic-interpolation-regression-kriging.html#cb299-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span>
+<span id="cb299-2"><a href="probabilistic-interpolation-regression-kriging.html#cb299-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span></code></pre></div>
 </div>
-<div id="a-map" class="section level2 hasAnchor" number="3.6">
-<h2><span class="header-section-number">3.6</span> A Map<a href="mt-baker-map.html#a-map" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Here is a map of the area I made with <code>ggplot</code> using the objects <code>mtbDEM</code>, <code>chairs</code>, and <code>buildings</code>. I’ll be the first to tell you that I’m no cartographer and this is not an excellent map but it is adequate. In most cases, I show you exactly what I’m doing with all the R code by setting <code>echo=TRUE</code> in all my chunks. For this map, I hid the code I used because I want you to make your own as I explain below in the “Your Work” section.</p>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-10-1.png" alt="" width="768" /></p>
+<div id="ols" class="section level3 hasAnchor" number="9.6.3">
+<h3><span class="header-section-number">9.6.3</span> OLS<a href="probabilistic-interpolation-regression-kriging.html#ols" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We will make a simple model of organic matter (<span class="math inline">\(y\)</span>) as a function of the square root of the distance to the river (<span class="math inline">\(x_1\)</span>) and soil type (<span class="math inline">\(x_2\)</span>): <span class="math inline">\(y=\beta_0 + \beta_1x_1+\beta_2x_2\)</span>. The parameters (<span class="math inline">\(\beta_{0,1,2}\)</span>) will be estimated with OLS.
+Here is the OLS model:</p>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="probabilistic-interpolation-regression-kriging.html#cb300-1" tabindex="-1"></a>om_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(om<span class="sc">~</span>sqrt_dist<span class="sc">+</span>soil, <span class="at">data=</span>meusePoints_sf)</span>
+<span id="cb300-2"><a href="probabilistic-interpolation-regression-kriging.html#cb300-2" tabindex="-1"></a><span class="fu">summary</span>(om_lm)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = om ~ sqrt_dist + soil, data = meusePoints_sf)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.8478 -1.4629 -0.1575  1.4344  7.3786 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  11.6894     0.4418  26.460  &lt; 2e-16 ***
+## sqrt_dist    -8.9179     1.0902  -8.180 8.79e-14 ***
+## soil2        -1.7178     0.5047  -3.403 0.000843 ***
+## soil3         0.7120     0.8628   0.825 0.410449    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.473 on 158 degrees of freedom
+## Multiple R-squared:  0.4926, Adjusted R-squared:  0.4829 
+## F-statistic: 51.12 on 3 and 158 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="probabilistic-interpolation-regression-kriging.html#cb302-1" tabindex="-1"></a><span class="fu">anova</span>(om_lm)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: om
+##            Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## sqrt_dist   1 833.08  833.08 136.197 &lt; 2.2e-16 ***
+## soil        2 105.07   52.54   8.589 0.0002877 ***
+## Residuals 158 966.45    6.12                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>In our model, we see that both distance and soil types are good predictors of organic matter percent. Now, this might or might not be a good model. After you learn about the pitfalls of using OLS with spatial data you’ll be appalled that I’m running this model and not checking for spatial autocorrelation in the residuals or doing any other regression diagnostics. But suppress your horror for now. Because all I want to do here is show how I could (if I wanted to live in a state of ignorant bliss) predict this model across the landscape.</p>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="probabilistic-interpolation-regression-kriging.html#cb304-1" tabindex="-1"></a>meuseGrid_sf<span class="sc">$</span>omHat <span class="ot">&lt;-</span> <span class="fu">predict</span>(om_lm, <span class="at">newdata=</span>meuseGrid_sf)</span>
+<span id="cb304-2"><a href="probabilistic-interpolation-regression-kriging.html#cb304-2" tabindex="-1"></a></span>
+<span id="cb304-3"><a href="probabilistic-interpolation-regression-kriging.html#cb304-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> meuseGrid_sf,<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">color=</span>omHat))</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
+<p>A few things. One this is a decent prediction. The model relatively skillful (but we should crossvalidate it) but the assumption about independence of the residuals is violated. E.g., Moran’s I on an eight-neighbor object is 0.23 which is significantly greater than zero. More on that in the next set of notes “GLS with Autocorrelated Residuals.” Oh, and that plot above is all points. We can make it a raster. Remember this handy function from the prior weeks that makes a <code>sf</code> point object into a <code>SpatRaster</code>?</p>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="probabilistic-interpolation-regression-kriging.html#cb305-1" tabindex="-1"></a>sf_2_rast <span class="ot">&lt;-</span><span class="cf">function</span>(sfObject,<span class="at">variable2get =</span> <span class="dv">1</span>){</span>
+<span id="cb305-2"><a href="probabilistic-interpolation-regression-kriging.html#cb305-2" tabindex="-1"></a>  <span class="co"># coerce sf to a data.frame</span></span>
+<span id="cb305-3"><a href="probabilistic-interpolation-regression-kriging.html#cb305-3" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> sfObject[,variable2get] <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb305-4"><a href="probabilistic-interpolation-regression-kriging.html#cb305-4" tabindex="-1"></a>  dfObject <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">st_coordinates</span>(sfObject),</span>
+<span id="cb305-5"><a href="probabilistic-interpolation-regression-kriging.html#cb305-5" tabindex="-1"></a>                         <span class="at">z=</span>tmp)</span>
+<span id="cb305-6"><a href="probabilistic-interpolation-regression-kriging.html#cb305-6" tabindex="-1"></a>  <span class="co"># coerce data.frame to SpatRaster</span></span>
+<span id="cb305-7"><a href="probabilistic-interpolation-regression-kriging.html#cb305-7" tabindex="-1"></a>  rastObject <span class="ot">&lt;-</span> <span class="fu">rast</span>(dfObject,<span class="at">crs=</span><span class="fu">crs</span>(sfObject))</span>
+<span id="cb305-8"><a href="probabilistic-interpolation-regression-kriging.html#cb305-8" tabindex="-1"></a>  </span>
+<span id="cb305-9"><a href="probabilistic-interpolation-regression-kriging.html#cb305-9" tabindex="-1"></a>  <span class="fu">return</span>(rastObject)</span>
+<span id="cb305-10"><a href="probabilistic-interpolation-regression-kriging.html#cb305-10" tabindex="-1"></a>}</span>
+<span id="cb305-11"><a href="probabilistic-interpolation-regression-kriging.html#cb305-11" tabindex="-1"></a></span>
+<span id="cb305-12"><a href="probabilistic-interpolation-regression-kriging.html#cb305-12" tabindex="-1"></a>meuseGrid_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(meuseGrid_sf,<span class="at">variable2get =</span> <span class="st">&quot;omHat&quot;</span>)</span>
+<span id="cb305-13"><a href="probabilistic-interpolation-regression-kriging.html#cb305-13" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> meuseGrid_rast,</span>
+<span id="cb305-14"><a href="probabilistic-interpolation-regression-kriging.html#cb305-14" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omHat)) <span class="sc">+</span></span>
+<span id="cb305-15"><a href="probabilistic-interpolation-regression-kriging.html#cb305-15" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb305-16"><a href="probabilistic-interpolation-regression-kriging.html#cb305-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;omHat&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-17-1.png" alt="" width="672" /></p>
 </div>
-<div id="your-work-1" class="section level2 hasAnchor" number="3.7">
-<h2><span class="header-section-number">3.7</span> Your work<a href="mt-baker-map.html#your-work-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Make a pretty map of the Mt Baker ski hill area using the data above. You can color outside the lines (e.g., pull in imagery from Google Earth or use other ancillary data) if you like. There are few limits to what you can do but you need to use all three data sets in one map. The idea here is to make sure you can handle raster data and two types of vector data (points and lines) simultaneously.</p>
-<p>Turn in a knitted R Markdown document in HTML that has a map and explain what you did. Make sure all your code is clean, your variables named well, your explanations clear. Show all the code.</p>
-<p>Finally, there is a lot to do in this class. As such, I’m not going to ask you to do a bunch of fancy cartography. In general I want you to focus on the spatial analysis and not fall into time sinks of map making. But I’m not against you making cool maps! Feel free to experiment with cartography. The Lovelace chapter <a href="https://geocompr.robinlovelace.net/adv-map.html">Making maps with R</a> is a great resource for <code>tmap</code> etc.</p>
+<div id="rk-application" class="section level3 hasAnchor" number="9.6.4">
+<h3><span class="header-section-number">9.6.4</span> RK Application<a href="probabilistic-interpolation-regression-kriging.html#rk-application" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>As I imagine you have anticipated, the silliest thing in the model above is that we threw out all of the awesome data we have on spatial structure. All the information on how pairs of samples relate to each other in terms of semivariance has been cast aside. And we know that organic matter is autocorrelated. E.g.,:</p>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="probabilistic-interpolation-regression-kriging.html#cb306-1" tabindex="-1"></a>omVar <span class="ot">&lt;-</span> <span class="fu">variogram</span>(om<span class="sc">~</span><span class="dv">1</span>, meusePoints_sf)</span>
+<span id="cb306-2"><a href="probabilistic-interpolation-regression-kriging.html#cb306-2" tabindex="-1"></a><span class="fu">plot</span>(omVar,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb306-3"><a href="probabilistic-interpolation-regression-kriging.html#cb306-3" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb306-4"><a href="probabilistic-interpolation-regression-kriging.html#cb306-4" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;% Soil Organic Matter&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672" /></p>
+<p>With kriging, we would interpolate a surface based just on a theoretical variogram we would fit to those data. But we have all the data on distance and soil type that we used in the OLS model above. We can combine these approaches with RK.</p>
+<p>We will set up a <code>gstat</code> object with the linear regression model. When we plot the variogram we are seeing the residuals from that regression. They have some spatial structure. In OLS that is bad (violates independence). For RK, this is good! It means we can use that structure to improve the prediction.</p>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="probabilistic-interpolation-regression-kriging.html#cb307-1" tabindex="-1"></a>omGstat <span class="ot">&lt;-</span> <span class="fu">gstat</span>(<span class="at">id =</span> <span class="st">&quot;omModel&quot;</span>, <span class="at">formula =</span> om <span class="sc">~</span> sqrt_dist <span class="sc">+</span> soil, </span>
+<span id="cb307-2"><a href="probabilistic-interpolation-regression-kriging.html#cb307-2" tabindex="-1"></a>                 <span class="at">data =</span> meusePoints_sf)</span>
+<span id="cb307-3"><a href="probabilistic-interpolation-regression-kriging.html#cb307-3" tabindex="-1"></a>omGstat_obsVariogram <span class="ot">&lt;-</span> <span class="fu">variogram</span>(omGstat)</span>
+<span id="cb307-4"><a href="probabilistic-interpolation-regression-kriging.html#cb307-4" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb307-5"><a href="probabilistic-interpolation-regression-kriging.html#cb307-5" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb307-6"><a href="probabilistic-interpolation-regression-kriging.html#cb307-6" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-19-1.png" alt="" width="672" /></p>
+<p>Ok. Let’s look at this. It’s not a severe variogram. But you can see that the semivariance goes from a nugget of about four to a sill of about six. I.e., there is spatial structure in this model that we can leverage and that should improve our predictions.</p>
+<p>Thus, let’s fit a theoretical model to the <code>omGstat_obsVariogram</code> variogram. I’ll use a Gaussian model but you could make a good case here for an Exponential model.</p>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="probabilistic-interpolation-regression-kriging.html#cb308-1" tabindex="-1"></a>omGau_fittedVariogram <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(omGstat_obsVariogram, <span class="fu">vgm</span>(<span class="at">psill =</span> <span class="dv">6</span>, <span class="at">model =</span> <span class="st">&quot;Gau&quot;</span>, <span class="at">range =</span> <span class="dv">500</span>, <span class="at">nugget =</span> <span class="dv">4</span>))</span>
+<span id="cb308-2"><a href="probabilistic-interpolation-regression-kriging.html#cb308-2" tabindex="-1"></a></span>
+<span id="cb308-3"><a href="probabilistic-interpolation-regression-kriging.html#cb308-3" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram, omGau_fittedVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb308-4"><a href="probabilistic-interpolation-regression-kriging.html#cb308-4" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb308-5"><a href="probabilistic-interpolation-regression-kriging.html#cb308-5" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-20-1.png" alt="" width="672" /></p>
+<p>Now we can update the <code>gstat</code> object with that variogram model. And use it to make a prediction.</p>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="probabilistic-interpolation-regression-kriging.html#cb309-1" tabindex="-1"></a><span class="co"># Update the gstat object with the variogram:</span></span>
+<span id="cb309-2"><a href="probabilistic-interpolation-regression-kriging.html#cb309-2" tabindex="-1"></a>omGstat_w_variogram <span class="ot">&lt;-</span> <span class="fu">gstat</span>(omGstat, <span class="at">id=</span><span class="st">&quot;omModel&quot;</span>, <span class="at">model=</span>omGau_fittedVariogram)</span>
+<span id="cb309-3"><a href="probabilistic-interpolation-regression-kriging.html#cb309-3" tabindex="-1"></a><span class="co"># And predict</span></span>
+<span id="cb309-4"><a href="probabilistic-interpolation-regression-kriging.html#cb309-4" tabindex="-1"></a>omHat_sf <span class="ot">&lt;-</span> <span class="fu">predict</span>(omGstat_w_variogram, <span class="at">newdata =</span> meuseGrid_sf)</span></code></pre></div>
+<pre><code>## [using universal kriging]</code></pre>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="probabilistic-interpolation-regression-kriging.html#cb311-1" tabindex="-1"></a>omHat_sf</span></code></pre></div>
+<pre><code>## Simple feature collection with 3103 features and 2 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 178460 ymin: 329620 xmax: 181540 ymax: 333740
+## Projected CRS: Amersfoort / RD New
+## First 10 features:
+##    omModel.pred omModel.var              geometry
+## 1      14.33925    5.370485 POINT (181180 333740)
+## 2      14.38783    5.207100 POINT (181140 333700)
+## 3      13.21201    5.157301 POINT (181180 333700)
+## 4      12.16400    5.172975 POINT (181220 333700)
+## 5      14.40786    5.072085 POINT (181100 333660)
+## 6      13.24575    5.008216 POINT (181140 333660)
+## 7      12.37960    5.012550 POINT (181180 333660)
+## 8      11.85536    5.056316 POINT (181220 333660)
+## 9      13.99688    4.937390 POINT (181060 333620)
+## 10     13.24907    4.889661 POINT (181100 333620)</code></pre>
+<p>We have made a new object <code>omHat_sf</code> that has the predictions and the variance from the RK. It’s an <code>sf</code> object (because <code>meuseGridSF</code> is also <code>sf</code>). Let’s make them into <code>SpatRasers</code> to make the plots prettier.</p>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="probabilistic-interpolation-regression-kriging.html#cb313-1" tabindex="-1"></a>omHat_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.pred&quot;</span>)</span>
+<span id="cb313-2"><a href="probabilistic-interpolation-regression-kriging.html#cb313-2" tabindex="-1"></a>omHat_rast</span></code></pre></div>
+<pre><code>## class       : SpatRaster 
+## size        : 104, 78, 1  (nrow, ncol, nlyr)
+## resolution  : 40, 40  (x, y)
+## extent      : 178440, 181560, 329600, 333760  (xmin, xmax, ymin, ymax)
+## coord. ref. : Amersfoort / RD New (EPSG:28992) 
+## source(s)   : memory
+## name        : omModel.pred 
+## min value   :     1.891323 
+## max value   :    14.407855</code></pre>
+<p>And plot:</p>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="probabilistic-interpolation-regression-kriging.html#cb315-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb315-2"><a href="probabilistic-interpolation-regression-kriging.html#cb315-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHat_rast,</span>
+<span id="cb315-3"><a href="probabilistic-interpolation-regression-kriging.html#cb315-3" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.pred)) <span class="sc">+</span></span>
+<span id="cb315-4"><a href="probabilistic-interpolation-regression-kriging.html#cb315-4" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb315-5"><a href="probabilistic-interpolation-regression-kriging.html#cb315-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter (%)&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672" /></p>
+<p>And variance around the predictions:</p>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="probabilistic-interpolation-regression-kriging.html#cb316-1" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.var&quot;</span>)</span>
+<span id="cb316-2"><a href="probabilistic-interpolation-regression-kriging.html#cb316-2" tabindex="-1"></a><span class="co"># take the square root of variance to create standard deviation (units match then)</span></span>
+<span id="cb316-3"><a href="probabilistic-interpolation-regression-kriging.html#cb316-3" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> omHatVar_rast <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">omModel.var.sqrt =</span> <span class="fu">sqrt</span>(omModel.var))</span>
+<span id="cb316-4"><a href="probabilistic-interpolation-regression-kriging.html#cb316-4" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHatVar_rast,</span>
+<span id="cb316-5"><a href="probabilistic-interpolation-regression-kriging.html#cb316-5" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.var.sqrt)) <span class="sc">+</span></span>
+<span id="cb316-6"><a href="probabilistic-interpolation-regression-kriging.html#cb316-6" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb316-7"><a href="probabilistic-interpolation-regression-kriging.html#cb316-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter Variance (%)&quot;</span>)</span></code></pre></div>
+<p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-24-1.png" alt="" width="672" /></p>
+<p>The RK approach looks quite a bit different than the OLS prediction. Now our job is to look at the differences carefully and assess skill.</p>
+</div>
+</div>
+<div id="your-work-7" class="section level2 hasAnchor" number="9.7">
+<h2><span class="header-section-number">9.7</span> Your Work<a href="probabilistic-interpolation-regression-kriging.html#your-work-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>None. This is kind of an add on to introduce you to RK. But you should be able to apply by following the workflow above. I suggest taking some time to figure out how to use <code>gstat.cv</code> and perform k-fold cross validation on the <code>omGstat_w_variogram</code> object and object with just the linear model (<code>omGstat</code>). Compare the skill of a k-fold cross validated OLS model and the k-fold cross validated RK model. Use R<span class="math inline">\(^2\)</span> and RMSE as your measures of skill. Did the RK approach improve the predictions?</p>
 
 </div>
 </div>
@@ -1299,8 +1532,8 @@ div.csl-indent {
           </div>
         </div>
       </div>
-<a href="aside-understanding-methods-and-generics-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="point-patterns.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="probabilistic-interpolation-kriging.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aside-geostats-ii-kriging-variance-by-hand.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
