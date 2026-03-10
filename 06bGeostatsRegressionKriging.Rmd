@@ -1,0 +1,293 @@
+# Regression Kriging
+
+
+```{r,echo=FALSE}
+set.seed(733)
+```
+
+## Big Idea
+With kriging we used limited spatial data to make predictions (interpolation) over larger areas. Regression kriging is going to use the same theory but incorporate ancillary data to make better predictions.
+
+## Reading
+Meng et al. (2013) provide a (mostly) readable description of regression kriging  and compare it to the kind of interpolation approaches we've looked at already. Give it a heavy skim.
+
+Meng et al. (2013) Assessment of regression kriging for spatial interpolation – comparisons of seven GIS interpolation methods. Cartography and Geographic Information Science, 40:1, 28-39, doi:
+10.1080/15230406.2013.762138.
+
+## Packages
+The `gstat` package is your friend. But we will need some of our recent collaborators as well including `terra` and `tidyterra'. 
+
+```{r,message=FALSE, warning=FALSE}
+library(tidyverse)
+library(sf)
+library(terra)
+library(tidyterra)
+library(gstat)
+```
+
+## Overview of RK
+Regression kriging (RK) is a spatial interpolation technique (like IDW, thin-plate splines, and kriging) that allows for estimation of a variable across a spatial domain. Like the name suggests, RK combines regression and kriging. It is a probabilistic method and produces a variance surface like kriging.
+
+RK uses a regression of the dependent variable ($y$) on predictor variables ($x_1$,$x_2$, etc.) with standard kriging of the errors on the regression. By fitting a variogram to the residuals of the model, predictors influence the kriging weights (recall $\lambda$ from the kriging module?). The advantage of RK over either kriging or regression is that it combines the use of spatial structure for prediction (as kriging does) with the addition of ancillary variables (like regression does). In other words, RK exploits the spatial correlation between variables for making predictions.
+
+RK is used more and more commonly as cheap and powerful covariates can be derived from remote sensing and GIS data. I'll give some examples in the video.
+
+## Prediction Review: OLS Regression with New Data
+This is likely serious review for all of you so roll your eyes as needed. But I just want to be sure we are on the same page. I want to  make sure you are hip to the idea of passing new data (e.g., into a `predict` function) for extending a model (e.g., `lm`) to new data. We've done this already a few times, but it never hurts to get it again.
+
+Here we create a `data.frame` called `originalDat` with three variables: `x1` and `x2` are `n` draws from a normal distribution ($N(0,1)$) and `y` is a function of `x1`and `x2` following a linear model with coefficients `b0`, `b1`, and `b2` plus some more noise (`epsilon`) ($N(0,2)$).
+
+```{r}
+n <- 50
+b0 <- 4
+b1 <- 0.6
+b2 <- 3
+originalDat <- data.frame(x1=rnorm(n), x2=rnorm(n), epsilon = rnorm(n,sd = 2))
+originalDat$y <- b0 + b1 * originalDat$x1 + b2 * originalDat$x2 + originalDat$epsilon
+```
+
+We then fit a linear model (OLS) with `lm`:
+
+```{r}
+lm1 <- lm(y~x1 + x2,data = originalDat)
+summary(lm1)
+```
+
+OK. We have one definitely helpful predictor, and one borderline predictor. Now let's say we want to extend that model to predict a new data set. The object `lm1` is class `lm` and most every model class has a `predict` function, or a `newdata` argument to the original function, that allows you feed it new data. So let's imagine we have a new data set with  `x1` and `x2` but no `y`. 
+
+```{r}
+newDat <- data.frame(x1=rnorm(n),x2=rnorm(n))
+head(newDat)
+```
+
+We can use `predict.lm` (we just need to type `predict` since the object we are feeding is class `lm`, R knows to use `predict.lm`) to model new estimates of `y` by pointing to `newDat` using the `newdata` argument. Note that I'm sticking the predicted values right into a new column `yhat`. Why the hat? Because it's an estimate.
+
+```{r}
+newDat$yhat <- predict(object = lm1,newdata = newDat)
+head(newDat)
+```
+
+If we call `predict` without new data, the fits from the original model are returned. In the above `predict(lm1)`, `fitted(lm1)`, and `lm1$fitted.values` all do the same thing.
+
+
+I know that most of you are familiar with this. I just wanted to spell it all out.
+
+## Back to the Netherlands
+
+Let's look at a real-world example of RK using, you guessed it, the Meuse River data. I'm pretty sick of these data but they are familiar to us. We've used the data in `meuse.all` quite a bit and we've used `meuse.grid` as an empty grid to interpolate into. But `meuse.grid` has other data in it that we can use in a regression kriging approach.
+
+### The Data
+
+```{r}
+data(meuse.all)
+str(meuse.all)
+```
+We know all too well by now that `meuse.all` is a `data.frame` with `r nrow(meuse.all)` point measurements of `r ncol(meuse.all)` variables. 
+
+
+```{r}
+data(meuse.grid, package = "sp")
+str(meuse.grid)
+```
+
+And, we know all too well by now that `meuse.grid` is a `data.frame` with `r nrow(meuse.grid)` points on a grid and `r ncol(meuse.grid)` variables. 
+
+However, we have three variables from `meuse.all` that overlap in `meuse.grid` and we haven't used those much (or at all) in this class yet. Thus, if we create a model from `meuse.all` that includes `dist`, `soil`, or `ffreq` as predictors we could predict over `meuse.grid` without doing IDW or kriging. Those variables held in common between `meuse.all` and `meuse.grid` are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See `?meuse.all` and `?meuse.grid` for details on the variables.
+
+Don't worry, we will skip cadmium, zinc, and lead and work with modeling `om` which is percent organic matter in the soil. We will model `om` as a function of `dist` and `soil` and predict it over the entire study site. We will do this naively with ordinary least squares regression (OLS) and then again with RK.
+
+
+### Make data as `sf` and clean it up
+Fist we will make both data sets in `sf` objects.
+
+```{r}
+meusePoints_sf <- st_as_sf(meuse.all,coords = c("x","y"), crs=28992)
+meuseGrid_sf <- st_as_sf(meuse.grid,coords = c("x","y"), crs=28992)
+meusePoints_sf
+meuseGrid_sf
+```
+
+One thing to note here is that the `dist.m` column in `meusePoints_sf` is the distance to the river in meters while `meuseGrid_sf` has distance to the river in relative units (scaled zero to one). To make life easier we will add the relative distances to the point data unsing the `dist` values from `meuseGrid_sf`.
+
+```{r}
+# get the relative distance from meuseGrid_sf and add it to meusePoints_sf
+meuseGrid_dist_sf <- meuseGrid_sf %>% select(dist)
+# join the two objects by the nearest point
+meusePoints_sf <- st_join(meusePoints_sf,meuseGrid_dist_sf, join = st_nearest_feature)
+# note that we now have relative dist for each point now in the column `dist`
+meusePoints_sf
+```
+
+We will go a step further and use the square root of the distance to the river as a predictor. This just helps us get a little more leverage on very short distances by stretching out the scale.
+
+```{r}
+meusePoints_sf <- meusePoints_sf %>% mutate(sqrt_dist = sqrt(dist))
+meuseGrid_sf <- meuseGrid_sf %>% mutate(sqrt_dist = sqrt(dist))
+
+```
+
+Next, the column `om` in `meusePoints_sf` has two missing data points (`NA`) in it. I'm going to toss those rows to make things easier. Note the new number of rows in `meusePoints_sf` after you run this.
+
+
+```{r}
+meusePoints_sf <- meusePoints_sf %>% drop_na(om)
+```
+
+And finally, we are going to be using the soil type as a predictor. That is a categorical variable so we need to change it to be a `factor`.
+
+```{r}
+meusePoints_sf <- meusePoints_sf %>% mutate(soil = factor(soil))
+meuseGrid_sf <- meuseGrid_sf %>% mutate(soil = factor(soil))
+```
+
+### OLS
+We will make a simple model of organic matter ($y$) as a function of the square root of the distance to the river ($x_1$) and soil type ($x_2$): $y=\beta_0 + \beta_1x_1+\beta_2x_2$. The parameters ($\beta_{0,1,2}$) will be estimated with OLS. 
+Here is the OLS model:
+
+```{r}
+om_lm <- lm(om~sqrt_dist+soil, data=meusePoints_sf)
+summary(om_lm)
+anova(om_lm)
+```
+
+In our model, we see that both distance and soil types are good predictors of organic matter percent. Now, this might or might not be a good model. After you learn about the pitfalls of using OLS with spatial data you'll be appalled that I'm running this model and not checking for spatial autocorrelation in the residuals or doing any other regression diagnostics. But suppress your horror for now. Because all I want to do here is show how I could (if I wanted to live in a state of ignorant bliss) predict this model across the landscape.
+
+```{r}
+meuseGrid_sf$omHat <- predict(om_lm, newdata=meuseGrid_sf)
+
+ggplot() + geom_sf(data = meuseGrid_sf,mapping = aes(color=omHat))
+```
+
+```{r, echo=FALSE}
+w <- spdep::knn2nb(spdep::knearneigh(meusePoints_sf,k=4))
+foo <- spdep::moran.test(residuals(om_lm),spdep::nb2listw(w))
+```
+
+A few things. One this is a decent prediction. The model relatively skillful (but we should crossvalidate it) but the assumption about independence of the residuals is violated. E.g., Moran's I on an eight-neighbor object is `r round(foo$estimate[1],2)` which is significantly greater than zero. More on that in the next set of notes "GLS with Autocorrelated Residuals." Oh, and that plot above is all points. We can make it a raster. Remember this handy function from the prior weeks that makes a `sf` point object into a `SpatRaster`?
+
+```{r}
+sf_2_rast <-function(sfObject,variable2get = 1){
+  # coerce sf to a data.frame
+  tmp <- sfObject[,variable2get] %>% st_drop_geometry()
+  dfObject <- data.frame(st_coordinates(sfObject),
+                         z=tmp)
+  # coerce data.frame to SpatRaster
+  rastObject <- rast(dfObject,crs=crs(sfObject))
+  
+  return(rastObject)
+}
+
+meuseGrid_rast <- sf_2_rast(meuseGrid_sf,variable2get = "omHat")
+ggplot() + geom_spatraster(data = meuseGrid_rast,
+                           mapping = aes(fill=omHat)) +
+  scale_fill_terrain_c() +
+  labs(fill = "omHat")
+  
+```
+
+### RK Application
+As I imagine you have anticipated, the silliest thing in the model above is that we threw out all of the awesome data we have on spatial structure. All the information on how pairs of samples relate to each other in terms of semivariance has been cast aside. And we know that organic matter is autocorrelated. E.g.,:
+```{r}
+omVar <- variogram(om~1, meusePoints_sf)
+plot(omVar,pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)", main = "% Soil Organic Matter")
+```
+
+With kriging, we would interpolate a surface based just on a theoretical variogram we would fit to those data. But we have all the data on distance and soil type that we used in the OLS model above. We can combine these approaches with RK.
+
+We will set up a `gstat` object with the linear regression model. When we plot the variogram we are seeing the residuals from that regression. They have some spatial structure. In OLS that is bad (violates independence). For RK, this is good! It means we can use that structure to improve the prediction.
+
+```{r}
+omGstat <- gstat(id = "omModel", formula = om ~ sqrt_dist + soil, 
+                 data = meusePoints_sf)
+omGstat_obsVariogram <- variogram(omGstat)
+plot(omGstat_obsVariogram,pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)", main = "Model Residuals")
+```
+
+Ok. Let's look at this. It's not a severe variogram. But you can see that the semivariance goes from a nugget of about four to a sill of about six. I.e., there is spatial structure in this model that we can leverage and that should improve our predictions.
+
+Thus, let's fit a theoretical model to the `omGstat_obsVariogram` variogram. I'll use a Gaussian model but you could make a good case here for an Exponential model.
+
+```{r}
+omGau_fittedVariogram <- fit.variogram(omGstat_obsVariogram, vgm(psill = 6, model = "Gau", range = 500, nugget = 4))
+
+plot(omGstat_obsVariogram, omGau_fittedVariogram,pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)", main = "Model Residuals")
+```
+
+Now we can update the `gstat` object with that variogram model. And use it to make a prediction.
+
+```{r}
+# Update the gstat object with the variogram:
+omGstat_w_variogram <- gstat(omGstat, id="omModel", model=omGau_fittedVariogram)
+# And predict
+omHat_sf <- predict(omGstat_w_variogram, newdata = meuseGrid_sf)
+omHat_sf
+```
+
+We have made a new object `omHat_sf` that has the predictions and the variance from the RK. It's an `sf` object (because `meuseGridSF` is also `sf`). Let's make them into `SpatRasers` to make the plots prettier. 
+
+```{r}
+omHat_rast <- sf_2_rast(omHat_sf,variable2get = "omModel.pred")
+omHat_rast
+```
+
+And plot:
+
+```{r}
+ggplot() + 
+  geom_spatraster(data = omHat_rast,
+                           mapping = aes(fill=omModel.pred)) +
+  scale_fill_terrain_c() +
+  labs(fill = "Organic Matter (%)")
+
+```
+
+And variance around the predictions:
+
+```{r}
+omHatVar_rast <- sf_2_rast(omHat_sf,variable2get = "omModel.var")
+# take the square root of variance to create standard deviation (units match then)
+omHatVar_rast <- omHatVar_rast %>% mutate(omModel.var.sqrt = sqrt(omModel.var))
+ggplot() + geom_spatraster(data = omHatVar_rast,
+                           mapping = aes(fill=omModel.var.sqrt)) +
+  scale_fill_terrain_c() +
+  labs(fill = "Organic Matter Variance (%)")
+
+```
+
+The RK approach looks quite a bit different than the OLS prediction. Now our job is to look at the differences carefully and assess skill. 
+
+## Your Work
+Take some time to figure out how to use `gstat.cv` and perform k-fold cross validation on the `omGstat_w_variogram` object and object with just the linear model (`omGstat`). Compare the skill of a k-fold cross validated OLS model and the k-fold cross validated RK model. Use R$^2$ and RMSE as your measures of skill. Did the RK approach improve the predictions?
+
+```{r, eval=FALSE,echo=FALSE,message=FALSE, warning=FALSE}
+# the rk
+out <- gstat.cv(object=omGstat_w_variogram,nfold=10)
+#r2
+cor(out$observed, out$observed - out$residual)^2
+cor(out$observed, out$omModel.pred)^2 # same
+
+# the lm
+out2 <- gstat.cv(omGstat,nfold=10)
+#r2
+cor(out2$observed, out2$observed - out2$residual)^2
+cor(out2$observed, out2$omModel.pred)^2 # same
+
+# oh! by fold. this is better prob
+
+out@data %>% group_by(fold) %>% summarise(r2=cor(observed, omModel.pred)^2) %>% summarise(mean(r2))
+
+out2@data %>% group_by(fold) %>% summarise(r2=cor(observed, omModel.pred)^2) %>% summarise(mean(r2))
+
+# same as lm?
+library(caret)
+trainControl <- trainControl(method = "cv", number = 10)
+fit <- train(om~sqrt_dist+soil,data=meusePoints_sf, trControl = trainControl, method = "lm")
+fit
+```
+

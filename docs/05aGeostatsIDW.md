@@ -1,4 +1,4 @@
-# Geostats I: Inverse Distance Weighting
+# Deterministic Interpolation: Inverse Distance Weighting
 
 
 

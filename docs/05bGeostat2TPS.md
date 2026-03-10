@@ -1,4 +1,4 @@
-# Geostats I: Thin-Plate Splines
+# Deterministic Interpolation: Thin-Plate Splines
 
 
 
