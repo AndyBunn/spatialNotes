@@ -1,4 +1,4 @@
-# Intro to Autocorrelation
+# Spatial Autocorrelation
 
 ```{r,echo=FALSE}
 set.seed(1984)

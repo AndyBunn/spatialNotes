@@ -43,13 +43,13 @@ This isn’t a comprehensive or final text. It’s a live document, shaped by yo
 The notes move through the core ideas of spatial analysis in roughly this order:
 
 - **Introduction to Geospatial Concepts** *(Data Carpentry)* — A common baseline on how geospatial data are organized, stored, and projected, for students coming in with varying levels of GIS experience.
-- **An Aside: Methods and Generics in R** — A conceptual primer on how R uses generic functions and dispatch, which will help you make sense of why the same function behaves differently depending on the object you give it.
-- **Mt Baker Map** — A practical introduction to handling raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
+- **Mt Baker Map** — A practical introduction to handling raster and vector spatial data in R, using elevation and infrastructure data.
 - **Point Patterns** — How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
-- **Intro to Autocorrelation** — How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
-- **Geostats I: Inverse Distance Weighting** — Predicting values at unsampled locations using a deterministic, distance-weighted average of nearby observations.
-- **Geostats I: Thin-Plate Splines** — A smooth, flexible interpolation method based on radial basis functions that minimizes curvature across the surface.
-- **Geostats II: Kriging** — A probabilistic interpolation method that uses the spatial structure of the data to predict unknown values and quantify prediction uncertainty.
+- **Spatial Autocorrelation** — How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
+- **Deterministic Interpolation: Inverse Distance Weighting** — Predicting values at unsampled locations using a deterministic, distance-weighted average of nearby observations.
+- **Deterministic Interpolation:  Thin-Plate Splines** — A smooth, flexible interpolation method based on radial basis functions that minimizes curvature across the surface.
+- **Probabilistic Interpolation:  Kriging** — A probabilistic interpolation method that uses the spatial structure of the data to predict unknown values and quantify prediction uncertainty.
+- **Probabilistic Interpolation:  Regression Kriging** — An addition to Kirgging using external predictors for interpolation.
 - **Regression: GLS with Autocorrelated Residuals** — How to fit a regression model that properly accounts for spatial autocorrelation in the residuals using generalized least squares.
 
 Each chapter builds on the last, so working through them in order is recommended — though the asides can be read independently.

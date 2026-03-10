@@ -40,7 +40,7 @@ your-work-2
 simulated-data
 mycorrhizal-fungi
 extra-rolling-k-by-hand
-intro-to-autocorrelation
+spatial-autocorrelation
 big-idea-3
 reading-1
 packages-2
@@ -49,7 +49,7 @@ space-in-environmental-data
 getting-back-to-distance-matrices
 meuse-river
 using-tmap
-spatial-autocorrelation
+spatial-autocorrelation-1
 variograms
 what-up-with-the-1-construct
 morans-i
