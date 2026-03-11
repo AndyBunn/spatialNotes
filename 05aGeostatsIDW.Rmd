@@ -19,7 +19,6 @@ The `gstat`[@R-gstat] package is your friend. But we will need some of our recen
 ```{r, message=FALSE}
 library(tidyverse)
 library(sf)
-library(sp)
 library(gstat)
 library(terra)
 library(tidyterra)
@@ -193,7 +192,7 @@ p2
 Let's interpolate those measurements to an empty grid that covers the whole study site. There is a handy object called `meuse.grid` that has a full grid of this area with 40-m cells stored as a `data.frame`. 
 
 ```{r}
-data(meuse.grid,package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 head(meuse.grid)
 ```
 

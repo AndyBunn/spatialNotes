@@ -18,7 +18,6 @@ The `gstat`[@R-gstat] package is your friend. But we will need some of our recen
 ``` r
 library(tidyverse)
 library(sf)
-library(sp)
 library(gstat)
 library(terra)
 library(tidyterra)
@@ -279,7 +278,7 @@ Let's interpolate those measurements to an empty grid that covers the whole stud
 
 
 ``` r
-data(meuse.grid,package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 head(meuse.grid)
 ```
 

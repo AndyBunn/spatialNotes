@@ -1235,7 +1235,7 @@ div.csl-indent {
 <span id="cb223-5"><a href="deterministic-interpolation-thin-plate-splines.html#cb223-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">&quot;Lead concentrations&quot;</span>)</span></code></pre></div>
 <p><img src="05bGeostat2TPS_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
 <p>Let’s interpolate those measurements to an empty grid like we did before.</p>
-<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="deterministic-interpolation-thin-plate-splines.html#cb224-1" tabindex="-1"></a><span class="fu">data</span>(meuse.grid,<span class="at">package =</span> <span class="st">&quot;sp&quot;</span>)</span>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="deterministic-interpolation-thin-plate-splines.html#cb224-1" tabindex="-1"></a>meuse.grid <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/meuse.grid.Rds&quot;</span>)</span>
 <span id="cb224-2"><a href="deterministic-interpolation-thin-plate-splines.html#cb224-2" tabindex="-1"></a><span class="fu">head</span>(meuse.grid)</span></code></pre></div>
 <pre><code>##        x      y part.a part.b      dist soil ffreq
 ## 1 181180 333740      1      0 0.0000000    1     1

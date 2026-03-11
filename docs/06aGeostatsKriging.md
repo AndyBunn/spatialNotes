@@ -18,7 +18,6 @@ The `gstat`[@R-gstat] package is your friend. But we will need some of our recen
 
 
 ``` r
-library(sp)
 library(sf)
 library(gstat)
 library(tidyverse)
@@ -46,7 +45,7 @@ We will demonstrate a variogram with the `meuse` data. Here we load the meuse po
 ``` r
 # load
 data(meuse.all)
-data(meuse.grid,package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 
 # make a variable to work with
 meuse.all$logLead <- log(meuse.all$lead)

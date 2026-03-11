@@ -99,7 +99,7 @@ birdRichness <-  readRDS("data/birdRichnessMexico.rds")
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'tidyverse', 'terra', 'sf', 'ggnewscale','tidyterra',
-  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap','nlme','sp'),
+  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap','nlme'),
 'packages.bib')
 # to build everything in docs/.
 # bookdown::render_book() 

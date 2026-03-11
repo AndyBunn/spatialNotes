@@ -1177,13 +1177,12 @@ div.csl-indent {
 </div>
 <div id="packages-5" class="section level2 hasAnchor" number="8.3">
 <h2><span class="header-section-number">8.3</span> Packages<a href="probabilistic-interpolation-kriging.html#packages-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The <code>gstat</code><span class="citation">(<a href="references.html#ref-R-gstat">Pebesma and Graeler 2026</a>)</span> package is your friend. But we will need some of our recent collaborators as well including <code>sp</code><span class="citation">(<a href="references.html#ref-R-sp">Pebesma and Bivand 2026</a>)</span> so we can load the <code>meuse</code> data easily. And I’m going to plot in <code>ggplot</code> via <code>tidyverse</code><span class="citation">(<a href="references.html#ref-R-tidyverse">Wickham 2023</a>)</span> with <code>sf</code><span class="citation">(<a href="references.html#ref-R-sf">Pebesma 2026</a>)</span>, <code>terra</code><span class="citation">(<a href="references.html#ref-R-terra">Hijmans 2026</a>)</span> and <code>tidyterra</code><span class="citation">(<a href="references.html#ref-R-tidyterra">Hernangómez 2023</a>)</span>.</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="probabilistic-interpolation-kriging.html#cb241-1" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
-<span id="cb241-2"><a href="probabilistic-interpolation-kriging.html#cb241-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb241-3"><a href="probabilistic-interpolation-kriging.html#cb241-3" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
-<span id="cb241-4"><a href="probabilistic-interpolation-kriging.html#cb241-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb241-5"><a href="probabilistic-interpolation-kriging.html#cb241-5" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb241-6"><a href="probabilistic-interpolation-kriging.html#cb241-6" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
+<p>The <code>gstat</code><span class="citation">(<a href="references.html#ref-R-gstat">Pebesma and Graeler 2026</a>)</span> package is your friend. But we will need some of our recent collaborators as well including <code>sp</code><span class="citation">(<a href="#ref-R-sp"><strong>R-sp?</strong></a>)</span> so we can load the <code>meuse</code> data easily. And I’m going to plot in <code>ggplot</code> via <code>tidyverse</code><span class="citation">(<a href="references.html#ref-R-tidyverse">Wickham 2023</a>)</span> with <code>sf</code><span class="citation">(<a href="references.html#ref-R-sf">Pebesma 2026</a>)</span>, <code>terra</code><span class="citation">(<a href="references.html#ref-R-terra">Hijmans 2026</a>)</span> and <code>tidyterra</code><span class="citation">(<a href="references.html#ref-R-tidyterra">Hernangómez 2023</a>)</span>.</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="probabilistic-interpolation-kriging.html#cb241-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb241-2"><a href="probabilistic-interpolation-kriging.html#cb241-2" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb241-3"><a href="probabilistic-interpolation-kriging.html#cb241-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb241-4"><a href="probabilistic-interpolation-kriging.html#cb241-4" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb241-5"><a href="probabilistic-interpolation-kriging.html#cb241-5" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
 </div>
 <div id="some-kriging-theory" class="section level2 hasAnchor" number="8.4">
 <h2><span class="header-section-number">8.4</span> Some Kriging Theory<a href="probabilistic-interpolation-kriging.html#some-kriging-theory" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -1199,7 +1198,7 @@ div.csl-indent {
 <p>We will demonstrate a variogram with the <code>meuse</code> data. Here we load the meuse point data and the gridded data as <code>data.frame</code>, make a new variable by logging the <code>lead</code> column and plot them. This is the same procedure we used when doing IDW.</p>
 <div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="probabilistic-interpolation-kriging.html#cb242-1" tabindex="-1"></a><span class="co"># load</span></span>
 <span id="cb242-2"><a href="probabilistic-interpolation-kriging.html#cb242-2" tabindex="-1"></a><span class="fu">data</span>(meuse.all)</span>
-<span id="cb242-3"><a href="probabilistic-interpolation-kriging.html#cb242-3" tabindex="-1"></a><span class="fu">data</span>(meuse.grid,<span class="at">package =</span> <span class="st">&quot;sp&quot;</span>)</span>
+<span id="cb242-3"><a href="probabilistic-interpolation-kriging.html#cb242-3" tabindex="-1"></a>meuse.grid <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/meuse.grid.Rds&quot;</span>)</span>
 <span id="cb242-4"><a href="probabilistic-interpolation-kriging.html#cb242-4" tabindex="-1"></a></span>
 <span id="cb242-5"><a href="probabilistic-interpolation-kriging.html#cb242-5" tabindex="-1"></a><span class="co"># make a variable to work with</span></span>
 <span id="cb242-6"><a href="probabilistic-interpolation-kriging.html#cb242-6" tabindex="-1"></a>meuse.all<span class="sc">$</span>logLead <span class="ot">&lt;-</span> <span class="fu">log</span>(meuse.all<span class="sc">$</span>lead)</span>

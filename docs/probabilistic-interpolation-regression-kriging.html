@@ -1271,7 +1271,7 @@ div.csl-indent {
 ##  $ in.meuse155: logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
 ##  $ in.BMcD    : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...</code></pre>
 <p>We know all too well by now that <code>meuse.all</code> is a <code>data.frame</code> with 164 point measurements of 17 variables.</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="probabilistic-interpolation-regression-kriging.html#cb289-1" tabindex="-1"></a><span class="fu">data</span>(meuse.grid, <span class="at">package =</span> <span class="st">&quot;sp&quot;</span>)</span>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="probabilistic-interpolation-regression-kriging.html#cb289-1" tabindex="-1"></a>meuse.grid <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/meuse.grid.Rds&quot;</span>)</span>
 <span id="cb289-2"><a href="probabilistic-interpolation-regression-kriging.html#cb289-2" tabindex="-1"></a><span class="fu">str</span>(meuse.grid)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    3103 obs. of  7 variables:
 ##  $ x     : num  181180 181140 181180 181220 181100 ...
@@ -1282,7 +1282,7 @@ div.csl-indent {
 ##  $ soil  : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ ffreq : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
 <p>And, we know all too well by now that <code>meuse.grid</code> is a <code>data.frame</code> with 3103 points on a grid and 7 variables.</p>
-<p>However, we have three variables from <code>meuse.all</code> that overlap in <code>meuse.grid</code> and we haven’t used those much (or at all) in this class yet. Thus, if we create a model from <code>meuse.all</code> that includes <code>dist</code>, <code>soil</code>, or <code>ffreq</code> as predictors we could predict over <code>meuse.grid</code> without doing IDW or kriging. Those variables held in common between <code>meuse.all</code> and <code>meuse.grid</code> are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See <code>?meuse.all</code> and <code>?meuse.grid</code> for details on the variables.</p>
+<p>However, we have three variables from <code>meuse.all</code> that overlap in <code>meuse.grid</code> and we haven’t used those much (or at all) in this class yet. Thus, if we create a model from <code>meuse.all</code> that includes <code>dist</code>, <code>soil</code>, or <code>ffreq</code> as predictors we could predict over <code>meuse.grid</code> without doing IDW or kriging. Those variables held in common between <code>meuse.all</code> and <code>meuse.grid</code> are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See <code>?meuse.all</code> for details on the variables.</p>
 <p>Don’t worry, we will skip cadmium, zinc, and lead and work with modeling <code>om</code> which is percent organic matter in the soil. We will model <code>om</code> as a function of <code>dist</code> and <code>soil</code> and predict it over the entire study site. We will do this naively with ordinary least squares regression (OLS) and then again with RK.</p>
 </div>
 <div id="make-data-as-sf-and-clean-it-up" class="section level3 hasAnchor" number="9.6.2">

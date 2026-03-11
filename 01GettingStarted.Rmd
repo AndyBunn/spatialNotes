@@ -16,7 +16,7 @@ How long will this take? It depends. Some of you are GIS veterans and some of yo
 You don't need to turn anything in, but you are responsible for the material. The Mt Baker assignment in the next chapter will assume you've done this work.
 
 **[Introduction to Geospatial Concepts](https://datacarpentry.org/organization-geospatial/)**
-We are going to continue working with the good folks at Data Carpentry for this intro to the organization of geospatial data. The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros and conversant with different data types and spatial schemas. Others are spatial novices. Finishing this will help establish a common baseline of knowledge.
+We are going to work with the good folks at Data Carpentry for this intro to the organization of geospatial data. The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros and conversant with different data types and spatial schemas. Others are spatial novices. Finishing this will help establish a common baseline of knowledge.
 
 **[Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/)**
-Here we go — we are actually going to start working in R with geospatial data and begin to get comfortable using R as a GIS. Learning these skills will build the bridge we need to get to doing formal spatial analysis in subsequent modules.
+Here we go! Now we are actually going to start working in R with geospatial data and begin to get comfortable using R as a GIS. Learning these skills will build the bridge we need to get to doing formal spatial analysis in subsequent modules.

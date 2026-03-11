@@ -19,7 +19,6 @@ We often want to estimate phenomena at locations where we do not have measuremen
 The `gstat`[@R-gstat] package is your friend. But we will need some of our recent collaborators as well including `sp`[@R-sp] so we can load the `meuse` data easily. And I'm going to plot in `ggplot` via `tidyverse`[@R-tidyverse] with `sf`[@R-sf], `terra`[@R-terra] and `tidyterra`[@R-tidyterra]. 
 
 ```{r, message=FALSE}
-library(sp)
 library(sf)
 library(gstat)
 library(tidyverse)
@@ -46,7 +45,7 @@ We will demonstrate a variogram with the `meuse` data. Here we load the meuse po
 ```{r}
 # load
 data(meuse.all)
-data(meuse.grid,package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 
 # make a variable to work with
 meuse.all$logLead <- log(meuse.all$lead)

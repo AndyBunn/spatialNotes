@@ -107,7 +107,7 @@ Let's interpolate those measurements to an empty grid like we did before.
 
 
 ``` r
-data(meuse.grid,package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 head(meuse.grid)
 ```
 

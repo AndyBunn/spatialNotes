@@ -154,7 +154,7 @@ We know all too well by now that `meuse.all` is a `data.frame` with 164 point me
 
 
 ``` r
-data(meuse.grid, package = "sp")
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 str(meuse.grid)
 ```
 
@@ -171,7 +171,7 @@ str(meuse.grid)
 
 And, we know all too well by now that `meuse.grid` is a `data.frame` with 3103 points on a grid and 7 variables. 
 
-However, we have three variables from `meuse.all` that overlap in `meuse.grid` and we haven't used those much (or at all) in this class yet. Thus, if we create a model from `meuse.all` that includes `dist`, `soil`, or `ffreq` as predictors we could predict over `meuse.grid` without doing IDW or kriging. Those variables held in common between `meuse.all` and `meuse.grid` are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See `?meuse.all` and `?meuse.grid` for details on the variables.
+However, we have three variables from `meuse.all` that overlap in `meuse.grid` and we haven't used those much (or at all) in this class yet. Thus, if we create a model from `meuse.all` that includes `dist`, `soil`, or `ffreq` as predictors we could predict over `meuse.grid` without doing IDW or kriging. Those variables held in common between `meuse.all` and `meuse.grid` are, by the way, the distance to the river (normalized from 0 to 1), soil type (three classes), and the flooding frequency class (also three classes). See `?meuse.all` for details on the variables.
 
 Don't worry, we will skip cadmium, zinc, and lead and work with modeling `om` which is percent organic matter in the soil. We will model `om` as a function of `dist` and `soil` and predict it over the entire study site. We will do this naively with ordinary least squares regression (OLS) and then again with RK.
 
