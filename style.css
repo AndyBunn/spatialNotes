@@ -1,6 +1,22 @@
 /* ============================================================
-   style.css  —  Time Series Analysis for Environmental Scientists
+   style.css  —  Spatial Analysis for Environmental Science
+   ============================================================
+
+   Palette
+   -------
+   Background (page)  : #f4f6f5  (cool off-white, slight green cast)
+   Text               : #1a2820  (near-black, forest)
+   Accent green       : #2ecc71  (banner teal-green)
+   Accent blue        : #3498db  (banner slate-blue)
+   Accent mid         : #4dd9a0  (lighter teal, italic highlights)
+   Muted border       : #b8ccc6  (desaturated teal-grey)
+   Code bg            : #edf2f0  (cool light green-grey)
    ============================================================ */
+
+
+/* ── 0. FONTS ───────────────────────────────────────────────*/
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap');
 
 
 /* ── 1. CONTENT WIDTH ───────────────────────────────────────
@@ -12,36 +28,36 @@
 }
 
 
-/* ── 2. LINKS ───────────────────────────────────────────────
-   Warm accent colour from hide_code.html palette.           */
+/* ── 2. LINKS ───────────────────────────────────────────────*/
 
 .book .book-body a {
-  color: #c0392b;
+  color: #1a8a5a;
 }
 
 .book .book-body a:hover {
-  color: #e95420;
+  color: #3498db;
   text-decoration: underline;
 }
 
 
-/* ── 3. CODE BLOCKS ─────────────────────────────────────────
-   Softer background, subtle left border, gentle rounding.   */
+/* ── 3. CODE BLOCKS ─────────────────────────────────────────*/
 
 pre {
-  background-color: #f7f4f1;
-  border-left: 3px solid #aea79f;
+  background-color: #edf2f0;
+  border-left: 3px solid #4dd9a0;
   border-radius: 0 4px 4px 0;
   padding: 1em 1em 1em 1.2em;
+  font-family: 'Source Code Pro', monospace;
 }
 
 /* Inline code */
 code {
-  background-color: #f7f4f1;
-  color: #5a3e2b;
+  background-color: #edf2f0;
+  color: #0e4a38;
   padding: 0.15em 0.35em;
   border-radius: 3px;
   font-size: 0.88em;
+  font-family: 'Source Code Pro', monospace;
 }
 
 /* Don't double-style code inside pre blocks */
@@ -53,29 +69,27 @@ pre code {
 }
 
 
-/* ── 4. FIGURE CAPTIONS ─────────────────────────────────────
-   Smaller, italic, centred — distinguishes caption from body.*/
+/* ── 4. FIGURE CAPTIONS ─────────────────────────────────────*/
 
 .figure p,
 p.caption,
 caption {
   font-size: 0.88em;
   font-style: italic;
-  color: #6d6d6d;
+  color: #5a7a70;
   text-align: center;
   margin-top: 0.4em;
 }
 
 
-/* ── 5. BLOCKQUOTES ─────────────────────────────────────────
-   Warm left border, muted text — good for asides/quotes.    */
+/* ── 5. BLOCKQUOTES ─────────────────────────────────────────*/
 
 blockquote {
-  border-left: 4px solid #aea79f;
-  background-color: #faf7f4;
+  border-left: 4px solid #4dd9a0;
+  background-color: #edf2f0;
   margin: 1.5em 0;
   padding: 0.8em 1.2em;
-  color: #555;
+  color: #2a4a40;
   font-style: italic;
 }
 
@@ -101,21 +115,21 @@ blockquote p {
 }
 
 .callout-note {
-  background-color: #eef4fb;
-  border-color: #5b8db8;
-  color: #2c4a6e;
+  background-color: #e8f0f7;
+  border-color: #3498db;
+  color: #1a3a52;
 }
 
 .callout-tip {
-  background-color: #eef7f0;
-  border-color: #5a9e6f;
-  color: #2d5a3d;
+  background-color: #e8f5ee;
+  border-color: #2ecc71;
+  color: #1a4a2e;
 }
 
 .callout-warning {
-  background-color: #fdf3ec;
-  border-color: #e95420;
-  color: #7a2d0e;
+  background-color: #f5ede8;
+  border-color: #e67e22;
+  color: #5a2d0e;
 }
 
 /* Bold label at the start of callouts, e.g. **Note:** */
@@ -134,15 +148,97 @@ blockquote p {
    Unnumbered chapters marked with {- .aside-chapter}        */
 
 .aside-chapter h1 {
-  color: #6d6d6d;
+  color: #5a7a70;
   font-style: italic;
-  border-left: 4px solid #aea79f;
+  border-left: 4px solid #4dd9a0;
   padding-left: 0.6em;
 }
 
 /* TOC entries for aside files (matched by filename convention) */
 .book .book-summary ul.summary li a[href*="xAside"] {
-  color: #999;
+  color: #7a9a90;
   font-style: italic;
   font-size: 0.9em;
+}
+
+
+/* ── 8. COURSE BANNER ───────────────────────────────────────
+   Add this HTML block to index.Rmd just after the YAML:
+
+   <div class="course-banner">
+     <div class="banner-content">
+       <div class="banner-title">Spatial <em>Analysis</em><br>
+         for Environmental Science</div>
+       <div class="banner-subtitle">patterns, structure, and
+         prediction in space</div>
+       <div class="banner-tags">
+         <span>Point Patterns</span>
+         <span>Autocorrelation</span>
+         <span>Kriging</span>
+         <span>IDW</span>
+         <span>GLS</span>
+         <span>R</span>
+       </div>
+     </div>
+   </div>                                                      */
+
+.course-banner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #0d1a14 0%, #0f2318 30%, #0e2233 60%, #091525 100%);
+  overflow: hidden;
+  margin-bottom: 2em;
+  border-left: 5px solid #2ecc71;
+}
+
+.course-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 40%, rgba(52,152,100,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 25% 80%, rgba(41,128,185,0.12) 0%, transparent 55%);
+}
+
+.banner-content {
+  position: relative;
+  padding: 32px 40px;
+  z-index: 1;
+}
+
+.banner-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 2.2em;
+  line-height: 1.1;
+  color: #f0ede6;
+  margin-bottom: 0.25em;
+}
+
+.banner-title em {
+  color: #4dd9a0;
+  font-style: italic;
+}
+
+.banner-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1em;
+  color: #8badb5;
+  margin-bottom: 0.9em;
+}
+
+.banner-tags span {
+  display: inline-block;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #4a7c6a;
+  border: 1px solid #1e4a38;
+  padding: 3px 8px;
+  margin-right: 6px;
+  text-transform: uppercase;
+  background: rgba(46,204,113,0.04);
 }

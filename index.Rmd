@@ -1,20 +1,17 @@
 --- 
 title: "Spatial Analysis for Environmental Science"
-subtitle: "Notes for ESCI 505"
+subtitle: "Course Notes"
 author: "Andy Bunn"
 date: "`r format(Sys.time(), '%d-%B-%Y')`"
-description: "Spatial analysis notes and exercises for ESCI 505"
+description: "Spatial analysis notes and exercises"
 documentclass: book
-bibliography: [packages.bib,otherRefs.bib]
-#csl: global-change-biology.csl
+bibliography: [packages.bib]
 biblio-style: apalike
 link-citations: yes
 site: bookdown::bookdown_site
 output: 
   bookdown::gitbook:
     css: style.css
-    includes:
-      in_header: hide_code.html # inspired by: https://stackoverflow.com/questions/45360998/code-folding-in-bookdown
     config:
       toc:
         collapse: section
@@ -24,9 +21,11 @@ output:
     split_bib: no
 ---
 
+![](assets/banner.png)
+
 # Welcome
 
-These are the course notes for ESCI 505. They are not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
+These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
 
 The notes are hands-on by design. You will write code, look at data, make maps, fit models, and interpret results. Each section builds on what came before. The math shows up when it needs to, but the emphasis throughout is on doing spatial analysis and understanding what you're doing -- not on deriving things for their own sake.
 
