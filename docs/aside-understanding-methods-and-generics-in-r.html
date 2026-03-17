@@ -1169,9 +1169,9 @@ div.csl-indent {
 <p>It’s nice when a function does the <em>right thing</em> depending on the kind of object you give it. You don’t want to memorize different function names for every kind of model—you just want to call <code>summary()</code>, <code>plot()</code>, or <code>print()</code> and get something useful. That’s what <strong>generic functions</strong> are for.</p>
 <p>In R, many common functions like <code>summary()</code>, <code>plot()</code>, and <code>print()</code> are <em>generic</em>—they automatically call the version that matches the class of your object.</p>
 <p>Let’s run a linear model and use that as an example.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb4-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb5-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars)</span></code></pre></div>
 <p>Ok. We have a new object called <code>fit</code> that is a <code>list</code> with a bunch of stuff in it that authors of the <code>lm</code> function think will be useful to you. Look at its structure to see what’s in there.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb5-1" tabindex="-1"></a><span class="fu">str</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb6-1" tabindex="-1"></a><span class="fu">str</span>(fit)</span></code></pre></div>
 <pre><code>## List of 12
 ##  $ coefficients : Named num [1:2] 37.29 -5.34
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;wt&quot;
@@ -1230,7 +1230,7 @@ div.csl-indent {
 ##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;mpg&quot; &quot;wt&quot;
 ##  - attr(*, &quot;class&quot;)= chr &quot;lm&quot;</code></pre>
 <p>That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn’t obvious. For instance, the t-statistics, p-values, and <span class="math inline">\(R^2\)</span> aren’t sitting there waiting for you — <code>summary()</code> computes them on the fly from what <em>is</em> stored. That’s part of what <code>summary.lm</code> actually does.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb8-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = mpg ~ wt, data = mtcars)
@@ -1250,7 +1250,7 @@ div.csl-indent {
 ## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
 ## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
 <p>Ok. Check that out. We got a really nice formatted output that helps us interpret the linear model using the <code>summary</code> function. But note that the output of <code>summary(fit)</code> is really different than getting a summary of a numeric vector like the <code>mpg</code> in the <code>mtcars</code> data that went into the model.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb9-1" tabindex="-1"></a><span class="fu">summary</span>(mtcars<span class="sc">$</span>mpg)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb10-1" tabindex="-1"></a><span class="fu">summary</span>(mtcars<span class="sc">$</span>mpg)</span></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   10.40   15.43   19.20   20.09   22.80   33.90</code></pre>
 <div id="same-function-different-behavior.-what-gives" class="section level3 hasAnchor" number="2.5.1">
@@ -1271,10 +1271,10 @@ Answer? <strong>Generics and methods.</strong></p>
 </ol>
 <p>This system is called S3. It’s the oldest and most common object system in R, and it’s what you’ll encounter in almost every package you use in this course.</p>
 <p>You can look under the hood:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb11-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb12-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
 <pre><code>## [1] &quot;lm&quot;</code></pre>
 <p>That tells you <code>fit</code> is of class <code>"lm"</code>. Now you can see all the methods that exist for <code>summary</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb13-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb14-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
 <pre><code>##  [1] summary.aov                         summary.aovlist*                   
 ##  [3] summary.aspell*                     summary.check_packages_in_dir*     
 ##  [5] summary.connection                  summary.data.frame                 
@@ -1296,7 +1296,7 @@ Answer? <strong>Generics and methods.</strong></p>
 ## [37] summary.tukeysmooth*                summary.warnings                   
 ## see &#39;?methods&#39; for accessing help and source code</code></pre>
 <p>And if you want to see the actual code that runs when you call <code>summary(fit)</code>, use <code>getS3method</code>:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb15-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb16-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
 <pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
 ##     ...) 
 ## {
@@ -1399,7 +1399,7 @@ Answer? <strong>Generics and methods.</strong></p>
 ##     class(ans) &lt;- &quot;summary.lm&quot;
 ##     ans
 ## }
-## &lt;bytecode: 0x11aff8888&gt;
+## &lt;bytecode: 0x13c7f8888&gt;
 ## &lt;environment: namespace:stats&gt;</code></pre>
 </div>
 <div id="whats-the-difference-between-a-generic-and-a-method" class="section level2 hasAnchor" number="2.7">
@@ -1416,10 +1416,10 @@ For example:</p>
 </ul></li>
 </ul>
 <p>You can look at the generic directly:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb17-1" tabindex="-1"></a>summary</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb18-1" tabindex="-1"></a>summary</span></code></pre></div>
 <pre><code>## function (object, ...) 
 ## UseMethod(&quot;summary&quot;)
-## &lt;bytecode: 0x11aff7938&gt;
+## &lt;bytecode: 0x13c7f7938&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <p>This call to <code>UseMethod("summary")</code> tells R to dispatch to the right method depending on the class of the object.</p>
 </div>
@@ -1453,7 +1453,7 @@ For example:</p>
 <div id="how-to-explore-and-understand-methods" class="section level2 hasAnchor" number="2.9">
 <h2><span class="header-section-number">2.9</span> How to Explore and Understand Methods<a href="aside-understanding-methods-and-generics-in-r.html#how-to-explore-and-understand-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Want to know what’s going on behind a function call? Here are a few tools:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb19-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb20-1" tabindex="-1"></a><span class="fu">methods</span>(summary)</span></code></pre></div>
 <pre><code>##  [1] summary.aov                         summary.aovlist*                   
 ##  [3] summary.aspell*                     summary.check_packages_in_dir*     
 ##  [5] summary.connection                  summary.data.frame                 
@@ -1474,7 +1474,7 @@ For example:</p>
 ## [35] summary.stl*                        summary.table                      
 ## [37] summary.tukeysmooth*                summary.warnings                   
 ## see &#39;?methods&#39; for accessing help and source code</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb21-1" tabindex="-1"></a><span class="fu">methods</span>(plot)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb22-1" tabindex="-1"></a><span class="fu">methods</span>(plot)</span></code></pre></div>
 <pre><code>##  [1] plot.acf*           plot.data.frame*    plot.decomposed.ts*
 ##  [4] plot.default        plot.dendrogram*    plot.density*      
 ##  [7] plot.ecdf           plot.factor*        plot.formula*      
@@ -1487,7 +1487,7 @@ For example:</p>
 ## [28] plot.table*         plot.ts             plot.tskernel*     
 ## [31] plot.TukeyHSD*     
 ## see &#39;?methods&#39; for accessing help and source code</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb23-1" tabindex="-1"></a><span class="fu">methods</span>(<span class="at">class =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb24-1" tabindex="-1"></a><span class="fu">methods</span>(<span class="at">class =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
 <pre><code>##  [1] add1           alias          anova          case.names     coerce        
 ##  [6] confint        cooks.distance deviance       dfbeta         dfbetas       
 ## [11] drop1          dummy.coef     effects        extractAIC     family        
@@ -1497,7 +1497,7 @@ For example:</p>
 ## [31] residuals      rstandard      rstudent       show           simulate      
 ## [36] slotsFromS3    summary        variable.names vcov          
 ## see &#39;?methods&#39; for accessing help and source code</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb25-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb26-1" tabindex="-1"></a><span class="fu">getS3method</span>(<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
 <pre><code>## function (object, correlation = FALSE, symbolic.cor = FALSE, 
 ##     ...) 
 ## {
@@ -1600,9 +1600,9 @@ For example:</p>
 ##     class(ans) &lt;- &quot;summary.lm&quot;
 ##     ans
 ## }
-## &lt;bytecode: 0x11aff8888&gt;
+## &lt;bytecode: 0x13c7f8888&gt;
 ## &lt;environment: namespace:stats&gt;</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb27-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="aside-understanding-methods-and-generics-in-r.html#cb28-1" tabindex="-1"></a><span class="fu">class</span>(fit)</span></code></pre></div>
 <pre><code>## [1] &quot;lm&quot;</code></pre>
 </div>
 <div id="why-this-matters" class="section level2 hasAnchor" number="2.10">
