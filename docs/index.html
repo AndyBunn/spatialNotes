@@ -1104,16 +1104,16 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="9.7" data-path="probabilistic-interpolation-regression-kriging.html"><a href="probabilistic-interpolation-regression-kriging.html#your-work-7"><i class="fa fa-check"></i><b>9.7</b> Your Work</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Geostats II: Kriging Variance By Hand</a>
+<li class="chapter" data-level="" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Kriging Variance By Hand</a>
 <ul>
-<li class="chapter" data-level="9.8" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
-<li class="chapter" data-level="9.9" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
-<li class="chapter" data-level="9.10" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
-<li class="chapter" data-level="9.11" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
-<li class="chapter" data-level="9.12" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
-<li class="chapter" data-level="9.13" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
-<li class="chapter" data-level="9.14" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
-<li class="chapter" data-level="9.15" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
+<li class="chapter" data-level="9.8" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
+<li class="chapter" data-level="9.9" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
+<li class="chapter" data-level="9.10" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
+<li class="chapter" data-level="9.11" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
+<li class="chapter" data-level="9.12" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
+<li class="chapter" data-level="9.13" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
+<li class="chapter" data-level="9.14" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
+<li class="chapter" data-level="9.15" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="regression-gls-with-autocorrelated-residuals.html"><a href="regression-gls-with-autocorrelated-residuals.html"><i class="fa fa-check"></i><b>10</b> Regression: GLS with Autocorrelated Residuals</a>
 <ul>
@@ -1223,14 +1223,14 @@ The datasets used in the examples are available in the <code>data/</code> folder
 <li><strong>Save your Rmd files in the project root</strong></li>
 </ol>
 <p>When you make a Rmd file for your work, save it in the project’s root directory. For instance if you have the first two assignments saved in files called “MtBakerHomework.Rmd” and “pointPatternHomework.Rmd,” your file and folder structure might look something like this:</p>
-<p>spatial-course/
+<pre><code>spatial-course/
 ├── data/
-│ ├── birdRichnessMexico.rds
-│ ├── mtbDEM.tif
-│ └── …
+│   ├── birdRichnessMexico.rds
+│   ├── mtbDEM.tif
+│   └── ...
 ├── MtBakerHomework.Rmd
 ├── pointPatternHomework.Rmd
-└── spatial-course.Rproj</p>
+└── spatial-course.Rproj</code></pre>
 
 </div>
 </div>

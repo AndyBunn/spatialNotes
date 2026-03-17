@@ -30,7 +30,7 @@
   
   
 <link rel="prev" href="probabilistic-interpolation-kriging.html"/>
-<link rel="next" href="aside-geostats-ii-kriging-variance-by-hand.html"/>
+<link rel="next" href="aside-kriging-variance-by-hand.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -1104,16 +1104,16 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="9.7" data-path="probabilistic-interpolation-regression-kriging.html"><a href="probabilistic-interpolation-regression-kriging.html#your-work-7"><i class="fa fa-check"></i><b>9.7</b> Your Work</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Geostats II: Kriging Variance By Hand</a>
+<li class="chapter" data-level="" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Kriging Variance By Hand</a>
 <ul>
-<li class="chapter" data-level="9.8" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
-<li class="chapter" data-level="9.9" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
-<li class="chapter" data-level="9.10" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
-<li class="chapter" data-level="9.11" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
-<li class="chapter" data-level="9.12" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
-<li class="chapter" data-level="9.13" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
-<li class="chapter" data-level="9.14" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
-<li class="chapter" data-level="9.15" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
+<li class="chapter" data-level="9.8" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
+<li class="chapter" data-level="9.9" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
+<li class="chapter" data-level="9.10" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
+<li class="chapter" data-level="9.11" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
+<li class="chapter" data-level="9.12" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
+<li class="chapter" data-level="9.13" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
+<li class="chapter" data-level="9.14" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
+<li class="chapter" data-level="9.15" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="regression-gls-with-autocorrelated-residuals.html"><a href="regression-gls-with-autocorrelated-residuals.html"><i class="fa fa-check"></i><b>10</b> Regression: GLS with Autocorrelated Residuals</a>
 <ul>
@@ -1171,11 +1171,11 @@ div.csl-indent {
 <div id="packages-6" class="section level2 hasAnchor" number="9.3">
 <h2><span class="header-section-number">9.3</span> Packages<a href="probabilistic-interpolation-regression-kriging.html#packages-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <code>gstat</code> package is your friend. But we will need some of our recent collaborators as well including <code>terra</code> and `tidyterra’.</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="probabilistic-interpolation-regression-kriging.html#cb277-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb277-2"><a href="probabilistic-interpolation-regression-kriging.html#cb277-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb277-3"><a href="probabilistic-interpolation-regression-kriging.html#cb277-3" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb277-4"><a href="probabilistic-interpolation-regression-kriging.html#cb277-4" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
-<span id="cb277-5"><a href="probabilistic-interpolation-regression-kriging.html#cb277-5" tabindex="-1"></a><span class="fu">library</span>(gstat)</span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="probabilistic-interpolation-regression-kriging.html#cb278-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb278-2"><a href="probabilistic-interpolation-regression-kriging.html#cb278-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb278-3"><a href="probabilistic-interpolation-regression-kriging.html#cb278-3" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb278-4"><a href="probabilistic-interpolation-regression-kriging.html#cb278-4" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb278-5"><a href="probabilistic-interpolation-regression-kriging.html#cb278-5" tabindex="-1"></a><span class="fu">library</span>(gstat)</span></code></pre></div>
 </div>
 <div id="overview-of-rk" class="section level2 hasAnchor" number="9.4">
 <h2><span class="header-section-number">9.4</span> Overview of RK<a href="probabilistic-interpolation-regression-kriging.html#overview-of-rk" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -1187,15 +1187,15 @@ div.csl-indent {
 <h2><span class="header-section-number">9.5</span> Prediction Review: OLS Regression with New Data<a href="probabilistic-interpolation-regression-kriging.html#prediction-review-ols-regression-with-new-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This is likely serious review for all of you so roll your eyes as needed. But I just want to be sure we are on the same page. I want to make sure you are hip to the idea of passing new data (e.g., into a <code>predict</code> function) for extending a model (e.g., <code>lm</code>) to new data. We’ve done this already a few times, but it never hurts to get it again.</p>
 <p>Here we create a <code>data.frame</code> called <code>originalDat</code> with three variables: <code>x1</code> and <code>x2</code> are <code>n</code> draws from a normal distribution (<span class="math inline">\(N(0,1)\)</span>) and <code>y</code> is a function of <code>x1</code>and <code>x2</code> following a linear model with coefficients <code>b0</code>, <code>b1</code>, and <code>b2</code> plus some more noise (<code>epsilon</code>) (<span class="math inline">\(N(0,2)\)</span>).</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="probabilistic-interpolation-regression-kriging.html#cb278-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb278-2"><a href="probabilistic-interpolation-regression-kriging.html#cb278-2" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb278-3"><a href="probabilistic-interpolation-regression-kriging.html#cb278-3" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
-<span id="cb278-4"><a href="probabilistic-interpolation-regression-kriging.html#cb278-4" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb278-5"><a href="probabilistic-interpolation-regression-kriging.html#cb278-5" tabindex="-1"></a>originalDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n), <span class="at">x2=</span><span class="fu">rnorm</span>(n), <span class="at">epsilon =</span> <span class="fu">rnorm</span>(n,<span class="at">sd =</span> <span class="dv">2</span>))</span>
-<span id="cb278-6"><a href="probabilistic-interpolation-regression-kriging.html#cb278-6" tabindex="-1"></a>originalDat<span class="sc">$</span>y <span class="ot">&lt;-</span> b0 <span class="sc">+</span> b1 <span class="sc">*</span> originalDat<span class="sc">$</span>x1 <span class="sc">+</span> b2 <span class="sc">*</span> originalDat<span class="sc">$</span>x2 <span class="sc">+</span> originalDat<span class="sc">$</span>epsilon</span></code></pre></div>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="probabilistic-interpolation-regression-kriging.html#cb279-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb279-2"><a href="probabilistic-interpolation-regression-kriging.html#cb279-2" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb279-3"><a href="probabilistic-interpolation-regression-kriging.html#cb279-3" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
+<span id="cb279-4"><a href="probabilistic-interpolation-regression-kriging.html#cb279-4" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb279-5"><a href="probabilistic-interpolation-regression-kriging.html#cb279-5" tabindex="-1"></a>originalDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n), <span class="at">x2=</span><span class="fu">rnorm</span>(n), <span class="at">epsilon =</span> <span class="fu">rnorm</span>(n,<span class="at">sd =</span> <span class="dv">2</span>))</span>
+<span id="cb279-6"><a href="probabilistic-interpolation-regression-kriging.html#cb279-6" tabindex="-1"></a>originalDat<span class="sc">$</span>y <span class="ot">&lt;-</span> b0 <span class="sc">+</span> b1 <span class="sc">*</span> originalDat<span class="sc">$</span>x1 <span class="sc">+</span> b2 <span class="sc">*</span> originalDat<span class="sc">$</span>x2 <span class="sc">+</span> originalDat<span class="sc">$</span>epsilon</span></code></pre></div>
 <p>We then fit a linear model (OLS) with <code>lm</code>:</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="probabilistic-interpolation-regression-kriging.html#cb279-1" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x1 <span class="sc">+</span> x2,<span class="at">data =</span> originalDat)</span>
-<span id="cb279-2"><a href="probabilistic-interpolation-regression-kriging.html#cb279-2" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="probabilistic-interpolation-regression-kriging.html#cb280-1" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x1 <span class="sc">+</span> x2,<span class="at">data =</span> originalDat)</span>
+<span id="cb280-2"><a href="probabilistic-interpolation-regression-kriging.html#cb280-2" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = y ~ x1 + x2, data = originalDat)
@@ -1216,8 +1216,8 @@ div.csl-indent {
 ## Multiple R-squared:  0.5788, Adjusted R-squared:  0.5609 
 ## F-statistic: 32.29 on 2 and 47 DF,  p-value: 1.497e-09</code></pre>
 <p>OK. We have one definitely helpful predictor, and one borderline predictor. Now let’s say we want to extend that model to predict a new data set. The object <code>lm1</code> is class <code>lm</code> and most every model class has a <code>predict</code> function, or a <code>newdata</code> argument to the original function, that allows you feed it new data. So let’s imagine we have a new data set with <code>x1</code> and <code>x2</code> but no <code>y</code>.</p>
-<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="probabilistic-interpolation-regression-kriging.html#cb281-1" tabindex="-1"></a>newDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n),<span class="at">x2=</span><span class="fu">rnorm</span>(n))</span>
-<span id="cb281-2"><a href="probabilistic-interpolation-regression-kriging.html#cb281-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="probabilistic-interpolation-regression-kriging.html#cb282-1" tabindex="-1"></a>newDat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">rnorm</span>(n),<span class="at">x2=</span><span class="fu">rnorm</span>(n))</span>
+<span id="cb282-2"><a href="probabilistic-interpolation-regression-kriging.html#cb282-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
 <pre><code>##           x1         x2
 ## 1 -0.9107046  0.1053673
 ## 2 -1.9548906 -0.2345276
@@ -1226,8 +1226,8 @@ div.csl-indent {
 ## 5 -0.5021313  1.1485350
 ## 6  0.1749991  0.8071396</code></pre>
 <p>We can use <code>predict.lm</code> (we just need to type <code>predict</code> since the object we are feeding is class <code>lm</code>, R knows to use <code>predict.lm</code>) to model new estimates of <code>y</code> by pointing to <code>newDat</code> using the <code>newdata</code> argument. Note that I’m sticking the predicted values right into a new column <code>yhat</code>. Why the hat? Because it’s an estimate.</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="probabilistic-interpolation-regression-kriging.html#cb283-1" tabindex="-1"></a>newDat<span class="sc">$</span>yhat <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> lm1,<span class="at">newdata =</span> newDat)</span>
-<span id="cb283-2"><a href="probabilistic-interpolation-regression-kriging.html#cb283-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="probabilistic-interpolation-regression-kriging.html#cb284-1" tabindex="-1"></a>newDat<span class="sc">$</span>yhat <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> lm1,<span class="at">newdata =</span> newDat)</span>
+<span id="cb284-2"><a href="probabilistic-interpolation-regression-kriging.html#cb284-2" tabindex="-1"></a><span class="fu">head</span>(newDat)</span></code></pre></div>
 <pre><code>##           x1         x2     yhat
 ## 1 -0.9107046  0.1053673 3.429497
 ## 2 -1.9548906 -0.2345276 1.973452
@@ -1243,8 +1243,8 @@ div.csl-indent {
 <p>Let’s look at a real-world example of RK using, you guessed it, the Meuse River data. I’m pretty sick of these data but they are familiar to us. We’ve used the data in <code>meuse.all</code> quite a bit and we’ve used <code>meuse.grid</code> as an empty grid to interpolate into. But <code>meuse.grid</code> has other data in it that we can use in a regression kriging approach.</p>
 <div id="the-data-1" class="section level3 hasAnchor" number="9.6.1">
 <h3><span class="header-section-number">9.6.1</span> The Data<a href="probabilistic-interpolation-regression-kriging.html#the-data-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="probabilistic-interpolation-regression-kriging.html#cb285-1" tabindex="-1"></a><span class="fu">data</span>(meuse.all)</span>
-<span id="cb285-2"><a href="probabilistic-interpolation-regression-kriging.html#cb285-2" tabindex="-1"></a><span class="fu">str</span>(meuse.all)</span></code></pre></div>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="probabilistic-interpolation-regression-kriging.html#cb286-1" tabindex="-1"></a><span class="fu">data</span>(meuse.all)</span>
+<span id="cb286-2"><a href="probabilistic-interpolation-regression-kriging.html#cb286-2" tabindex="-1"></a><span class="fu">str</span>(meuse.all)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    164 obs. of  17 variables:
 ##  $ sample     : num  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ x          : num  181072 181025 181165 181298 181307 ...
@@ -1264,8 +1264,8 @@ div.csl-indent {
 ##  $ in.meuse155: logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
 ##  $ in.BMcD    : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...</code></pre>
 <p>We know all too well by now that <code>meuse.all</code> is a <code>data.frame</code> with 164 point measurements of 17 variables.</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="probabilistic-interpolation-regression-kriging.html#cb287-1" tabindex="-1"></a>meuse.grid <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/meuse.grid.Rds&quot;</span>)</span>
-<span id="cb287-2"><a href="probabilistic-interpolation-regression-kriging.html#cb287-2" tabindex="-1"></a><span class="fu">str</span>(meuse.grid)</span></code></pre></div>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="probabilistic-interpolation-regression-kriging.html#cb288-1" tabindex="-1"></a>meuse.grid <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/meuse.grid.Rds&quot;</span>)</span>
+<span id="cb288-2"><a href="probabilistic-interpolation-regression-kriging.html#cb288-2" tabindex="-1"></a><span class="fu">str</span>(meuse.grid)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    3103 obs. of  7 variables:
 ##  $ x     : num  181180 181140 181180 181220 181100 ...
 ##  $ y     : num  333740 333700 333700 333700 333660 ...
@@ -1281,9 +1281,9 @@ div.csl-indent {
 <div id="make-data-as-sf-and-clean-it-up" class="section level3 hasAnchor" number="9.6.2">
 <h3><span class="header-section-number">9.6.2</span> Make data as <code>sf</code> and clean it up<a href="probabilistic-interpolation-regression-kriging.html#make-data-as-sf-and-clean-it-up" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Fist we will make both data sets in <code>sf</code> objects.</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="probabilistic-interpolation-regression-kriging.html#cb289-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.all,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
-<span id="cb289-2"><a href="probabilistic-interpolation-regression-kriging.html#cb289-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.grid,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
-<span id="cb289-3"><a href="probabilistic-interpolation-regression-kriging.html#cb289-3" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="probabilistic-interpolation-regression-kriging.html#cb290-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.all,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb290-2"><a href="probabilistic-interpolation-regression-kriging.html#cb290-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.grid,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb290-3"><a href="probabilistic-interpolation-regression-kriging.html#cb290-3" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 164 features and 15 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -1312,7 +1312,7 @@ div.csl-indent {
 ## 8   FALSE        TRUE   FALSE POINT (181027 333363)
 ## 9   FALSE        TRUE   FALSE POINT (181060 333231)
 ## 10  FALSE        TRUE   FALSE POINT (181232 333168)</code></pre>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="probabilistic-interpolation-regression-kriging.html#cb291-1" tabindex="-1"></a>meuseGrid_sf</span></code></pre></div>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="probabilistic-interpolation-regression-kriging.html#cb292-1" tabindex="-1"></a>meuseGrid_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 3103 features and 5 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -1331,12 +1331,12 @@ div.csl-indent {
 ## 9       1      0 0.00135803    1     1 POINT (181060 333620)
 ## 10      1      0 0.01222430    1     1 POINT (181100 333620)</code></pre>
 <p>One thing to note here is that the <code>dist.m</code> column in <code>meusePoints_sf</code> is the distance to the river in meters while <code>meuseGrid_sf</code> has distance to the river in relative units (scaled zero to one). To make life easier we will add the relative distances to the point data unsing the <code>dist</code> values from <code>meuseGrid_sf</code>.</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="probabilistic-interpolation-regression-kriging.html#cb293-1" tabindex="-1"></a><span class="co"># get the relative distance from meuseGrid_sf and add it to meusePoints_sf</span></span>
-<span id="cb293-2"><a href="probabilistic-interpolation-regression-kriging.html#cb293-2" tabindex="-1"></a>meuseGrid_dist_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">select</span>(dist)</span>
-<span id="cb293-3"><a href="probabilistic-interpolation-regression-kriging.html#cb293-3" tabindex="-1"></a><span class="co"># join the two objects by the nearest point</span></span>
-<span id="cb293-4"><a href="probabilistic-interpolation-regression-kriging.html#cb293-4" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_join</span>(meusePoints_sf,meuseGrid_dist_sf, <span class="at">join =</span> st_nearest_feature)</span>
-<span id="cb293-5"><a href="probabilistic-interpolation-regression-kriging.html#cb293-5" tabindex="-1"></a><span class="co"># note that we now have relative dist for each point now in the column `dist`</span></span>
-<span id="cb293-6"><a href="probabilistic-interpolation-regression-kriging.html#cb293-6" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="probabilistic-interpolation-regression-kriging.html#cb294-1" tabindex="-1"></a><span class="co"># get the relative distance from meuseGrid_sf and add it to meusePoints_sf</span></span>
+<span id="cb294-2"><a href="probabilistic-interpolation-regression-kriging.html#cb294-2" tabindex="-1"></a>meuseGrid_dist_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">select</span>(dist)</span>
+<span id="cb294-3"><a href="probabilistic-interpolation-regression-kriging.html#cb294-3" tabindex="-1"></a><span class="co"># join the two objects by the nearest point</span></span>
+<span id="cb294-4"><a href="probabilistic-interpolation-regression-kriging.html#cb294-4" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> <span class="fu">st_join</span>(meusePoints_sf,meuseGrid_dist_sf, <span class="at">join =</span> st_nearest_feature)</span>
+<span id="cb294-5"><a href="probabilistic-interpolation-regression-kriging.html#cb294-5" tabindex="-1"></a><span class="co"># note that we now have relative dist for each point now in the column `dist`</span></span>
+<span id="cb294-6"><a href="probabilistic-interpolation-regression-kriging.html#cb294-6" tabindex="-1"></a>meusePoints_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 164 features and 16 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -1366,20 +1366,20 @@ div.csl-indent {
 ## 9   FALSE        TRUE   FALSE 0.18461400 POINT (181060 333231)
 ## 10  FALSE        TRUE   FALSE 0.30970200 POINT (181232 333168)</code></pre>
 <p>We will go a step further and use the square root of the distance to the river as a predictor. This just helps us get a little more leverage on very short distances by stretching out the scale.</p>
-<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="probabilistic-interpolation-regression-kriging.html#cb295-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span>
-<span id="cb295-2"><a href="probabilistic-interpolation-regression-kriging.html#cb295-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="probabilistic-interpolation-regression-kriging.html#cb296-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span>
+<span id="cb296-2"><a href="probabilistic-interpolation-regression-kriging.html#cb296-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span></code></pre></div>
 <p>Next, the column <code>om</code> in <code>meusePoints_sf</code> has two missing data points (<code>NA</code>) in it. I’m going to toss those rows to make things easier. Note the new number of rows in <code>meusePoints_sf</code> after you run this.</p>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="probabilistic-interpolation-regression-kriging.html#cb296-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(om)</span></code></pre></div>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="probabilistic-interpolation-regression-kriging.html#cb297-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(om)</span></code></pre></div>
 <p>And finally, we are going to be using the soil type as a predictor. That is a categorical variable so we need to change it to be a <code>factor</code>.</p>
-<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="probabilistic-interpolation-regression-kriging.html#cb297-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span>
-<span id="cb297-2"><a href="probabilistic-interpolation-regression-kriging.html#cb297-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span></code></pre></div>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="probabilistic-interpolation-regression-kriging.html#cb298-1" tabindex="-1"></a>meusePoints_sf <span class="ot">&lt;-</span> meusePoints_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span>
+<span id="cb298-2"><a href="probabilistic-interpolation-regression-kriging.html#cb298-2" tabindex="-1"></a>meuseGrid_sf <span class="ot">&lt;-</span> meuseGrid_sf <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">soil =</span> <span class="fu">factor</span>(soil))</span></code></pre></div>
 </div>
 <div id="ols" class="section level3 hasAnchor" number="9.6.3">
 <h3><span class="header-section-number">9.6.3</span> OLS<a href="probabilistic-interpolation-regression-kriging.html#ols" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We will make a simple model of organic matter (<span class="math inline">\(y\)</span>) as a function of the square root of the distance to the river (<span class="math inline">\(x_1\)</span>) and soil type (<span class="math inline">\(x_2\)</span>): <span class="math inline">\(y=\beta_0 + \beta_1x_1+\beta_2x_2\)</span>. The parameters (<span class="math inline">\(\beta_{0,1,2}\)</span>) will be estimated with OLS.
 Here is the OLS model:</p>
-<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="probabilistic-interpolation-regression-kriging.html#cb298-1" tabindex="-1"></a>om_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(om<span class="sc">~</span>sqrt_dist<span class="sc">+</span>soil, <span class="at">data=</span>meusePoints_sf)</span>
-<span id="cb298-2"><a href="probabilistic-interpolation-regression-kriging.html#cb298-2" tabindex="-1"></a><span class="fu">summary</span>(om_lm)</span></code></pre></div>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="probabilistic-interpolation-regression-kriging.html#cb299-1" tabindex="-1"></a>om_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(om<span class="sc">~</span>sqrt_dist<span class="sc">+</span>soil, <span class="at">data=</span>meusePoints_sf)</span>
+<span id="cb299-2"><a href="probabilistic-interpolation-regression-kriging.html#cb299-2" tabindex="-1"></a><span class="fu">summary</span>(om_lm)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = om ~ sqrt_dist + soil, data = meusePoints_sf)
@@ -1400,7 +1400,7 @@ Here is the OLS model:</p>
 ## Residual standard error: 2.473 on 158 degrees of freedom
 ## Multiple R-squared:  0.4926, Adjusted R-squared:  0.4829 
 ## F-statistic: 51.12 on 3 and 158 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="probabilistic-interpolation-regression-kriging.html#cb300-1" tabindex="-1"></a><span class="fu">anova</span>(om_lm)</span></code></pre></div>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="probabilistic-interpolation-regression-kriging.html#cb301-1" tabindex="-1"></a><span class="fu">anova</span>(om_lm)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: om
@@ -1411,61 +1411,61 @@ Here is the OLS model:</p>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>In our model, we see that both distance and soil types are good predictors of organic matter percent. Now, this might or might not be a good model. After you learn about the pitfalls of using OLS with spatial data you’ll be appalled that I’m running this model and not checking for spatial autocorrelation in the residuals or doing any other regression diagnostics. But suppress your horror for now. Because all I want to do here is show how I could (if I wanted to live in a state of ignorant bliss) predict this model across the landscape.</p>
-<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="probabilistic-interpolation-regression-kriging.html#cb302-1" tabindex="-1"></a>meuseGrid_sf<span class="sc">$</span>omHat <span class="ot">&lt;-</span> <span class="fu">predict</span>(om_lm, <span class="at">newdata=</span>meuseGrid_sf)</span>
-<span id="cb302-2"><a href="probabilistic-interpolation-regression-kriging.html#cb302-2" tabindex="-1"></a></span>
-<span id="cb302-3"><a href="probabilistic-interpolation-regression-kriging.html#cb302-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> meuseGrid_sf,<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">color=</span>omHat))</span></code></pre></div>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="probabilistic-interpolation-regression-kriging.html#cb303-1" tabindex="-1"></a>meuseGrid_sf<span class="sc">$</span>omHat <span class="ot">&lt;-</span> <span class="fu">predict</span>(om_lm, <span class="at">newdata=</span>meuseGrid_sf)</span>
+<span id="cb303-2"><a href="probabilistic-interpolation-regression-kriging.html#cb303-2" tabindex="-1"></a></span>
+<span id="cb303-3"><a href="probabilistic-interpolation-regression-kriging.html#cb303-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> meuseGrid_sf,<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">color=</span>omHat))</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
 <p>A few things. One this is a decent prediction. The model relatively skillful (but we should crossvalidate it) but the assumption about independence of the residuals is violated. E.g., Moran’s I on an eight-neighbor object is 0.23 which is significantly greater than zero. More on that in the next set of notes “GLS with Autocorrelated Residuals.” Oh, and that plot above is all points. We can make it a raster. Remember this handy function from the prior weeks that makes a <code>sf</code> point object into a <code>SpatRaster</code>?</p>
-<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="probabilistic-interpolation-regression-kriging.html#cb303-1" tabindex="-1"></a>sf_2_rast <span class="ot">&lt;-</span><span class="cf">function</span>(sfObject,<span class="at">variable2get =</span> <span class="dv">1</span>){</span>
-<span id="cb303-2"><a href="probabilistic-interpolation-regression-kriging.html#cb303-2" tabindex="-1"></a>  <span class="co"># coerce sf to a data.frame</span></span>
-<span id="cb303-3"><a href="probabilistic-interpolation-regression-kriging.html#cb303-3" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> sfObject[,variable2get] <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>()</span>
-<span id="cb303-4"><a href="probabilistic-interpolation-regression-kriging.html#cb303-4" tabindex="-1"></a>  dfObject <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">st_coordinates</span>(sfObject),</span>
-<span id="cb303-5"><a href="probabilistic-interpolation-regression-kriging.html#cb303-5" tabindex="-1"></a>                         <span class="at">z=</span>tmp)</span>
-<span id="cb303-6"><a href="probabilistic-interpolation-regression-kriging.html#cb303-6" tabindex="-1"></a>  <span class="co"># coerce data.frame to SpatRaster</span></span>
-<span id="cb303-7"><a href="probabilistic-interpolation-regression-kriging.html#cb303-7" tabindex="-1"></a>  rastObject <span class="ot">&lt;-</span> <span class="fu">rast</span>(dfObject,<span class="at">crs=</span><span class="fu">crs</span>(sfObject))</span>
-<span id="cb303-8"><a href="probabilistic-interpolation-regression-kriging.html#cb303-8" tabindex="-1"></a>  </span>
-<span id="cb303-9"><a href="probabilistic-interpolation-regression-kriging.html#cb303-9" tabindex="-1"></a>  <span class="fu">return</span>(rastObject)</span>
-<span id="cb303-10"><a href="probabilistic-interpolation-regression-kriging.html#cb303-10" tabindex="-1"></a>}</span>
-<span id="cb303-11"><a href="probabilistic-interpolation-regression-kriging.html#cb303-11" tabindex="-1"></a></span>
-<span id="cb303-12"><a href="probabilistic-interpolation-regression-kriging.html#cb303-12" tabindex="-1"></a>meuseGrid_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(meuseGrid_sf,<span class="at">variable2get =</span> <span class="st">&quot;omHat&quot;</span>)</span>
-<span id="cb303-13"><a href="probabilistic-interpolation-regression-kriging.html#cb303-13" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> meuseGrid_rast,</span>
-<span id="cb303-14"><a href="probabilistic-interpolation-regression-kriging.html#cb303-14" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omHat)) <span class="sc">+</span></span>
-<span id="cb303-15"><a href="probabilistic-interpolation-regression-kriging.html#cb303-15" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
-<span id="cb303-16"><a href="probabilistic-interpolation-regression-kriging.html#cb303-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;omHat&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="probabilistic-interpolation-regression-kriging.html#cb304-1" tabindex="-1"></a>sf_2_rast <span class="ot">&lt;-</span><span class="cf">function</span>(sfObject,<span class="at">variable2get =</span> <span class="dv">1</span>){</span>
+<span id="cb304-2"><a href="probabilistic-interpolation-regression-kriging.html#cb304-2" tabindex="-1"></a>  <span class="co"># coerce sf to a data.frame</span></span>
+<span id="cb304-3"><a href="probabilistic-interpolation-regression-kriging.html#cb304-3" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> sfObject[,variable2get] <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb304-4"><a href="probabilistic-interpolation-regression-kriging.html#cb304-4" tabindex="-1"></a>  dfObject <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">st_coordinates</span>(sfObject),</span>
+<span id="cb304-5"><a href="probabilistic-interpolation-regression-kriging.html#cb304-5" tabindex="-1"></a>                         <span class="at">z=</span>tmp)</span>
+<span id="cb304-6"><a href="probabilistic-interpolation-regression-kriging.html#cb304-6" tabindex="-1"></a>  <span class="co"># coerce data.frame to SpatRaster</span></span>
+<span id="cb304-7"><a href="probabilistic-interpolation-regression-kriging.html#cb304-7" tabindex="-1"></a>  rastObject <span class="ot">&lt;-</span> <span class="fu">rast</span>(dfObject,<span class="at">crs=</span><span class="fu">crs</span>(sfObject))</span>
+<span id="cb304-8"><a href="probabilistic-interpolation-regression-kriging.html#cb304-8" tabindex="-1"></a>  </span>
+<span id="cb304-9"><a href="probabilistic-interpolation-regression-kriging.html#cb304-9" tabindex="-1"></a>  <span class="fu">return</span>(rastObject)</span>
+<span id="cb304-10"><a href="probabilistic-interpolation-regression-kriging.html#cb304-10" tabindex="-1"></a>}</span>
+<span id="cb304-11"><a href="probabilistic-interpolation-regression-kriging.html#cb304-11" tabindex="-1"></a></span>
+<span id="cb304-12"><a href="probabilistic-interpolation-regression-kriging.html#cb304-12" tabindex="-1"></a>meuseGrid_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(meuseGrid_sf,<span class="at">variable2get =</span> <span class="st">&quot;omHat&quot;</span>)</span>
+<span id="cb304-13"><a href="probabilistic-interpolation-regression-kriging.html#cb304-13" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> meuseGrid_rast,</span>
+<span id="cb304-14"><a href="probabilistic-interpolation-regression-kriging.html#cb304-14" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omHat)) <span class="sc">+</span></span>
+<span id="cb304-15"><a href="probabilistic-interpolation-regression-kriging.html#cb304-15" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb304-16"><a href="probabilistic-interpolation-regression-kriging.html#cb304-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;omHat&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-17-1.png" alt="" width="672" /></p>
 </div>
 <div id="rk-application" class="section level3 hasAnchor" number="9.6.4">
 <h3><span class="header-section-number">9.6.4</span> RK Application<a href="probabilistic-interpolation-regression-kriging.html#rk-application" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>As I imagine you have anticipated, the silliest thing in the model above is that we threw out all of the awesome data we have on spatial structure. All the information on how pairs of samples relate to each other in terms of semivariance has been cast aside. And we know that organic matter is autocorrelated. E.g.,:</p>
-<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="probabilistic-interpolation-regression-kriging.html#cb304-1" tabindex="-1"></a>omVar <span class="ot">&lt;-</span> <span class="fu">variogram</span>(om<span class="sc">~</span><span class="dv">1</span>, meusePoints_sf)</span>
-<span id="cb304-2"><a href="probabilistic-interpolation-regression-kriging.html#cb304-2" tabindex="-1"></a><span class="fu">plot</span>(omVar,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
-<span id="cb304-3"><a href="probabilistic-interpolation-regression-kriging.html#cb304-3" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
-<span id="cb304-4"><a href="probabilistic-interpolation-regression-kriging.html#cb304-4" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;% Soil Organic Matter&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="probabilistic-interpolation-regression-kriging.html#cb305-1" tabindex="-1"></a>omVar <span class="ot">&lt;-</span> <span class="fu">variogram</span>(om<span class="sc">~</span><span class="dv">1</span>, meusePoints_sf)</span>
+<span id="cb305-2"><a href="probabilistic-interpolation-regression-kriging.html#cb305-2" tabindex="-1"></a><span class="fu">plot</span>(omVar,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb305-3"><a href="probabilistic-interpolation-regression-kriging.html#cb305-3" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb305-4"><a href="probabilistic-interpolation-regression-kriging.html#cb305-4" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;% Soil Organic Matter&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672" /></p>
 <p>With kriging, we would interpolate a surface based just on a theoretical variogram we would fit to those data. But we have all the data on distance and soil type that we used in the OLS model above. We can combine these approaches with RK.</p>
 <p>We will set up a <code>gstat</code> object with the linear regression model. When we plot the variogram we are seeing the residuals from that regression. They have some spatial structure. In OLS that is bad (violates independence). For RK, this is good! It means we can use that structure to improve the prediction.</p>
-<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="probabilistic-interpolation-regression-kriging.html#cb305-1" tabindex="-1"></a>omGstat <span class="ot">&lt;-</span> <span class="fu">gstat</span>(<span class="at">id =</span> <span class="st">&quot;omModel&quot;</span>, <span class="at">formula =</span> om <span class="sc">~</span> sqrt_dist <span class="sc">+</span> soil, </span>
-<span id="cb305-2"><a href="probabilistic-interpolation-regression-kriging.html#cb305-2" tabindex="-1"></a>                 <span class="at">data =</span> meusePoints_sf)</span>
-<span id="cb305-3"><a href="probabilistic-interpolation-regression-kriging.html#cb305-3" tabindex="-1"></a>omGstat_obsVariogram <span class="ot">&lt;-</span> <span class="fu">variogram</span>(omGstat)</span>
-<span id="cb305-4"><a href="probabilistic-interpolation-regression-kriging.html#cb305-4" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
-<span id="cb305-5"><a href="probabilistic-interpolation-regression-kriging.html#cb305-5" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
-<span id="cb305-6"><a href="probabilistic-interpolation-regression-kriging.html#cb305-6" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="probabilistic-interpolation-regression-kriging.html#cb306-1" tabindex="-1"></a>omGstat <span class="ot">&lt;-</span> <span class="fu">gstat</span>(<span class="at">id =</span> <span class="st">&quot;omModel&quot;</span>, <span class="at">formula =</span> om <span class="sc">~</span> sqrt_dist <span class="sc">+</span> soil, </span>
+<span id="cb306-2"><a href="probabilistic-interpolation-regression-kriging.html#cb306-2" tabindex="-1"></a>                 <span class="at">data =</span> meusePoints_sf)</span>
+<span id="cb306-3"><a href="probabilistic-interpolation-regression-kriging.html#cb306-3" tabindex="-1"></a>omGstat_obsVariogram <span class="ot">&lt;-</span> <span class="fu">variogram</span>(omGstat)</span>
+<span id="cb306-4"><a href="probabilistic-interpolation-regression-kriging.html#cb306-4" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb306-5"><a href="probabilistic-interpolation-regression-kriging.html#cb306-5" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb306-6"><a href="probabilistic-interpolation-regression-kriging.html#cb306-6" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-19-1.png" alt="" width="672" /></p>
 <p>Ok. Let’s look at this. It’s not a severe variogram. But you can see that the semivariance goes from a nugget of about four to a sill of about six. I.e., there is spatial structure in this model that we can leverage and that should improve our predictions.</p>
 <p>Thus, let’s fit a theoretical model to the <code>omGstat_obsVariogram</code> variogram. I’ll use a Gaussian model but you could make a good case here for an Exponential model.</p>
-<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="probabilistic-interpolation-regression-kriging.html#cb306-1" tabindex="-1"></a>omGau_fittedVariogram <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(omGstat_obsVariogram, <span class="fu">vgm</span>(<span class="at">psill =</span> <span class="dv">6</span>, <span class="at">model =</span> <span class="st">&quot;Gau&quot;</span>, <span class="at">range =</span> <span class="dv">500</span>, <span class="at">nugget =</span> <span class="dv">4</span>))</span>
-<span id="cb306-2"><a href="probabilistic-interpolation-regression-kriging.html#cb306-2" tabindex="-1"></a></span>
-<span id="cb306-3"><a href="probabilistic-interpolation-regression-kriging.html#cb306-3" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram, omGau_fittedVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
-<span id="cb306-4"><a href="probabilistic-interpolation-regression-kriging.html#cb306-4" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
-<span id="cb306-5"><a href="probabilistic-interpolation-regression-kriging.html#cb306-5" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="probabilistic-interpolation-regression-kriging.html#cb307-1" tabindex="-1"></a>omGau_fittedVariogram <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(omGstat_obsVariogram, <span class="fu">vgm</span>(<span class="at">psill =</span> <span class="dv">6</span>, <span class="at">model =</span> <span class="st">&quot;Gau&quot;</span>, <span class="at">range =</span> <span class="dv">500</span>, <span class="at">nugget =</span> <span class="dv">4</span>))</span>
+<span id="cb307-2"><a href="probabilistic-interpolation-regression-kriging.html#cb307-2" tabindex="-1"></a></span>
+<span id="cb307-3"><a href="probabilistic-interpolation-regression-kriging.html#cb307-3" tabindex="-1"></a><span class="fu">plot</span>(omGstat_obsVariogram, omGau_fittedVariogram,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,</span>
+<span id="cb307-4"><a href="probabilistic-interpolation-regression-kriging.html#cb307-4" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;Semivariance (&quot;</span><span class="sc">*</span>gamma<span class="sc">*</span><span class="st">&quot;)&quot;</span>),</span>
+<span id="cb307-5"><a href="probabilistic-interpolation-regression-kriging.html#cb307-5" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;Distance (m)&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Model Residuals&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-20-1.png" alt="" width="672" /></p>
 <p>Now we can update the <code>gstat</code> object with that variogram model. And use it to make a prediction.</p>
-<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="probabilistic-interpolation-regression-kriging.html#cb307-1" tabindex="-1"></a><span class="co"># Update the gstat object with the variogram:</span></span>
-<span id="cb307-2"><a href="probabilistic-interpolation-regression-kriging.html#cb307-2" tabindex="-1"></a>omGstat_w_variogram <span class="ot">&lt;-</span> <span class="fu">gstat</span>(omGstat, <span class="at">id=</span><span class="st">&quot;omModel&quot;</span>, <span class="at">model=</span>omGau_fittedVariogram)</span>
-<span id="cb307-3"><a href="probabilistic-interpolation-regression-kriging.html#cb307-3" tabindex="-1"></a><span class="co"># And predict</span></span>
-<span id="cb307-4"><a href="probabilistic-interpolation-regression-kriging.html#cb307-4" tabindex="-1"></a>omHat_sf <span class="ot">&lt;-</span> <span class="fu">predict</span>(omGstat_w_variogram, <span class="at">newdata =</span> meuseGrid_sf)</span></code></pre></div>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="probabilistic-interpolation-regression-kriging.html#cb308-1" tabindex="-1"></a><span class="co"># Update the gstat object with the variogram:</span></span>
+<span id="cb308-2"><a href="probabilistic-interpolation-regression-kriging.html#cb308-2" tabindex="-1"></a>omGstat_w_variogram <span class="ot">&lt;-</span> <span class="fu">gstat</span>(omGstat, <span class="at">id=</span><span class="st">&quot;omModel&quot;</span>, <span class="at">model=</span>omGau_fittedVariogram)</span>
+<span id="cb308-3"><a href="probabilistic-interpolation-regression-kriging.html#cb308-3" tabindex="-1"></a><span class="co"># And predict</span></span>
+<span id="cb308-4"><a href="probabilistic-interpolation-regression-kriging.html#cb308-4" tabindex="-1"></a>omHat_sf <span class="ot">&lt;-</span> <span class="fu">predict</span>(omGstat_w_variogram, <span class="at">newdata =</span> meuseGrid_sf)</span></code></pre></div>
 <pre><code>## [using universal kriging]</code></pre>
-<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="probabilistic-interpolation-regression-kriging.html#cb309-1" tabindex="-1"></a>omHat_sf</span></code></pre></div>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="probabilistic-interpolation-regression-kriging.html#cb310-1" tabindex="-1"></a>omHat_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 3103 features and 2 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -1484,8 +1484,8 @@ Here is the OLS model:</p>
 ## 9      13.99688    4.937390 POINT (181060 333620)
 ## 10     13.24907    4.889661 POINT (181100 333620)</code></pre>
 <p>We have made a new object <code>omHat_sf</code> that has the predictions and the variance from the RK. It’s an <code>sf</code> object (because <code>meuseGridSF</code> is also <code>sf</code>). Let’s make them into <code>SpatRasers</code> to make the plots prettier.</p>
-<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="probabilistic-interpolation-regression-kriging.html#cb311-1" tabindex="-1"></a>omHat_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.pred&quot;</span>)</span>
-<span id="cb311-2"><a href="probabilistic-interpolation-regression-kriging.html#cb311-2" tabindex="-1"></a>omHat_rast</span></code></pre></div>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="probabilistic-interpolation-regression-kriging.html#cb312-1" tabindex="-1"></a>omHat_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.pred&quot;</span>)</span>
+<span id="cb312-2"><a href="probabilistic-interpolation-regression-kriging.html#cb312-2" tabindex="-1"></a>omHat_rast</span></code></pre></div>
 <pre><code>## class       : SpatRaster 
 ## size        : 104, 78, 1  (nrow, ncol, nlyr)
 ## resolution  : 40, 40  (x, y)
@@ -1496,20 +1496,20 @@ Here is the OLS model:</p>
 ## min value   :     1.891323 
 ## max value   :    14.407855</code></pre>
 <p>And plot:</p>
-<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="probabilistic-interpolation-regression-kriging.html#cb313-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb313-2"><a href="probabilistic-interpolation-regression-kriging.html#cb313-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHat_rast,</span>
-<span id="cb313-3"><a href="probabilistic-interpolation-regression-kriging.html#cb313-3" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.pred)) <span class="sc">+</span></span>
-<span id="cb313-4"><a href="probabilistic-interpolation-regression-kriging.html#cb313-4" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
-<span id="cb313-5"><a href="probabilistic-interpolation-regression-kriging.html#cb313-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter (%)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="probabilistic-interpolation-regression-kriging.html#cb314-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb314-2"><a href="probabilistic-interpolation-regression-kriging.html#cb314-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHat_rast,</span>
+<span id="cb314-3"><a href="probabilistic-interpolation-regression-kriging.html#cb314-3" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.pred)) <span class="sc">+</span></span>
+<span id="cb314-4"><a href="probabilistic-interpolation-regression-kriging.html#cb314-4" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb314-5"><a href="probabilistic-interpolation-regression-kriging.html#cb314-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter (%)&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672" /></p>
 <p>And variance around the predictions:</p>
-<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="probabilistic-interpolation-regression-kriging.html#cb314-1" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.var&quot;</span>)</span>
-<span id="cb314-2"><a href="probabilistic-interpolation-regression-kriging.html#cb314-2" tabindex="-1"></a><span class="co"># take the square root of variance to create standard deviation (units match then)</span></span>
-<span id="cb314-3"><a href="probabilistic-interpolation-regression-kriging.html#cb314-3" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> omHatVar_rast <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">omModel.var.sqrt =</span> <span class="fu">sqrt</span>(omModel.var))</span>
-<span id="cb314-4"><a href="probabilistic-interpolation-regression-kriging.html#cb314-4" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHatVar_rast,</span>
-<span id="cb314-5"><a href="probabilistic-interpolation-regression-kriging.html#cb314-5" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.var.sqrt)) <span class="sc">+</span></span>
-<span id="cb314-6"><a href="probabilistic-interpolation-regression-kriging.html#cb314-6" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
-<span id="cb314-7"><a href="probabilistic-interpolation-regression-kriging.html#cb314-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter Variance (%)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="probabilistic-interpolation-regression-kriging.html#cb315-1" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(omHat_sf,<span class="at">variable2get =</span> <span class="st">&quot;omModel.var&quot;</span>)</span>
+<span id="cb315-2"><a href="probabilistic-interpolation-regression-kriging.html#cb315-2" tabindex="-1"></a><span class="co"># take the square root of variance to create standard deviation (units match then)</span></span>
+<span id="cb315-3"><a href="probabilistic-interpolation-regression-kriging.html#cb315-3" tabindex="-1"></a>omHatVar_rast <span class="ot">&lt;-</span> omHatVar_rast <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">omModel.var.sqrt =</span> <span class="fu">sqrt</span>(omModel.var))</span>
+<span id="cb315-4"><a href="probabilistic-interpolation-regression-kriging.html#cb315-4" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_spatraster</span>(<span class="at">data =</span> omHatVar_rast,</span>
+<span id="cb315-5"><a href="probabilistic-interpolation-regression-kriging.html#cb315-5" tabindex="-1"></a>                           <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>omModel.var.sqrt)) <span class="sc">+</span></span>
+<span id="cb315-6"><a href="probabilistic-interpolation-regression-kriging.html#cb315-6" tabindex="-1"></a>  <span class="fu">scale_fill_terrain_c</span>() <span class="sc">+</span></span>
+<span id="cb315-7"><a href="probabilistic-interpolation-regression-kriging.html#cb315-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Organic Matter Variance (%)&quot;</span>)</span></code></pre></div>
 <p><img src="06bGeostatsRegressionKriging_files/figure-html/unnamed-chunk-24-1.png" alt="" width="672" /></p>
 <p>The RK approach looks quite a bit different than the OLS prediction. Now our job is to look at the differences carefully and assess skill.</p>
 </div>
@@ -1526,7 +1526,7 @@ Here is the OLS model:</p>
         </div>
       </div>
 <a href="probabilistic-interpolation-kriging.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="aside-geostats-ii-kriging-variance-by-hand.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="aside-kriging-variance-by-hand.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -106,6 +106,7 @@ birdRichness <-  readRDS("data/birdRichnessMexico.rds")
 
 When you make a Rmd file for your work, save it in the project's root directory. For instance if you have the first two assignments saved in files called "MtBakerHomework.Rmd" and "pointPatternHomework.Rmd," your file and folder structure might look something like this:
 
+   ```
    spatial-course/
    ├── data/
    │   ├── birdRichnessMexico.rds
@@ -114,7 +115,7 @@ When you make a Rmd file for your work, save it in the project's root directory.
    ├── MtBakerHomework.Rmd
    ├── pointPatternHomework.Rmd
    └── spatial-course.Rproj
-
+   ```
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages

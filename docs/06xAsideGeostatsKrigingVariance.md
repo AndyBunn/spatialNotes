@@ -1,4 +1,4 @@
-# Aside: Geostats II: Kriging Variance By Hand {- .aside-chapter}
+# Aside: Kriging Variance By Hand {- .aside-chapter}
 
 
 

@@ -1104,16 +1104,16 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="9.7" data-path="probabilistic-interpolation-regression-kriging.html"><a href="probabilistic-interpolation-regression-kriging.html#your-work-7"><i class="fa fa-check"></i><b>9.7</b> Your Work</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Geostats II: Kriging Variance By Hand</a>
+<li class="chapter" data-level="" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html"><i class="fa fa-check"></i>Aside: Kriging Variance By Hand</a>
 <ul>
-<li class="chapter" data-level="9.8" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
-<li class="chapter" data-level="9.9" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
-<li class="chapter" data-level="9.10" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
-<li class="chapter" data-level="9.11" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
-<li class="chapter" data-level="9.12" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
-<li class="chapter" data-level="9.13" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
-<li class="chapter" data-level="9.14" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
-<li class="chapter" data-level="9.15" data-path="aside-geostats-ii-kriging-variance-by-hand.html"><a href="aside-geostats-ii-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
+<li class="chapter" data-level="9.8" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#whats-going-on-here"><i class="fa fa-check"></i><b>9.8</b> What’s Going On Here</a></li>
+<li class="chapter" data-level="9.9" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-setup"><i class="fa fa-check"></i><b>9.9</b> The Setup</a></li>
+<li class="chapter" data-level="9.10" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-covariance-functions"><i class="fa fa-check"></i><b>9.10</b> The Covariance Functions</a></li>
+<li class="chapter" data-level="9.11" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#building-the-covariance-matrix-and-vector"><i class="fa fa-check"></i><b>9.11</b> Building the Covariance Matrix and Vector</a></li>
+<li class="chapter" data-level="9.12" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#simple-kriging"><i class="fa fa-check"></i><b>9.12</b> Simple Kriging</a></li>
+<li class="chapter" data-level="9.13" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#ordinary-kriging"><i class="fa fa-check"></i><b>9.13</b> Ordinary Kriging</a></li>
+<li class="chapter" data-level="9.14" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#checking-against-gstat"><i class="fa fa-check"></i><b>9.14</b> Checking Against gstat</a></li>
+<li class="chapter" data-level="9.15" data-path="aside-kriging-variance-by-hand.html"><a href="aside-kriging-variance-by-hand.html#the-results"><i class="fa fa-check"></i><b>9.15</b> The Results</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="regression-gls-with-autocorrelated-residuals.html"><a href="regression-gls-with-autocorrelated-residuals.html"><i class="fa fa-check"></i><b>10</b> Regression: GLS with Autocorrelated Residuals</a>
 <ul>
@@ -1168,11 +1168,11 @@ div.csl-indent {
 <p>But first…</p>
 <p>For the past couple of years there has been major upheaval underway in how projection information is getting stored and how R is working with spatial data in general (e.g., the <code>PROJ</code> projection standard is being replaced by <code>WKT</code> and the <code>raster</code> library is being superseded by <code>terra</code>. It’s both complicated and extremely boring. But while the details are getting worked out, many of the different R libraries that work with the old projection scheme are throwing warnings sometimes. I’ll try to anticipate that and give you workarounds if we need them.</p>
 <p>Ok. Let’s go.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="mt-baker-map.html#cb29-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb29-2"><a href="mt-baker-map.html#cb29-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb29-3"><a href="mt-baker-map.html#cb29-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb29-4"><a href="mt-baker-map.html#cb29-4" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
-<span id="cb29-5"><a href="mt-baker-map.html#cb29-5" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="mt-baker-map.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb30-2"><a href="mt-baker-map.html#cb30-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb30-3"><a href="mt-baker-map.html#cb30-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb30-4"><a href="mt-baker-map.html#cb30-4" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
+<span id="cb30-5"><a href="mt-baker-map.html#cb30-5" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div>
 </div>
 <div id="prepratory-work" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Prepratory Work<a href="mt-baker-map.html#prepratory-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -1187,8 +1187,8 @@ div.csl-indent {
 <div id="the-data" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> The Data<a href="mt-baker-map.html#the-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>First we have a digital elevation model (DEM) of the area near the ski hill. I’ll read this in here using <code>raster</code> from the <code>terra</code> library. Note that these data are projected in UTM (EPSG:32610) so the units are in meters. The DEM has five meter resolution.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="mt-baker-map.html#cb30-1" tabindex="-1"></a>mtbDEM <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;data/mtbDEM.tif&quot;</span>)</span>
-<span id="cb30-2"><a href="mt-baker-map.html#cb30-2" tabindex="-1"></a>mtbDEM</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="mt-baker-map.html#cb31-1" tabindex="-1"></a>mtbDEM <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;data/mtbDEM.tif&quot;</span>)</span>
+<span id="cb31-2"><a href="mt-baker-map.html#cb31-2" tabindex="-1"></a>mtbDEM</span></code></pre></div>
 <pre><code>## class       : SpatRaster 
 ## size        : 409, 628, 1  (nrow, ncol, nlyr)
 ## resolution  : 5, 5  (x, y)
@@ -1198,33 +1198,33 @@ div.csl-indent {
 ## name        :      elev 
 ## min value   :  826.4308 
 ## max value   : 1689.3694</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="mt-baker-map.html#cb32-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb32-2"><a href="mt-baker-map.html#cb32-2" tabindex="-1"></a>mtbDEM_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mtbDEM, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb32-3"><a href="mt-baker-map.html#cb32-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb32-4"><a href="mt-baker-map.html#cb32-4" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> mtbDEM_df , <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
-<span id="cb32-5"><a href="mt-baker-map.html#cb32-5" tabindex="-1"></a>                                               <span class="at">fill =</span> elev)) <span class="sc">+</span> </span>
-<span id="cb32-6"><a href="mt-baker-map.html#cb32-6" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">100</span>)) <span class="sc">+</span></span>
-<span id="cb32-7"><a href="mt-baker-map.html#cb32-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Easting (m)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Northing (m)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-8"><a href="mt-baker-map.html#cb32-8" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="mt-baker-map.html#cb33-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
+<span id="cb33-2"><a href="mt-baker-map.html#cb33-2" tabindex="-1"></a>mtbDEM_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mtbDEM, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-3"><a href="mt-baker-map.html#cb33-3" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb33-4"><a href="mt-baker-map.html#cb33-4" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> mtbDEM_df , <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
+<span id="cb33-5"><a href="mt-baker-map.html#cb33-5" tabindex="-1"></a>                                               <span class="at">fill =</span> elev)) <span class="sc">+</span> </span>
+<span id="cb33-6"><a href="mt-baker-map.html#cb33-6" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb33-7"><a href="mt-baker-map.html#cb33-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Easting (m)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Northing (m)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="mt-baker-map.html#cb33-8" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div>
 <p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
 <p>This is very similar to the way that the carpentries workshop approached mapping where you take the raster layer from <code>rast</code> and then turn it into a <code>data.frame</code> for plotting. And that works fine. I’ve using the <code>tidyterra</code> library which has a <code>ggplot</code> geometry for the <code>SpatRaster</code> class. That seems easier to me. So here is a simpler approach using <code>geom_spatraster</code>. Oh, and <code>tidyterra</code> has some very cool color schemes. Look at <code>?hypso.colors</code>.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="mt-baker-map.html#cb33-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb33-2"><a href="mt-baker-map.html#cb33-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb33-3"><a href="mt-baker-map.html#cb33-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>)</span></code></pre></div>
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
-<p>Note that unlike <code>geom_raster()</code>, <code>geom_spatraster()</code> uses the projection information and shows us the plot using latitude and longitude. That can mess us up if we aren’t careful because the projection for <code>mtbDEM</code> is un UTM. If we wanted to we can plot in the original projection with <code>coord_sf()</code>.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="mt-baker-map.html#cb34-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb34-2"><a href="mt-baker-map.html#cb34-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb34-3"><a href="mt-baker-map.html#cb34-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb34-4"><a href="mt-baker-map.html#cb34-4" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">datum =</span> <span class="dv">32610</span>)</span></code></pre></div>
+<span id="cb34-3"><a href="mt-baker-map.html#cb34-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>)</span></code></pre></div>
+<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
+<p>Note that unlike <code>geom_raster()</code>, <code>geom_spatraster()</code> uses the projection information and shows us the plot using latitude and longitude. That can mess us up if we aren’t careful because the projection for <code>mtbDEM</code> is un UTM. If we wanted to we can plot in the original projection with <code>coord_sf()</code>.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="mt-baker-map.html#cb35-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb35-2"><a href="mt-baker-map.html#cb35-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="mt-baker-map.html#cb35-3" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb35-4"><a href="mt-baker-map.html#cb35-4" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">datum =</span> <span class="dv">32610</span>)</span></code></pre></div>
 <p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
 <p>Next, I made a hillshade layer from the elevation model.This is a common way to get a 3D representation of a surface that basically shines a light onto a surface at a specified angle and elevation to create shading the image. We need make a slope raster and an aspect raster in order to be able to calculate hillshade.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="mt-baker-map.html#cb35-1" tabindex="-1"></a>mtbSlope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;slope&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
-<span id="cb35-2"><a href="mt-baker-map.html#cb35-2" tabindex="-1"></a>mtbAspect <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;aspect&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
-<span id="cb35-3"><a href="mt-baker-map.html#cb35-3" tabindex="-1"></a>mtbHillshade <span class="ot">&lt;-</span> <span class="fu">shade</span>(mtbSlope, mtbAspect, <span class="at">angle =</span> <span class="dv">40</span>, <span class="at">direction =</span> <span class="dv">270</span>)</span>
-<span id="cb35-4"><a href="mt-baker-map.html#cb35-4" tabindex="-1"></a>mtbHillshade[mtbHillshade <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb35-5"><a href="mt-baker-map.html#cb35-5" tabindex="-1"></a><span class="fu">names</span>(mtbHillshade) <span class="ot">&lt;-</span> <span class="st">&quot;value&quot;</span> <span class="co"># these are unitless</span></span>
-<span id="cb35-6"><a href="mt-baker-map.html#cb35-6" tabindex="-1"></a>mtbHillshade</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="mt-baker-map.html#cb36-1" tabindex="-1"></a>mtbSlope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;slope&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
+<span id="cb36-2"><a href="mt-baker-map.html#cb36-2" tabindex="-1"></a>mtbAspect <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">&quot;aspect&quot;</span>, <span class="at">unit=</span><span class="st">&quot;radians&quot;</span>)</span>
+<span id="cb36-3"><a href="mt-baker-map.html#cb36-3" tabindex="-1"></a>mtbHillshade <span class="ot">&lt;-</span> <span class="fu">shade</span>(mtbSlope, mtbAspect, <span class="at">angle =</span> <span class="dv">40</span>, <span class="at">direction =</span> <span class="dv">270</span>)</span>
+<span id="cb36-4"><a href="mt-baker-map.html#cb36-4" tabindex="-1"></a>mtbHillshade[mtbHillshade <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb36-5"><a href="mt-baker-map.html#cb36-5" tabindex="-1"></a><span class="fu">names</span>(mtbHillshade) <span class="ot">&lt;-</span> <span class="st">&quot;value&quot;</span> <span class="co"># these are unitless</span></span>
+<span id="cb36-6"><a href="mt-baker-map.html#cb36-6" tabindex="-1"></a>mtbHillshade</span></code></pre></div>
 <pre><code>## class       : SpatRaster 
 ## size        : 409, 628, 1  (nrow, ncol, nlyr)
 ## resolution  : 5, 5  (x, y)
@@ -1235,26 +1235,26 @@ div.csl-indent {
 ## name        :    value 
 ## min value   : 0.000000 
 ## max value   : 0.999856</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="mt-baker-map.html#cb37-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb37-2"><a href="mt-baker-map.html#cb37-2" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb37-3"><a href="mt-baker-map.html#cb37-3" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="mt-baker-map.html#cb38-1" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
+<span id="cb38-2"><a href="mt-baker-map.html#cb38-2" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb38-3"><a href="mt-baker-map.html#cb38-3" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade)</span></code></pre></div>
 <p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
 <p>You can combine these with and show both rasters using transparency.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="mt-baker-map.html#cb38-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb38-2"><a href="mt-baker-map.html#cb38-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade) <span class="sc">+</span></span>
-<span id="cb38-3"><a href="mt-baker-map.html#cb38-3" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> <span class="fu">gray.colors</span>(<span class="dv">100</span>,</span>
-<span id="cb38-4"><a href="mt-baker-map.html#cb38-4" tabindex="-1"></a>                                            <span class="at">start =</span> <span class="fl">0.1</span>,</span>
-<span id="cb38-5"><a href="mt-baker-map.html#cb38-5" tabindex="-1"></a>                                            <span class="at">end =</span> <span class="fl">0.9</span>), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
-<span id="cb38-6"><a href="mt-baker-map.html#cb38-6" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
-<span id="cb38-7"><a href="mt-baker-map.html#cb38-7" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb38-8"><a href="mt-baker-map.html#cb38-8" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">name =</span> <span class="st">&quot;Elevation (m)&quot;</span>, </span>
-<span id="cb38-9"><a href="mt-baker-map.html#cb38-9" tabindex="-1"></a>                     <span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>,<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb38-10"><a href="mt-baker-map.html#cb38-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb38-11"><a href="mt-baker-map.html#cb38-11" tabindex="-1"></a>p1</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="mt-baker-map.html#cb39-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb39-2"><a href="mt-baker-map.html#cb39-2" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade) <span class="sc">+</span></span>
+<span id="cb39-3"><a href="mt-baker-map.html#cb39-3" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> <span class="fu">gray.colors</span>(<span class="dv">100</span>,</span>
+<span id="cb39-4"><a href="mt-baker-map.html#cb39-4" tabindex="-1"></a>                                            <span class="at">start =</span> <span class="fl">0.1</span>,</span>
+<span id="cb39-5"><a href="mt-baker-map.html#cb39-5" tabindex="-1"></a>                                            <span class="at">end =</span> <span class="fl">0.9</span>), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-6"><a href="mt-baker-map.html#cb39-6" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
+<span id="cb39-7"><a href="mt-baker-map.html#cb39-7" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
+<span id="cb39-8"><a href="mt-baker-map.html#cb39-8" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">name =</span> <span class="st">&quot;Elevation (m)&quot;</span>, </span>
+<span id="cb39-9"><a href="mt-baker-map.html#cb39-9" tabindex="-1"></a>                     <span class="at">palette =</span> <span class="st">&quot;usgs-gswa2&quot;</span>,<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="mt-baker-map.html#cb39-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb39-11"><a href="mt-baker-map.html#cb39-11" tabindex="-1"></a>p1</span></code></pre></div>
 <p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
 <p>Walk through the code and note how I added the hillshade in grey first and then added the elevation layer afterwards with a transparency. I used <code>new_scale_fill</code> from the <code>ggnewscale</code> library to allow for more than one scale for the fill aesthetic. Refer back to the last module for mapping hillshades for a different approach.</p>
 <p>Next, we have a shapefile of line data showing where the chairlifts are. I’ll read that in using <code>st_read()</code> from the <code>sf</code> library. These data are also projected in UTM.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="mt-baker-map.html#cb39-1" tabindex="-1"></a>chairs <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/mtbChairLines.shp&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="mt-baker-map.html#cb40-1" tabindex="-1"></a>chairs <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/mtbChairLines.shp&quot;</span>)</span></code></pre></div>
 <pre><code>## Reading layer `mtbChairLines&#39; from data source 
 ##   `/Users/andybunn/Documents/teaching/current/ESCI505/spatialNotes/data/mtbChairLines.shp&#39; 
 ##   using driver `ESRI Shapefile&#39;
@@ -1263,11 +1263,11 @@ div.csl-indent {
 ## Dimension:     XY
 ## Bounding box:  xmin: 596713.7 ymin: 5411451 xmax: 599131.5 ymax: 5412970
 ## Projected CRS: UTM_Zone_10_Northern_Hemisphere</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="mt-baker-map.html#cb41-1" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data=</span>chairs)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="mt-baker-map.html#cb42-1" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data=</span>chairs)</span></code></pre></div>
 <p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
 <p>And finally, here is the location of the three lodges stored in a simple csv file.The coordinates are in UTM as above.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="mt-baker-map.html#cb42-1" tabindex="-1"></a>buildings <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/mtbLodges.csv&quot;</span>)</span>
-<span id="cb42-2"><a href="mt-baker-map.html#cb42-2" tabindex="-1"></a>buildings</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="mt-baker-map.html#cb43-1" tabindex="-1"></a>buildings <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/mtbLodges.csv&quot;</span>)</span>
+<span id="cb43-2"><a href="mt-baker-map.html#cb43-2" tabindex="-1"></a>buildings</span></code></pre></div>
 <pre><code>##          X       Y                    id
 ## 1 598732.6 5412985    White Salmon Lodge
 ## 2 596891.9 5412928 Heather Meadows Lodge
