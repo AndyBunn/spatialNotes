@@ -2,43 +2,64 @@
 
 
 
-## Calculating Variance By Hand
+## What's Going On Here
 
-This is a very quick adaptation of calculating the variance in kriging by hand. This came from used Prof Ashton Shortridge at MSU and he gave me permission to share this with you. It was hosted on his univ web page but as he told me:
+When we use `gstat` to krige, we hand it a variogram model and some data and it hands back predictions and variances. That's great. But it can feel like a black box. This aside cracks it open.
 
-"Unfortunately MSU, in its wisdom, decided to eliminate home pages, and I have had to move to our course management software...When I have time (hah!), I'd like to post the course stuff somewhere public. For now I'll just pass along the updated manual kriging pages - feel free to use as you see fit."
+The goal is simple: take a small toy dataset, calculate kriging weights and prediction variance by hand using matrix algebra, and then check our work against `gstat`. If we did it right, the numbers should match exactly.
 
-What a cool guy!
+You don't need to do anything here and most of what follows is linear algebra dressed up in geostatistical clothing. But if you've ever wondered what `gstat` is actually solving when it does kriging, this is it.
 
-So, here is an example of how to get the variance on ordinary and simple kriging by hand if you want to go down this particular rabbit hole. There is nothing specifically for you to do here, but I think it's fun to work through these calculations manually. But I'm odd like that.
+This example is adapted from Prof. Ashton Shortridge at MSU, who was kind enough to share it. It's based on Box 6.2 in Burrough & McDonnell, *Principles of GIS* (1998), though with a corrected typo from the book. As Ashton put it when I asked to share it:
 
+> "Unfortunately MSU, in its wisdom, decided to eliminate home pages...When I have time (hah!), I'd like to post the course stuff somewhere public. For now I'll just pass along the updated manual kriging pages - feel free to use as you see fit."
 
+What a cool guy.
+
+## The Setup
+
+We need a few packages and a toy dataset. Five points with known values (`z`) scattered in a 10x10 space, and we want to predict `z` at the location (5,5).
 
 
 ``` r
-#################################################################
-#
-# Manual krig example: code for manual simple and ordinary 
-# kriging using the coordinates in Box 6.2 in Burrough & 
-# McDonnell, Principles of GIS (1998). However, 
-# results are a bit different, as there was a typo in the book.
-#  written by A. Shortridge 3/2004, 3/2007, 10/2013, 10/2014
-#
-#################################################################
+library(gstat)
+library(fields)
+library(ggplot2)
+library(ggrepel)
+```
 
 
-#################################################################
-#
-# Covar funcs for spherical, exponential, and Gaussian models
-#
-# Given a set of parameters and a matrix of distances, these 
-# functions will spit out covariances.
-#
-#################################################################
+``` r
+dat <- data.frame(x = c(2,3,9,6,5), y = c(2,7,9,5,3), z = c(3,4,2,4,6))
+```
 
+Let's map it so we can see what we're working with. The purple point is our prediction target.
+
+
+``` r
+dat2 <- rbind(dat, data.frame(x=5, y=5, z="?"))
+dat2$lbls <- paste("(", dat2$x, ",", dat2$y, ") z=", dat2$z, sep="")
+dat2$cols <- factor(c(rep("black",5), "purple"))
+
+ggplot(data=dat2, mapping=aes(x=x, y=y, col=cols, label=lbls)) + 
+  geom_point() +
+  geom_label_repel() +
+  lims(x=c(0,10), y=c(0,10)) +
+  scale_color_identity() +
+  coord_equal() +
+  labs(subtitle = "Kriging: X marks the spot")
+```
+
+<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" />
+
+## The Covariance Functions
+
+Kriging works in covariance space rather than semivariance space, so we need covariance functions corresponding to the variogram models we already know -- spherical, exponential, and Gaussian. These functions take a matrix of distances and the variogram parameters (nugget, sill, range) and return covariances.
+
+
+``` r
 spher.covar <- function(dist, nugget, sill, range) {
    sigma <- sill + nugget
-   # Covariance(h) = Sigma + Gamma(h)
    covar <- matrix(0, nrow=nrow(dist), ncol=ncol(dist))
    for (i in 1:nrow(covar)) {
       for (j in 1:ncol(covar)) {
@@ -53,7 +74,6 @@ spher.covar <- function(dist, nugget, sill, range) {
    return(covar)
 }
 
-
 exp.covar <- function(dist, nugget, sill, range) {
    sigma <- sill + nugget
    covar <- matrix(0, nrow=nrow(dist), ncol=ncol(dist))
@@ -61,14 +81,13 @@ exp.covar <- function(dist, nugget, sill, range) {
       for (j in 1:ncol(covar)) {
          if (dist[i,j] == 0) {
             covar[i,j] <- sigma
-         }
-         else 
+         } else {
             covar[i,j] <- sill * exp(-dist[i,j]/range)
+         }
       }
    }
    return(covar)
 }
-
 
 gauss.covar <- function(dist, nugget, sill, range) {
    sigma <- sill + nugget
@@ -77,120 +96,74 @@ gauss.covar <- function(dist, nugget, sill, range) {
       for (j in 1:ncol(covar)) {
          if (dist[i,j] == 0) {
             covar[i,j] <- sigma
-         }
-         else 
+         } else {
             covar[i,j] <- sill * exp(-dist[i,j]^2/range^2)
+         }
       }
    }
    return(covar)
 }
-
-
-#################################################################
-#
-# Worked example
-#
-#################################################################
-
-library(gstat)
-library(fields)
 ```
 
-```
-## Loading required package: spam
-```
+## Building the Covariance Matrix and Vector
 
-```
-## Spam version 2.11-3 (2026-01-05) is loaded.
-## Type 'help( Spam)' or 'demo( spam)' for a short introduction 
-## and overview of this package.
-## Help for individual functions is also obtained by adding the
-## suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
-```
+We need two things: **K**, a 5x5 matrix of covariances between all pairs of observed points, and **k**, a vector of covariances between each observed point and our prediction location (5,5). We use `rdist()` from the `fields` package to compute the distances.
 
-```
-## 
-## Attaching package: 'spam'
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     backsolve, forwardsolve
-```
-
-```
-## Loading required package: viridisLite
-```
-
-```
-## Loading required package: RColorBrewer
-```
-
-```
-## 
-## Try help(fields) to get started.
-```
 
 ``` r
-library(ggplot2)
-library(ggrepel)
-
-## Set up data and distance matrix/vector
-dat <- data.frame(x=c(2,3,9,6,5),y=c(2,7,9,5,3), z=c(3,4,2,4,6))
-dmat <- round(rdist(cbind(dat$x,dat$y)), digits=4)  # covariance matrix
-dvec <- round(rdist(cbind(dat$x,dat$y), cbind(5,5)), digits=4) # cov vector
-
-## Map
-dat2 <- dat
-dat2 <- rbind(dat,data.frame(x=5,y=5,z="?"))
-
-dat2$lbls <- paste("(",dat2$x,",",dat2$y, ") z=",dat2$z,sep="")
-dat2$cols <- factor(c(rep("black",5),"purple"))
-
-p1 <- ggplot(data=dat2,mapping=aes(x=x,y=y,col=cols,label=lbls)) + 
-   geom_point() +
-   geom_label_repel() +
-   lims(x=c(0,10),y=c(0,10)) +
-   scale_color_identity() +
-   coord_equal() +
-   labs(subtitle = "Kriging: X marks the spot")
-p1
+dmat <- round(rdist(cbind(dat$x, dat$y)), digits=4)               # distances among observed points
+dvec <- round(rdist(cbind(dat$x, dat$y), cbind(5,5)), digits=4)   # distances to prediction location
 ```
 
-<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" />
+We'll use a Gaussian variogram model with these parameters -- chosen to be reasonable for our toy data, not fit to it.
+
 
 ``` r
-## Define the model
-vmod="Gau"
+vmod   <- "Gau"
 nugget <- 2.5
-sill <- 7.5
-range <- 10
+sill   <- 7.5
+range  <- 10
 
-## Build matrix and vector of covariances using gauss.covar()
-K <- gauss.covar(dmat, nugget, sill, range)  
-k <- gauss.covar(dvec, nugget, sill, range)
+K <- gauss.covar(dmat, nugget, sill, range)  # covariance matrix among observed points
+k <- gauss.covar(dvec, nugget, sill, range)  # covariance vector to prediction location
+```
+
+## Simple Kriging
+
+Simple kriging (SK) assumes the mean of the process is **known**. Here we use the sample mean as a stand-in. The kriging weights are $\mathbf{w} = \mathbf{K}^{-1}\mathbf{k}$, and the prediction is a weighted sum of deviations from the mean, added back to the mean. The kriging variance tells us how uncertain we are.
 
 
-## First Simple Kriging
-wts.sk<- solve(K)%*%k
-est.sk <- sum(wts.sk*(dat$z-mean(dat$z)))+mean(dat$z)  # note the business with the mean.
-var.sk <- (sill + nugget) - t(k)%*%solve(K)%*%k
+``` r
+wts.sk <- solve(K) %*% k
+est.sk  <- sum(wts.sk * (dat$z - mean(dat$z))) + mean(dat$z)
+var.sk  <- (sill + nugget) - t(k) %*% solve(K) %*% k
+```
 
-## Now Ordinary Kriging
+## Ordinary Kriging
+
+Ordinary kriging (OK) doesn't assume we know the mean -- it estimates it from the data. To enforce the constraint that the weights must sum to 1, we augment the covariance matrix with a row and column of ones and introduce a Lagrange multiplier. The matrix grows from 5x5 to 6x6 and we solve the augmented system.
+
+
+``` r
 K <- cbind(K, rep(1, nrow(K)))
-K <- rbind(K, c(rep(1, ncol(K)-1),0))
-k <- c(k,1)
-wts.ok <- solve(K)%*%k
-est.ok <- sum(wts.ok[-length(wts.ok)]*dat$z)  # minus length bit excludes the lagrangian
-var.ok <- (sill + nugget) - t(k)%*%solve(K)%*%k
+K <- rbind(K, c(rep(1, ncol(K)-1), 0))
+k <- c(k, 1)
 
-## Check the estimates with gstat's krige() function
-dat.vgram <- vgm(model=vmod, psill=sill, 
-                 nugget=nugget, range=range)
+wts.ok <- solve(K) %*% k
+est.ok  <- sum(wts.ok[-length(wts.ok)] * dat$z)  # drop the Lagrange multiplier from the sum
+var.ok  <- (sill + nugget) - t(k) %*% solve(K) %*% k
+```
+
+## Checking Against gstat
+
+Now we verify our hand calculations against `gstat`. If the math is right, the estimates and variances should match.
+
+
+``` r
+dat.vgram <- vgm(model=vmod, psill=sill, nugget=nugget, range=range)
+
 est2.sk <- krige(z~1, ~x+y, data=dat, model=dat.vgram, 
-                 newdata=data.frame(x=5,y=5), 
-                 beta=mean(dat$z))
+                 newdata=data.frame(x=5,y=5), beta=mean(dat$z))
 ```
 
 ```
@@ -207,10 +180,14 @@ est2.ok <- krige(z~1, ~x+y, data=dat, model=dat.vgram,
 ```
 
 ``` r
-res.df <- data.frame(type=c('manual SK', 'gstat SK', 'manual OK', 'gstat OK'),
-                     est = c(round(est.sk, 3),round(est2.sk$var1.pred, 3), round(est.ok, 3), round(est2.ok$var1.pred, 3)),
-                     var=c(round(var.sk, 3),round(est2.sk$var1.var, 3), round(var.ok, 3), round(est2.ok$var1.var, 3)))
-res.df  # They'd better match up here
+res.df <- data.frame(
+  type = c('manual SK', 'gstat SK', 'manual OK', 'gstat OK'),
+  est  = c(round(est.sk, 3), round(est2.sk$var1.pred, 3), 
+           round(est.ok, 3), round(est2.ok$var1.pred, 3)),
+  var  = c(round(var.sk, 3), round(est2.sk$var1.var, 3), 
+           round(var.ok, 3), round(est2.ok$var1.var, 3))
+)
+res.df
 ```
 
 ```
@@ -221,57 +198,49 @@ res.df  # They'd better match up here
 ## 4  gstat OK 4.072 3.157
 ```
 
+They match. That's the point. `gstat` is solving the same system of equations -- we just did it by hand to see how the sausage is made.
+
+## The Results
+
+Finally, let's visualize the results with the weights and prediction variance labeled on the map.
+
+
 ``` r
-## Plot SK Graph
 dat3 <- dat2
+dat3$lbls <- paste("(", dat3$x, ",", dat3$y, ") z=", dat3$z,
+                   ", wt=", c(round(wts.sk, 2)[,1], ""), sep="")
+dat3$lbls[6] <- paste("(5,5) z=", round(est.sk,3),
+                      ", var=", round(sqrt(var.sk), 3), sep="")
 
-
-dat3$lbls <- paste("(",
-                   dat3$x,
-                   ",",
-                   dat3$y, 
-                   ") z=",
-                   dat3$z,
-                   ", wt=",
-                   c(round(wts.sk, 2)[,1],""),
-                   sep="")
-dat3$lbls[6] <- paste("(5,5) z=",
-                      round(est.sk,3),
-                      ", var=",
-                      round(sqrt(var.sk), 3),
-                      sep="")
-
-p2 <- ggplot(data=dat3,mapping=aes(x=x,y=y,col=cols,label=lbls)) + 
-   geom_point() +
-   geom_label_repel() +
-   lims(x=c(0,10),y=c(0,10)) +
-   scale_color_identity() +
-   coord_equal() +
-   labs(subtitle = paste("Simple Kriging; Model=", vmod, ", nug=", nugget, 
-                         ", psill=", sill, ", range=", range, sep=""))
-p2
+ggplot(data=dat3, mapping=aes(x=x, y=y, col=cols, label=lbls)) + 
+  geom_point() +
+  geom_label_repel() +
+  lims(x=c(0,10), y=c(0,10)) +
+  scale_color_identity() +
+  coord_equal() +
+  labs(subtitle = paste("Simple Kriging; Model=", vmod, 
+                        ", nug=", nugget, ", psill=", sill, 
+                        ", range=", range, sep=""))
 ```
 
-<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-2.png" alt="" width="672" />
+<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" />
+
 
 ``` r
-## Change the weights vectors for plotting
-dat3$lbls[6] <- paste("(5,5) z=",
-                      round(est.ok,3),
-                      ", var=",
-                      round(sqrt(var.ok), 3),
-                      sep="")
+dat3$lbls[6] <- paste("(5,5) z=", round(est.ok,3),
+                      ", var=", round(sqrt(var.ok), 3), sep="")
 
-## Plot OK Graph
-p3 <- ggplot(data=dat3,mapping=aes(x=x,y=y,col=cols,label=lbls)) + 
-   geom_point() +
-   geom_label_repel() +
-   lims(x=c(0,10),y=c(0,10)) +
-   scale_color_identity() +
-   coord_equal() +
-   labs(subtitle = paste("Ordinary Kriging; Model=", vmod, ", nug=", nugget, 
-                         ", psill=", sill, ", range=", range, sep=""))
-p3
+ggplot(data=dat3, mapping=aes(x=x, y=y, col=cols, label=lbls)) + 
+  geom_point() +
+  geom_label_repel() +
+  lims(x=c(0,10), y=c(0,10)) +
+  scale_color_identity() +
+  coord_equal() +
+  labs(subtitle = paste("Ordinary Kriging; Model=", vmod, 
+                        ", nug=", nugget, ", psill=", sill, 
+                        ", range=", range, sep=""))
 ```
 
-<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-2-3.png" alt="" width="672" />
+<img src="06xAsideGeostatsKrigingVariance_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" />
+
+Notice that ordinary kriging gives slightly higher variance than simple kriging. That makes sense -- OK has to estimate the mean from the data rather than assuming it's known, so there's an additional source of uncertainty baked into the prediction.

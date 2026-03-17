@@ -26,7 +26,7 @@ Ok. We have a new object called `fit` that is a `list` with a bunch of stuff in 
 str(fit)
 ```
 
-That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn't obvious. For instance, the object `fit` doesn’t directly contain the $R^2$ or p-values. Those are computed when you call `summary(fit)`.
+That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn't obvious. For instance, the t-statistics, p-values, and $R^2$ aren't sitting there waiting for you — `summary()` computes them on the fly from what *is* stored. That's part of what `summary.lm` actually does.
 
 ```{r}
 summary(fit)
@@ -38,7 +38,7 @@ Ok. Check that out. We got a really nice formatted output that helps us interpre
 summary(mtcars$mpg)
 ```
 
-### Same Function, Different Behavior — What Gives?
+### Same Function, Different Behavior. What Gives?
 
 We used the same function (`summary`) and got two very different results.  
 Answer? **Generics and methods.**
@@ -54,12 +54,23 @@ Here’s what R does when you call `summary(fit)`:
 3. If it finds that method, it runs it.
 4. If not, it falls back to `summary.default()`.
 
+This system is called S3. It's the oldest and most common object system in R, and it's what you'll encounter in almost every package you use in this course.
+
 You can look under the hood:
 
 ```{r}
 class(fit)
+```
+
+That tells you `fit` is of class `"lm"`. Now you can see all the methods that exist for `summary`:
+
+```{r}
 methods(summary)
-summary.lm
+```
+
+And if you want to see the actual code that runs when you call `summary(fit)`, use `getS3method`:
+
+```{r}
 getS3method("summary", "lm")
 ```
 
@@ -82,7 +93,6 @@ summary
 
 This call to `UseMethod("summary")` tells R to dispatch to the right method depending on the class of the object.
 
----
 
 ## Common Generic Functions
 
@@ -114,4 +124,6 @@ class(fit)
 
 ## Why This Matters
 
-Understanding how generics and methods work helps you read other people’s code, write better functions, and make sense of R’s behavior when things feel a little magic.
+Understanding how generics and methods work helps you read other people's code, write better functions, and make sense of R's behavior when things feel a little magic.
+
+You'll see this pattern come up throughout the course. When we work with spatial objects — things like `sf` features or `ppp` point patterns — the same idea applies. `plot()`, `summary()`, `print()` all do the right thing because someone wrote a method for that class. Now you know how.

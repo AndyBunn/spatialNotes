@@ -26,33 +26,40 @@ output:
 
 # Welcome
 
-This document is a compilation of notes, examples, and exercises developed for our course on spatial analysis, with a particular focus on environmental applications. Rather than follow a traditional textbook, we’ve taken a modular, hands-on approach. Each section builds on what came before, emphasizing interpretation, practical tools, and critical thinking about how spatial models apply to real-world environmental questions.
+These are the course notes for ESCI 505. They are not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
 
-You’ll find annotated code, worked examples, and commentary throughout — some informal, some technical — all aimed at helping you *do* spatial work, not just read about it. The examples often draw from environmental data: climate records, ecological spatial, and other systems that change over time and space. But the core ideas and tools are broadly applicable.
+The notes are hands-on by design. You will write code, look at data, make maps, fit models, and interpret results. Each section builds on what came before. The math shows up when it needs to, but the emphasis throughout is on doing spatial analysis and understanding what you're doing -- not on deriving things for their own sake.
 
-From time to time, I’ll refer you to more formal textbooks or peer-reviewed articles to go deeper into theory, context, or application. These serve as complements, not replacements, for what we’re doing here.
+I'll point you to textbooks and papers along the way. Read them. They complement what we're doing here and will matter when you're working on your own data and I'm not around to ask.
 
-The tone of these notes is meant to be accessible, pragmatic, and occasionally opinionated. You’ll see suggestions, cautions, and nudges — all based on what I’ve found helpful (and confusing) when learning and teaching these methods.
+These notes are a living document. They change based on what works, what doesn't, and what you ask about in class. If something is wrong or unclear, tell me.
 
-This isn’t a comprehensive or final text. It’s a live document, shaped by your questions, feedback, and curiosity. Think of it as a field guide: not everything you’ll ever need, but hopefully exactly what you need to get your bearings, spot the patterns, and know what to do next.
-
-*This is a living document — feedback and corrections are always welcome.*
-
-## What’s in These Notes
+## What's in These Notes
 
 The notes move through the core ideas of spatial analysis in roughly this order:
 
-- **Introduction to Geospatial Concepts** *(Data Carpentry)* — A common baseline on how geospatial data are organized, stored, and projected, for students coming in with varying levels of GIS experience.
-- **Mt Baker Map** — A practical introduction to handling raster and vector spatial data in R, using elevation and infrastructure data.
-- **Point Patterns** — How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
-- **Spatial Autocorrelation** — How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
-- **Deterministic Interpolation: Inverse Distance Weighting** — Predicting values at unsampled locations using a deterministic, distance-weighted average of nearby observations.
-- **Deterministic Interpolation:  Thin-Plate Splines** — A smooth, flexible interpolation method based on radial basis functions that minimizes curvature across the surface.
-- **Probabilistic Interpolation:  Kriging** — A probabilistic interpolation method that uses the spatial structure of the data to predict unknown values and quantify prediction uncertainty.
-- **Probabilistic Interpolation:  Regression Kriging** — An addition to Kirgging using external predictors for interpolation.
-- **Regression: GLS with Autocorrelated Residuals** — How to fit a regression model that properly accounts for spatial autocorrelation in the residuals using generalized least squares.
+- **Introduction to Geospatial Concepts** *(Data Carpentry)* -- Before we can analyze spatial data, we need to be able to handle it. These workshops get you there. Think of it as building the workbench before we start making things.
+- **An Aside: Methods and Generics in R** -- A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why `plot()` and `summary()` behave differently depending on what you give them.
+- **Mt Baker Map** -- A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
+- **Point Patterns** -- How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
+- **Intro to Autocorrelation** -- How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
+- **Geostats I: Inverse Distance Weighting** -- Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
+- **Geostats I: Thin-Plate Splines** -- A smooth, flexible interpolation method that minimizes curvature across the surface.
+- **Geostats II: Kriging** -- The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.
+- **Geostats II: Regression Kriging** -- Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.
+- **Regression: GLS with Autocorrelated Residuals** -- What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
 
-Each chapter builds on the last, so working through them in order is recommended — though the asides can be read independently.
+The asides are optional deep dives. They won't be on any assignment, but they're there if you want to understand what's happening under the hood.
+
+Each chapter builds on the last, so working through them in order is recommended.
+
+## Go Do Great Things
+
+You are going to learn to see the world spatially. That sounds dramatic, but I mean it practically: by the end of this course you will be able to look at a dataset, ask where things are happening and why, and have real tools to answer those questions. That is not a small thing.
+
+The people who do this work well are not necessarily the ones who find it easiest. They're the ones who run the code when it breaks, read the error messages, ask questions, and keep going. That's it. That's the whole secret.
+
+So: set up your project, download the data, and let's get to work.
 
 ## Technical Setup
 
@@ -90,16 +97,30 @@ Once it's unzipped your folder structure should look something like this:
 
 In your code, use paths like `"data/birdRichnessMexico.rds"` rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g.,
 
-```
+```{r}
 birdRichness <-  readRDS("data/birdRichnessMexico.rds")
 ```
+
+
+4. **Save your Rmd files in the project root**
+
+When you make a Rmd file for your work, save it in the project's root directory. For instance if you have the first two assignments saved in files called "MtBakerHomework.Rmd" and "pointPatternHomework.Rmd," your file and folder structure might look something like this:
+
+   spatial-course/
+   ├── data/
+   │   ├── birdRichnessMexico.rds
+   │   ├── mtbDEM.tif
+   │   └── ...
+   ├── MtBakerHomework.Rmd
+   ├── pointPatternHomework.Rmd
+   └── spatial-course.Rproj
 
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'tidyverse', 'terra', 'sf', 'ggnewscale','tidyterra',
-  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap','nlme'),
+  'spatstat', 'ncf', 'spdep', 'gstat', 'tmap','nlme', 'fields', 'ggrepel'),
 'packages.bib')
 # to build everything in docs/.
 # bookdown::render_book() 

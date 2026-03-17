@@ -88,7 +88,7 @@ str(fit)
 ##  - attr(*, "class")= chr "lm"
 ```
 
-That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn't obvious. For instance, the object `fit` doesn’t directly contain the $R^2$ or p-values. Those are computed when you call `summary(fit)`.
+That list has 12 things in it including the coefficients, residuals, fitted values and a lot more. But getting the information you want in terms of interpreting the linear model isn't obvious. For instance, the t-statistics, p-values, and $R^2$ aren't sitting there waiting for you — `summary()` computes them on the fly from what *is* stored. That's part of what `summary.lm` actually does.
 
 
 ``` r
@@ -128,7 +128,7 @@ summary(mtcars$mpg)
 ##   10.40   15.43   19.20   20.09   22.80   33.90
 ```
 
-### Same Function, Different Behavior — What Gives?
+### Same Function, Different Behavior. What Gives?
 
 We used the same function (`summary`) and got two very different results.  
 Answer? **Generics and methods.**
@@ -144,6 +144,8 @@ Here’s what R does when you call `summary(fit)`:
 3. If it finds that method, it runs it.
 4. If not, it falls back to `summary.default()`.
 
+This system is called S3. It's the oldest and most common object system in R, and it's what you'll encounter in almost every package you use in this course.
+
 You can look under the hood:
 
 
@@ -154,6 +156,9 @@ class(fit)
 ```
 ## [1] "lm"
 ```
+
+That tells you `fit` is of class `"lm"`. Now you can see all the methods that exist for `summary`:
+
 
 ``` r
 methods(summary)
@@ -182,116 +187,8 @@ methods(summary)
 ## see '?methods' for accessing help and source code
 ```
 
-``` r
-summary.lm
-```
+And if you want to see the actual code that runs when you call `summary(fit)`, use `getS3method`:
 
-```
-## function (object, correlation = FALSE, symbolic.cor = FALSE, 
-##     ...) 
-## {
-##     z <- object
-##     p <- z$rank
-##     rdf <- z$df.residual
-##     if (p == 0) {
-##         r <- z$residuals
-##         n <- length(r)
-##         w <- z$weights
-##         if (is.null(w)) {
-##             rss <- sum(r^2)
-##         }
-##         else {
-##             rss <- sum(w * r^2)
-##             r <- sqrt(w) * r
-##         }
-##         resvar <- rss/rdf
-##         ans <- z[c("call", "terms", if (!is.null(z$weights)) "weights")]
-##         class(ans) <- "summary.lm"
-##         ans$aliased <- is.na(coef(object))
-##         ans$residuals <- r
-##         ans$df <- c(0L, n, length(ans$aliased))
-##         ans$coefficients <- matrix(NA_real_, 0L, 4L, dimnames = list(NULL, 
-##             c("Estimate", "Std. Error", "t value", "Pr(>|t|)")))
-##         ans$sigma <- sqrt(resvar)
-##         ans$r.squared <- ans$adj.r.squared <- 0
-##         ans$cov.unscaled <- matrix(NA_real_, 0L, 0L)
-##         if (correlation) 
-##             ans$correlation <- ans$cov.unscaled
-##         return(ans)
-##     }
-##     if (is.null(z$terms)) 
-##         stop("invalid 'lm' object:  no 'terms' component")
-##     if (!inherits(object, "lm")) 
-##         warning("calling summary.lm(<fake-lm-object>) ...")
-##     Qr <- qr.lm(object)
-##     n <- NROW(Qr$qr)
-##     if (is.na(z$df.residual) || n - p != z$df.residual) 
-##         warning("residual degrees of freedom in object suggest this is not an \"lm\" fit")
-##     r <- z$residuals
-##     f <- z$fitted.values
-##     if (!is.null(z$offset)) {
-##         f <- f - z$offset
-##     }
-##     w <- z$weights
-##     if (is.null(w)) {
-##         mss <- if (attr(z$terms, "intercept")) 
-##             sum((f - mean(f))^2)
-##         else sum(f^2)
-##         rss <- sum(r^2)
-##     }
-##     else {
-##         mss <- if (attr(z$terms, "intercept")) {
-##             m <- sum(w * f/sum(w))
-##             sum(w * (f - m)^2)
-##         }
-##         else sum(w * f^2)
-##         rss <- sum(w * r^2)
-##         r <- sqrt(w) * r
-##     }
-##     resvar <- rss/rdf
-##     if (is.finite(resvar) && resvar < (mean(f)^2 + var(c(f))) * 
-##         1e-30) 
-##         warning("essentially perfect fit: summary may be unreliable")
-##     p1 <- 1L:p
-##     R <- chol2inv(Qr$qr[p1, p1, drop = FALSE])
-##     se <- sqrt(diag(R) * resvar)
-##     est <- z$coefficients[Qr$pivot[p1]]
-##     tval <- est/se
-##     ans <- z[c("call", "terms", if (!is.null(z$weights)) "weights")]
-##     ans$residuals <- r
-##     ans$coefficients <- cbind(Estimate = est, `Std. Error` = se, 
-##         `t value` = tval, `Pr(>|t|)` = 2 * pt(abs(tval), rdf, 
-##             lower.tail = FALSE))
-##     ans$aliased <- is.na(z$coefficients)
-##     ans$sigma <- sqrt(resvar)
-##     ans$df <- c(p, rdf, NCOL(Qr$qr))
-##     if (p != attr(z$terms, "intercept")) {
-##         df.int <- if (attr(z$terms, "intercept")) 
-##             1L
-##         else 0L
-##         ans$r.squared <- mss/(mss + rss)
-##         ans$adj.r.squared <- 1 - (1 - ans$r.squared) * ((n - 
-##             df.int)/rdf)
-##         ans$fstatistic <- c(value = (mss/(p - df.int))/resvar, 
-##             numdf = p - df.int, dendf = rdf)
-##     }
-##     else ans$r.squared <- ans$adj.r.squared <- 0
-##     ans$cov.unscaled <- R
-##     dimnames(ans$cov.unscaled) <- dimnames(ans$coefficients)[c(1, 
-##         1)]
-##     if (correlation) {
-##         ans$correlation <- (R * resvar)/outer(se, se)
-##         dimnames(ans$correlation) <- dimnames(ans$cov.unscaled)
-##         ans$symbolic.cor <- symbolic.cor
-##     }
-##     if (!is.null(z$na.action)) 
-##         ans$na.action <- z$na.action
-##     class(ans) <- "summary.lm"
-##     ans
-## }
-## <bytecode: 0x120863240>
-## <environment: namespace:stats>
-```
 
 ``` r
 getS3method("summary", "lm")
@@ -400,7 +297,7 @@ getS3method("summary", "lm")
 ##     class(ans) <- "summary.lm"
 ##     ans
 ## }
-## <bytecode: 0x120863240>
+## <bytecode: 0x11aff8888>
 ## <environment: namespace:stats>
 ```
 
@@ -425,13 +322,12 @@ summary
 ```
 ## function (object, ...) 
 ## UseMethod("summary")
-## <bytecode: 0x12086cb80>
+## <bytecode: 0x11aff7938>
 ## <environment: namespace:base>
 ```
 
 This call to `UseMethod("summary")` tells R to dispatch to the right method depending on the class of the object.
 
----
 
 ## Common Generic Functions
 
@@ -623,7 +519,7 @@ getS3method("summary", "lm")
 ##     class(ans) <- "summary.lm"
 ##     ans
 ## }
-## <bytecode: 0x120863240>
+## <bytecode: 0x11aff8888>
 ## <environment: namespace:stats>
 ```
 
@@ -637,4 +533,6 @@ class(fit)
 
 ## Why This Matters
 
-Understanding how generics and methods work helps you read other people’s code, write better functions, and make sense of R’s behavior when things feel a little magic.
+Understanding how generics and methods work helps you read other people's code, write better functions, and make sense of R's behavior when things feel a little magic.
+
+You'll see this pattern come up throughout the course. When we work with spatial objects — things like `sf` features or `ppp` point patterns — the same idea applies. `plot()`, `summary()`, `print()` all do the right thing because someone wrote a method for that class. Now you know how.
