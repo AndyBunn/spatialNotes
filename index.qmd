@@ -1,0 +1,295 @@
+---
+toc: false
+page-layout: custom
+sidebar: false
+title: ""
+subtitle: ""
+description: ""
+author: ""
+date: ""
+---
+
+```{=html}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Libre+Baskerville:ital@1&display=swap');
+
+  /* Kill Quarto's auto-generated title block on cover page */
+  #title-block-header { display: none !important; }
+
+  /* Scoped reset -- do NOT use * {} or it kills Quarto's navbar */
+  .banner, .banner * { box-sizing: border-box; }
+
+  .banner {
+    width: 100%;
+    height: calc(100vh - 60px);
+    position: relative;
+    background: #0d1a14;
+    overflow: hidden;
+    font-family: 'Source Code Pro', monospace;
+    margin: 0;
+    padding: 0;
+  }
+
+  .topo-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+  }
+
+  .color-wash {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      #0d1a14 0%,
+      #0f2318 20%,
+      #102b1e 35%,
+      #0e2233 55%,
+      #0b1a2e 75%,
+      #091525 100%
+    );
+  }
+
+  .grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.06;
+  }
+
+  .blob1 {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(52, 152, 100, 0.12) 0%, transparent 70%);
+    top: -150px;
+    right: 100px;
+  }
+  .blob2 {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(41, 128, 185, 0.10) 0%, transparent 70%);
+    bottom: -100px;
+    left: 200px;
+  }
+  .blob3 {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(22, 180, 120, 0.08) 0%, transparent 70%);
+    top: 50px;
+    left: 500px;
+  }
+
+  .accent-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, #2ecc71 0%, #3498db 50%, #1abc9c 100%);
+  }
+
+  .content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 64px 48px 80px;
+  }
+
+  .enter-button {
+    display: inline-block;
+    margin-bottom: 32px;
+    align-self: flex-start;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: #4dd9a0;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 1px solid #2a6a52;
+    padding: 12px 28px;
+    border-radius: 2px;
+    background: rgba(46, 204, 113, 0.06);
+    transition: background 0.2s, color 0.2s;
+  }
+  .enter-button:hover {
+    background: rgba(46, 204, 113, 0.14);
+    color: #6ef5be;
+  }
+
+  .banner-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 58px;
+    line-height: 1.05;
+    color: #f0ede6;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .banner-title .accent-word {
+    color: #4dd9a0;
+    font-style: italic;
+    font-weight: 700;
+  }
+
+  .banner-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: #8badb5;
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+
+  .tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #4a7c6a;
+    border: 1px solid #1e4a38;
+    padding: 4px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    background: rgba(46, 204, 113, 0.04);
+  }
+
+  .right-panel {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 320px;
+    height: 280px;
+    opacity: 0.7;
+  }
+
+  .bottom-rule {
+    position: absolute;
+    bottom: 52px;
+    left: 80px;
+    right: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, #1e4a38, #1a3a52, transparent);
+  }
+
+  .credit {
+    position: absolute;
+    bottom: 24px;
+    left: 80px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: #4a7c6a;
+    text-transform: uppercase;
+  }
+</style>
+
+<div class="banner">
+  <div class="color-wash"></div>
+
+  <svg class="topo-layer" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>.contour { fill: none; stroke: #4dd9a0; stroke-width: 0.8; }</style>
+    </defs>
+    <ellipse class="contour" cx="950" cy="180" rx="310" ry="190"/>
+    <ellipse class="contour" cx="955" cy="178" rx="265" ry="158"/>
+    <ellipse class="contour" cx="960" cy="175" rx="220" ry="128"/>
+    <ellipse class="contour" cx="963" cy="172" rx="178" ry="100"/>
+    <ellipse class="contour" cx="966" cy="170" rx="138" ry="76"/>
+    <ellipse class="contour" cx="968" cy="168" rx="100" ry="55"/>
+    <ellipse class="contour" cx="970" cy="167" rx="66" ry="36"/>
+    <ellipse class="contour" cx="971" cy="166" rx="38" ry="20"/>
+    <ellipse class="contour" cx="972" cy="165" rx="18" ry="10"/>
+    <ellipse class="contour" cx="780" cy="310" rx="170" ry="110"/>
+    <ellipse class="contour" cx="783" cy="308" rx="130" ry="82"/>
+    <ellipse class="contour" cx="785" cy="306" rx="92" ry="58"/>
+    <ellipse class="contour" cx="787" cy="305" rx="58" ry="36"/>
+    <ellipse class="contour" cx="788" cy="304" rx="30" ry="18"/>
+    <circle cx="870" cy="230" r="3" fill="#2ecc71" opacity="0.6"/>
+    <circle cx="920" cy="260" r="3" fill="#2ecc71" opacity="0.6"/>
+    <circle cx="860" cy="300" r="3" fill="#2ecc71" opacity="0.6"/>
+    <circle cx="1010" cy="200" r="3" fill="#3498db" opacity="0.6"/>
+    <circle cx="1050" cy="240" r="3" fill="#3498db" opacity="0.6"/>
+    <circle cx="990" cy="290" r="3" fill="#3498db" opacity="0.6"/>
+    <circle cx="940" cy="330" r="3" fill="#2ecc71" opacity="0.5"/>
+    <circle cx="1080" cy="180" r="3" fill="#1abc9c" opacity="0.5"/>
+    <circle cx="830" cy="260" r="3" fill="#1abc9c" opacity="0.5"/>
+    <circle cx="1100" cy="290" r="3" fill="#2ecc71" opacity="0.5"/>
+  </svg>
+
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+  <div class="blob3"></div>
+  <div class="grain"></div>
+  <div class="accent-bar"></div>
+
+  <svg class="right-panel" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>text { font-family: 'Source Code Pro', monospace; }</style>
+    </defs>
+    <line x1="40" y1="220" x2="300" y2="220" stroke="#2a5a48" stroke-width="1.2"/>
+    <line x1="40" y1="220" x2="40" y2="20" stroke="#2a5a48" stroke-width="1.2"/>
+    <line x1="40" y1="75" x2="290" y2="75" stroke="#4dd9a0" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"/>
+    <line x1="185" y1="75" x2="185" y2="220" stroke="#3498db" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"/>
+    <path d="M 52 200 C 80 170, 120 100, 160 80 C 185 72, 210 73, 260 74 L 290 74"
+          fill="none" stroke="#4dd9a0" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="55"  cy="196" r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="70"  cy="178" r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="88"  cy="152" r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="72"  cy="165" r="3" fill="#4dd9a0" opacity="0.5"/>
+    <circle cx="105" cy="130" r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="115" cy="115" r="3" fill="#4dd9a0" opacity="0.6"/>
+    <circle cx="98"  cy="138" r="3" fill="#4dd9a0" opacity="0.5"/>
+    <circle cx="135" cy="98"  r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="148" cy="88"  r="3" fill="#4dd9a0" opacity="0.6"/>
+    <circle cx="162" cy="80"  r="3" fill="#4dd9a0" opacity="0.7"/>
+    <circle cx="190" cy="76"  r="3" fill="#4dd9a0" opacity="0.6"/>
+    <circle cx="220" cy="75"  r="3" fill="#4dd9a0" opacity="0.6"/>
+    <circle cx="250" cy="76"  r="3" fill="#4dd9a0" opacity="0.5"/>
+    <circle cx="275" cy="74"  r="3" fill="#4dd9a0" opacity="0.6"/>
+    <circle cx="40"  cy="210" r="4" fill="none" stroke="#3498db" stroke-width="1.5" opacity="0.6"/>
+    <text x="192" y="238" fill="#3a6052" font-size="10" letter-spacing="1">range</text>
+    <text x="42"  y="68"  fill="#3a6052" font-size="10" letter-spacing="1">sill</text>
+    <text x="46"  y="235" fill="#3a6052" font-size="10" letter-spacing="1">lag distance h</text>
+    <text x="18"  y="130" fill="#3a6052" font-size="10" letter-spacing="1" transform="rotate(-90 18 130)">γ(h)</text>
+    <text x="200" y="15"  fill="#3a6052" font-size="10" letter-spacing="2" opacity="0.8">VARIOGRAM</text>
+  </svg>
+
+  <div class="content">
+    <a href="00Welcome.html" class="enter-button">Welcome →</a>
+    <div class="banner-title">
+      Spatial <span class="accent-word">Analysis</span><br>
+      for Environmental Science
+    </div>
+    <div class="banner-subtitle">patterns, structure, and prediction in space</div>
+    <div class="tags">
+      <span class="tag">Point Patterns</span>
+      <span class="tag">Autocorrelation</span>
+      <span class="tag">Kriging</span>
+      <span class="tag">IDW</span>
+      <span class="tag">GLS</span>
+      <span class="tag">R</span>
+    </div>
+  </div>
+
+  <div class="bottom-rule"></div>
+  <div class="credit">Andy Bunn &nbsp;·&nbsp; ESCI 505</div>
+
+</div>
+```

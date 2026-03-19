@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Spatial analysis notes and exercises">
+
+<title>Regression: GLS with Autocorrelated Residuals – Spatial Analysis for Environmental Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./07xAsideOLS_Algebric_Matrix.html" rel="next">
+<link href="./06xAsideGeostatsKrigingVariance.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a04a01d9790747593e0658c5ce91c85b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Spatial Analysis for Environmental Science</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/AndyBunn/spatialNotes" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07RegressionGLS.html"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#big-idea" id="toc-big-idea" class="nav-link active" data-scroll-target="#big-idea">Big Idea</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression">Regression</a></li>
+  <li><a href="#gls-and-ols" id="toc-gls-and-ols" class="nav-link" data-scroll-target="#gls-and-ols">GLS and OLS</a></li>
+  <li><a href="#toy-example" id="toc-toy-example" class="nav-link" data-scroll-target="#toy-example">Toy Example</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  </ul></li>
+  <li><a href="#your-work" id="toc-your-work" class="nav-link" data-scroll-target="#your-work">Your work</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/07RegressionGLS.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="big-idea" class="level2">
+<h2 class="anchored" data-anchor-id="big-idea">Big Idea</h2>
+<p>In the big picture, identifying spatial patterns in data lets us understand process. In practical terms, standard ordinary least squares regression can be problematic with spatial data but there are other approaches that are useful.</p>
+</section>
+<section id="reading" class="level2">
+<h2 class="anchored" data-anchor-id="reading">Reading</h2>
+<p>Dormann et al.&nbsp;(2007) provide a review of several methods for accounting for spatial structure in species distribution data. The paper does a good job of explaining the big picture on why space is important in a regression context. Much of the paper uses matrix notation that you might not be familiar with and the mathematical details are not critical. In this module, we will focus on using generalized least squares (GLS). For this paper, I suggest reading the intro and then skimming the rest. Pay attention to the first part of section three on on spatial models based on GLS regression but don’t sweat the details more than you want to.</p>
+<p>Keitt et al.&nbsp;(2002) is also worth a heavy skim. They don’t use GLS in their approach but do show how spatial methods outperform standard methods in a few case studies. Focus on the implications rather than the methods in that paper. I worked with Tim Keitt when I was a masters student and my goodness, he is a smarty pants. It’s worth reading anything he’s written.</p>
+<p>Dormann, C F et al.&nbsp;(2007) Methods to account for spatial autocorrelation in the analysis of species distributional data: a review. Ecography 30: 609-628, doi: 10.1111/j.2007.0906-7590.05171.x.</p>
+<p>Keitt T H et al.&nbsp;(2002) Accounting for Spatial Pattern When Modeling Organism-Environment Interactions Ecography 25: 616-625.</p>
+</section>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<p>You’ll want to install the packages below. We are going to fit a linear model using GLS as opposed to ordinary least squares and thus need <code>nlme</code><span class="citation" data-cites="R-nlme">(<a href="08PackagesUsed.html#ref-R-nlme" role="doc-biblioref">Pinheiro, Bates, and R Core Team 2025</a>)</span> as well as some of our other spatial standards.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(automap)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spdep)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ncf)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="regression" class="level2">
+<h2 class="anchored" data-anchor-id="regression">Regression</h2>
+<p>A very common situation with environmental data is to want to do an ordinary least squares (OLS) regression using spatial data. If your data are explicitly spatial, you are doing spatial regression. And that has different pitfalls than standard regression.</p>
+<p>The biggest issue is that if the residuals (errors) are autocorrelated, you have violated the assumption of <a href="https://en.wikipedia.org/wiki/Independent_and_identically_distributed_random_variables">independence</a>. What does this mean? Well, <a href="https://en.wikipedia.org/wiki/Autocorrelation#Regression_analysis">the standard errors on the coefficient estimates tend to be underestimated (and the t-scores overestimated) when autocorrelation of the errors at short distances are positive</a>. This means that any statistical inference could be wrong, e.g., the the p-values from a t-test will be artificially low. But despair not! If we take the the spatial structure of the errors into account we can usually still model the association between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> effectively.</p>
+<p>Is this a little opaque? Let’s make up an example. Let’s say you wanted to build a model of tree growth as a function of plant-available nitrogen in the soil. Your idea is that trees with more nitrogen will grow better. So, you make a nice linear model <span class="math inline">\(y=\beta_0 + \beta_1 x + \epsilon\)</span> where <span class="math inline">\(y\)</span> is the basal area increment of the tree, <span class="math inline">\(\beta_0\)</span> is the intercept and <span class="math inline">\(\beta_1\)</span> is the coefficient on the variable <span class="math inline">\(x\)</span> which is plant-available N, and <span class="math inline">\(\epsilon\)</span> is the residual. You have a gorgeous data set with 75 trees mapped which makes this a spatial regression: <span class="math inline">\(y_i=\beta_0 + \beta_1 x_i + \epsilon_i\)</span> where <span class="math inline">\(i\)</span> is the location specified by northing and easting coordinates. You run an OLS regression and get a positive slope and a t-test says that your model has skill (good <span class="math inline">\(R^2\)</span>, <span class="math inline">\(p&lt;0.05\)</span>, etc). Great – you fire off a letter to Nature, or write your thesis, or go dump some salmon carcasses on the trees, or just bathe in the satisfaction of a job well done. But of course your model won’t fit perfectly so you’ll have residuals or errors from the model (<span class="math inline">\(\epsilon\)</span>). Now, if those residuals are not independent and identically distributed (iid), you have violated the assumptions of the OLS regression. The coefficients might be inefficiently estimated, standard errors might be wrong, the p-values might be inflated. Alas. The classic reason that residuals are not ~iid in spatial data is because they are not independent and that means autocorrelation.</p>
+<p>In general here is a good approach when dealing with spatial data in a regression.</p>
+<ol type="1">
+<li><p>Start by assuming iid (e.g., doing an ordinary least squares regression).</p></li>
+<li><p>Look at the spatial structure of the residuals with Moran’s I.</p></li>
+<li><p>If the residuals look clean then carry on. Note that it’s OK for the variable <span class="math inline">\(y\)</span> or <span class="math inline">\(x\)</span> to be autocorrelated – watch the residuals. If the residuals have spatial structure, quantify the degree of spatial structure using Moran’s I. Spatial structure might or might not be a problem. But if your life/thesis/soul depends on having a clean model you’ll want to deal with it.</p></li>
+<li><p>Fit a variogram to the residuals. We can use this information to fit a GLS model where we specify the spatial structure in the error term using a variogram model fit from the the semivariance on the residuals.</p></li>
+</ol>
+</section>
+<section id="gls-and-ols" class="level2">
+<h2 class="anchored" data-anchor-id="gls-and-ols">GLS and OLS</h2>
+<p>We have all been taught OLS. OLS is a <strong>method</strong> for estimating the unknown parameters in a linear regression model – e.g., estimating the intercept (<span class="math inline">\(\beta_0\)</span>) and slope (<span class="math inline">\(\beta_1\)</span>) of a line in the formula <span class="math inline">\(y=\beta_0 + \beta_1x\)</span>. OLS works by choosing the parameters of a linear function by minimizing the sum of the squares of the differences between the observed dependent variable (<span class="math inline">\(y\)</span>) in the given data set and those predicted by the linear function (e.g., <span class="math inline">\(y=\beta_0 + \beta_1x\)</span> in the example above, but note that you can have more than one independent variable in a multiple regression). If conditions like homoscedasticty, independence, and normality are met, the OLS estimators are optimal (often called BLUE – Best Linear Unbiased Estimators). In other words, when the assumptions are met, OLS works. OLS has a nice property that teaching it is relatively simple and can be done without a bunch of matrix algebra. You can calculate the sum of squares by hand and in intro stats courses we relate OLS to simpler concepts like correlation.</p>
+<p>The other common least squares approach is generalized least squares (GLS). GLS is a <strong>method</strong> of estimation of a linear process which accounts for heteroscedasticity and structure in the error term. If OLS is used for homoscedastic regressions (i.e.&nbsp;<span class="math inline">\(y\)</span> has the same variance for each <span class="math inline">\(x\)</span>), GLS is used for heteroscedastic regression (different variances). GLS can also be used for correlated (non-independent) residuals. The theory with GLS is that the residuals can be transformed so that the variances are equal and uncorrelated. We will let the math happen behind the scene, but you can think of it like this: OLS minimizes the sum of the squares of the differences between the observed dependent variable and GLS minimizes distances relative to the covariance matrix of the residuals. The calculation for GLS is more involved than for OLS (the GLS function is fit from restricted maximum likelihood rather than sums of squares) and relies on specifying the nature of the errors (i.e., how are they not normal and independent?). For those reasons, and mostly from lack of time, GLS tends not to be taught alongside OLS. We typically encounter it when we learn mixed effects modeling.</p>
+<p>In spatial and time-series analysis, the error term is often autocorrelated. So, if the important difference between OLS and GLS is the assumptions made about the error term of the model, we can use GLS to allow for autocorrelated errors and avoid having inefficient estimation of the unknown parameters in a linear model. <a href="https://www.reddit.com/r/AskStatistics/comments/36ocl1/why_not_always_use_gls_over_ols/">Why not always use GLS over OLS?</a>. It’s a good question and I think of it along the lines of the <a href="https://en.wikipedia.org/wiki/KISS_principle">KISS principle</a>. If you meet the OLS assumptions, use it. If you don’t then look for alternatives like GLS.</p>
+</section>
+<section id="toy-example" class="level2">
+<h2 class="anchored" data-anchor-id="toy-example">Toy Example</h2>
+<p>Here is our goal: We will create a variable <code>y</code> that is a function of <code>x</code> but will have spatially autocorrelated noise (<span class="math inline">\(\epsilon\)</span>). We will regress <code>y</code> on <code>x</code> and find to our horror that the residuals from this model are not iid. We will then apply a GLS model with an appropriate correlation structure and feel good about ourselves.</p>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>First, I’m going to make some autocorrelated noise <span class="math inline">\(\epsilon\)</span>. This bit of code here is not for the faint of heart. You can hum your way through this and know that at the end the variable <span class="math inline">\(\epsilon\)</span> will be spatially autocorrelated. You can follow the code below if you are interested in the process but it’s significantly more complicated that we usually do in this class. We we are doing is making a variable <span class="math inline">\(\epsilon\)</span> that has spatial autocorrelation <span class="math inline">\(\rho\)</span> in the form <span class="math inline">\(\epsilon = \rho W + e\)</span> where <span class="math inline">\(W\)</span> is a weights matrix following an inverse distance weights process and <span class="math inline">\(e\)</span> is random noise (<span class="math inline">\(N(0,1)\)</span>). We make <code>n</code> random points following complete spatial randomness (using <code>runif</code>) and then do some tedious calculations to determine how each points is linked based their distances (<code>dnearneigh</code> and <code>nbdists</code>). Based on the distances we make a weights matrix following IDW with power <code>p</code>. We get the spatial autocorrelation generating operator for <span class="math inline">\(\rho\)</span> via the weights matrix and then multiply by some white noise (<code>rnorm</code>) to get <span class="math inline">\(\epsilon\)</span>. The details on this last step involve some matrix inversions that we don’t need to unpack.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We will do n points</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">75</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># CSR. Our mapped points.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>easting <span class="ot">&lt;-</span> <span class="fu">runif</span>(n,<span class="dv">0</span>,<span class="dv">100</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>northing <span class="ot">&lt;-</span> <span class="fu">runif</span>(n,<span class="dv">0</span>,<span class="dv">100</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>points <span class="ot">&lt;-</span> <span class="fu">cbind</span>(easting,northing)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the spatially autocorrelated error term, epsilon.</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Build neighbor objects with an inclusive distance threshold</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dnb <span class="ot">&lt;-</span> <span class="fu">dnearneigh</span>(<span class="at">x =</span> points, <span class="at">d1 =</span> <span class="dv">0</span>, <span class="at">d2 =</span> <span class="dv">150</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>dsts <span class="ot">&lt;-</span> <span class="fu">nbdists</span>(<span class="at">nb =</span> dnb, <span class="at">coords =</span> points)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># And follow an IDW process</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">2.25</span> <span class="co"># IDW power</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>idw <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dsts, <span class="cf">function</span>(x) x<span class="sc">^-</span>p)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Weights matrix as a list</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>wList <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(<span class="at">neighbours =</span> dnb, <span class="at">glist=</span>idw, <span class="at">style=</span><span class="st">"W"</span>) </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute SAR generating operator via a weights matrix</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>inv <span class="ot">&lt;-</span> spatialreg<span class="sc">::</span><span class="fu">invIrW</span>(<span class="at">x =</span> wList, <span class="at">rho =</span> <span class="fl">0.75</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate epsilon and rescale as z scores</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> inv <span class="sc">%*%</span> <span class="fu">rnorm</span>(n) </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fu">scale</span>(epsilon[,<span class="dv">1</span>])[,<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>OK, by great magic we now have a variable that is from random spatial points but has spatially autocorrelated values (that follow an IDW process). If you want, you can imagine that <span class="math inline">\(\epsilon\)</span> is a variable in nature that is spatially autocorrelated (maybe soil moisture availability following the tree example above) that we didn’t measure. How intense is the spatial autocorrelation? Think <span class="math inline">\(\rho\)</span> following an IDW process. E.g.,</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">moran.test</span>(epsilon, wList)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  epsilon  
+weights: wList    
+
+Moran I statistic standard deviate = 8.4772, p-value &lt; 2.2e-16
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+      0.723530049      -0.013513514       0.007559259 </code></pre>
+</div>
+</div>
+<p>We are going to use <span class="math inline">\(\epsilon\)</span> as the error term in a model. Oh, I’ll use the terms “errors” and “residuals” interchangeably throughout these notes.</p>
+<p>We’ll now make <code>x</code> and then <span class="math inline">\(y=\beta_0 + \beta_1(x) + \epsilon\)</span>. We will run a linear model and look at the residuals of that model using Moran’s I.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate x as noise.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate y as a function of x and epsilon (which is spatially autocorrelated)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>B0 <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># intercept</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>B1 <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="co"># slope</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> B0 <span class="sc">+</span> B1<span class="sc">*</span>x <span class="sc">+</span> epsilon</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a data.frame</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(easting,northing,y,x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>So in our thought experiment here are the data. The independent variable <code>x</code>:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">size=</span>x, <span class="at">fill=</span>x)) <span class="sc">+</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span><span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"x"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And the dependent variable <code>y</code>:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">size=</span>y, <span class="at">fill=</span>y)) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span> <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"y"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="analysis" class="level3">
+<h3 class="anchored" data-anchor-id="analysis">Analysis</h3>
+<p>Following our imagined example above we have a dependent variable <code>y</code> (tree growth) that we want to model using an independent variable <code>x</code> (nitrogen). The points (trees) are mapped using coordinates (<code>easting</code> and <code>northing</code>) and we can imagine those are in meters. Because we made up these data we know that the residual term on this model is autocorrelated noise (<code>epsilon</code>). If you don’t like having the errors be something theoretical in your head, you can imagine that this term is mostly some variable we haven’t measured that might provide explanatory power (e.g., a topographic variable relating to soil moisture availability).</p>
+<p>We will start by assuming <code>epsilon</code> follows an iid process (e.g., <span class="math inline">\(N(0,1)\)</span>) and we will fit a model with uncorrelated errors. E.g., here we use <code>gls</code> but this gives the same info as <code>lm</code> would because <code>gls</code> assumes iid errors unless told otherwise.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a model using gls</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>glsNaive <span class="ot">&lt;-</span> <span class="fu">gls</span>(y<span class="sc">~</span>x, dat)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glsNaive)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: y ~ x 
+  Data: dat 
+       AIC      BIC    logLik
+  220.5108 227.3822 -107.2554
+
+Coefficients:
+                Value Std.Error   t-value p-value
+(Intercept) 3.0279132 0.1159938 26.104090       0
+x           0.6770339 0.1177377  5.750359       0
+
+ Correlation: 
+  (Intr)
+x 0.16  
+
+Standardized residuals:
+        Min          Q1         Med          Q3         Max 
+-2.30917106 -0.58948266  0.04617216  0.52758487  3.64494767 
+
+Residual standard error: 0.9915877 
+Degrees of freedom: 75 total; 73 residual</code></pre>
+</div>
+</div>
+<p>We fit a linear model of the form <span class="math inline">\(y=\beta_0 + \beta_1x\)</span> using GLS and got out estimates for the intercept (<span class="math inline">\(\hat\beta_0\)</span>) and slope (<span class="math inline">\(\hat\beta_1\)</span>). We assumed that the error term was uncorrelated. Looking at summary, we can see the the estimate of the slope (<span class="math inline">\(\hat\beta_1\)</span>) is 0.677 and significantly different than zero. We also have a variety of goodness of fit statistics and some other goodies. The important thing to wrap your head around here is that we just fit GLS with uncorrelated errors meaning it’s essentially identical to OLS. Compare the above to the more familiar <code>summary(lm(y~x,data=dat))</code>.</p>
+<p>Since these data are spatial. the key for us is to look at the residuals and see if they are autocorrelated. Let’s map them first.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add residuals to dat -- think epsilon</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>glsNaiveResids <span class="ot">&lt;-</span> <span class="fu">residuals</span>(glsNaive,<span class="at">type=</span><span class="st">"normalized"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">size=</span>glsNaiveResids, <span class="at">fill=</span>glsNaiveResids)) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>() <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From the map, the residuals look aggressively non-random. Positive values are near positive values and negative ones near negative values. Let’s quantify that with a correlogram.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test them for spatial autocorrelation using a correlogram.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>residsI <span class="ot">&lt;-</span> <span class="fu">spline.correlog</span>(<span class="at">x=</span>dat<span class="sc">$</span>easting, <span class="at">y=</span>dat<span class="sc">$</span>northing,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">z=</span>dat<span class="sc">$</span>glsNaiveResids, <span class="at">resamp=</span><span class="dv">50</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(residsI,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(<span class="fu">dist</span>(points))<span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The residuals of this model are not clean and autocorrelated at short distances. Thus, we have violated the assumption of independent residuals. But do not despair. We will use a GLS model that allows us to specify a spatial correlation structure for the residuals and perform hypothesis testing in the presence of spatial structure. Doing so, will give us new and improved estimates of the parameters. We will thus sleep well knowing in our hearts that we have done good.</p>
+<p>We need to determine an appropriate theoretical model for the spatial structure of the residuals. Once we have a model, we can pass it to the <code>gls</code> function with a <code>corStruct</code> object. The models that we have at our disposal include the theoretical variogram models we used with kriging. So, let’s fit a variogram to the residuals and see which model might fit best.</p>
+<p>Here we’ll cheat a little and use <code>autofitVariogram</code> to get a model suggestion rather than go through the fitting process by hand with <code>variogram</code>, <code>vgm</code>, and <code>fit.variogram</code> from <code>gstat</code>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>datSF <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"easting"</span>,<span class="st">"northing"</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A variogram of the residuals</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">autofitVariogram</span>(glsNaiveResids<span class="sc">~</span><span class="dv">1</span>, <span class="at">input_data =</span> datSF, <span class="at">model =</span> <span class="fu">c</span>(<span class="st">"Gau"</span>,<span class="st">"Sph"</span>,<span class="st">"Exp"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The experimental variogram (dots) above is fit with a spherical theoretical model (line) and we can use that spherical model as a correlation structure with <code>gls</code> by initializing the correlation structure with <code>corSpatial</code>. We can then use <code>update</code> to re-fit the model. Note that this is the same as fitting a new model via <code>gls(model = y~x, data = dat, correlation = csSpatial)</code> but I like <code>update</code> as a way of making sure the model specification is the same for the sake of comparison.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>csSpatial <span class="ot">&lt;-</span> <span class="fu">corSpatial</span>(<span class="at">form=</span><span class="sc">~</span>easting<span class="sc">+</span>northing,<span class="at">nugget=</span><span class="cn">TRUE</span>, <span class="at">type =</span> <span class="st">"spherical"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>glsUpdated <span class="ot">&lt;-</span> <span class="fu">update</span>(glsNaive,<span class="at">correlation=</span>csSpatial)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glsUpdated)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: y ~ x 
+  Data: dat 
+       AIC      BIC    logLik
+  200.7105 212.1628 -95.35527
+
+Correlation Structure: Spherical spatial correlation
+ Formula: ~easting + northing 
+ Parameter estimate(s):
+      range      nugget 
+74.04107726  0.06465118 
+
+Coefficients:
+               Value Std.Error  t-value p-value
+(Intercept) 3.249872 0.6437820 5.048094       0
+x           0.538845 0.0862102 6.250369       0
+
+ Correlation: 
+  (Intr)
+x 0.044 
+
+Standardized residuals:
+       Min         Q1        Med         Q3        Max 
+-1.6635015 -0.5306524 -0.1391361  0.1675900  2.2775546 
+
+Residual standard error: 1.564058 
+Degrees of freedom: 75 total; 73 residual</code></pre>
+</div>
+</div>
+<p>This is interesting. We will interpret more below but note that the slope coefficient is different from <code>glsNaive</code> to <code>glsUpdated</code>. Let’s look at the spatial structure of the residuals from <code>glsUpdated</code>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add the residuals to the spatial dat object</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>glsResids <span class="ot">&lt;-</span> <span class="fu">residuals</span>(glsUpdated,<span class="at">type=</span><span class="st">"normalized"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Map the residuals from gls</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>easting,<span class="at">y=</span>northing,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">size=</span>glsResids, <span class="at">fill=</span>glsResids)) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>() <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(), <span class="at">size =</span> <span class="fu">guide_legend</span>()) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>They don’t look to be autocorrelated. But we should test them:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>residsI <span class="ot">&lt;-</span> <span class="fu">spline.correlog</span>(<span class="at">x=</span>dat<span class="sc">$</span>easting, <span class="at">y=</span>dat<span class="sc">$</span>northing,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">z=</span>dat<span class="sc">$</span>glsResids, <span class="at">resamp=</span><span class="dv">50</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(residsI,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(<span class="fu">dist</span>(points))<span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="07RegressionGLS_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And the correlogram shows that they are clean – autocorrelation has been accounted for.</p>
+</section>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
+<p>So what’s the big deal? We started with a model that showed <code>x</code> as a significant predictor of <code>y</code>. We ended up, after much wailing and rending of garments, with a model that showed <code>x</code> as a significant predictor of <code>y</code>. Is it a better model? Was it worth the trouble. Let’s consider a few things.</p>
+<ol type="1">
+<li><p>The GLS model with the correlated residuals has a lower AIC than the naive uncorrelated model (201 vs.&nbsp;221)</p></li>
+<li><p>The original function we used to make <span class="math inline">\(y\)</span> was <span class="math inline">\(y=\beta_0 + \beta_1x + \epsilon\)</span> where <span class="math inline">\(\beta_0\)</span> = 3 and <span class="math inline">\(\beta_1\)</span> = 0.5. Both the GLS models got the intercept right (3.25 for <code>glsUpdated</code> and 3.03 for <code>glsNaive</code>). But the GLS model with the correlated residuals does a better job of getting the true value of the slope (0.54 vs 0.68).</p></li>
+<li><p>The error estimate on <span class="math inline">\(\beta_1\)</span> was lower on the model with correlated residuals than the naive uncorrelated model (0.0862 vs 0.1177).</p></li>
+</ol>
+<p>Finally, we did it “right” – that should be satisfying. What would have happened if <span class="math inline">\(\beta_1\)</span> had been lower? That is, what if <span class="math inline">\(y\)</span> was made up of more noise and less <span class="math inline">\(x\)</span>? E.g., <span class="math inline">\(y=\beta_0 + 0.5(\beta_1)x + 2(\epsilon)\)</span>? This model, with 75 points should be pretty robust on the simple hypothesis test on the slope (H<span class="math inline">\(_1\)</span>: <span class="math inline">\(\beta_1 \neq 0\)</span>) but we know that parameter estimation is inefficient with autocorrelated residuals so having clean residuals and good parameter estimation is important.</p>
+</section>
+</section>
+<section id="your-work" class="level2">
+<h2 class="anchored" data-anchor-id="your-work">Your work</h2>
+<p>The joy of simulated data is, of course, that we know the real answer going in. We knew above, that <span class="math inline">\(y=\beta_0 + \beta_1x + \epsilon\)</span> and we knew that the residual term was spatially autocorrelated. Obviously, that’s a luxury that we don’t have when making inference about data we collect.</p>
+<p>The file <code>birdDiv.csv</code> has data on bird diversity and plant community diversity (unitless, with higher numbers indicating greater diversity) and coordinates for 64, 1-ha plots Coordinates are UTM and thus in meters. Your work is to model bird diversity as a function of plant diversity with the expectation that higher plant diversity is associated with high bird diversity. Watch those residuals and interpret carefully!</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-R-nlme" class="csl-entry" role="listitem">
+Pinheiro, José, Douglas Bates, and R Core Team. 2025. <em>Nlme: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./06xAsideGeostatsKrigingVariance.html" class="pagination-link" aria-label="Aside: Kriging Variance By Hand">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aside: Kriging Variance By Hand</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./07xAsideOLS_Algebric_Matrix.html" class="pagination-link" aria-label="Aside: OLS via Algebra and Matrices">
+        <span class="nav-page-text">Aside: OLS via Algebra and Matrices</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/07RegressionGLS.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

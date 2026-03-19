@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="">
+<meta name="description" content="Spatial analysis notes and exercises">
 
-<title>Spatial Analysis for Environmental Science</title>
+<title>References – Spatial Analysis for Environmental Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,7 +21,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -31,6 +50,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./07xAsideOLS_Algebric_Matrix.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -74,7 +94,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="custom.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -93,16 +113,119 @@ ul.task-list li input[type="checkbox"] {
           <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08PackagesUsed.html"><span class="chapter-title">References</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-layout-custom page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
 <!-- main -->
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Spatial Analysis for Environmental Science</h1>
+<h1 class="title"><span class="chapter-title">References</span></h1>
 </div>
 
 
@@ -119,291 +242,56 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Libre+Baskerville:ital@1&display=swap');
-
-  /* Kill Quarto's auto-generated title block on cover page */
-  #title-block-header { display: none !important; }
-
-  /* Scoped reset -- do NOT use * {} or it kills Quarto's navbar */
-  .banner, .banner * { box-sizing: border-box; }
-
-  .banner {
-    width: 100%;
-    height: calc(100vh - 60px);
-    position: relative;
-    background: #0d1a14;
-    overflow: hidden;
-    font-family: 'Source Code Pro', monospace;
-    margin: 0;
-    padding: 0;
-  }
-
-  .topo-layer {
-    position: absolute;
-    inset: 0;
-    opacity: 0.18;
-  }
-
-  .color-wash {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      #0d1a14 0%,
-      #0f2318 20%,
-      #102b1e 35%,
-      #0e2233 55%,
-      #0b1a2e 75%,
-      #091525 100%
-    );
-  }
-
-  .grain {
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity: 0.06;
-  }
-
-  .blob1 {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(52, 152, 100, 0.12) 0%, transparent 70%);
-    top: -150px;
-    right: 100px;
-  }
-  .blob2 {
-    position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(41, 128, 185, 0.10) 0%, transparent 70%);
-    bottom: -100px;
-    left: 200px;
-  }
-  .blob3 {
-    position: absolute;
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(22, 180, 120, 0.08) 0%, transparent 70%);
-    top: 50px;
-    left: 500px;
-  }
-
-  .accent-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: linear-gradient(180deg, #2ecc71 0%, #3498db 50%, #1abc9c 100%);
-  }
-
-  .content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 48px 64px 48px 80px;
-  }
-
-  .enter-button {
-    display: inline-block;
-    margin-bottom: 32px;
-    align-self: flex-start;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    color: #4dd9a0;
-    text-decoration: none;
-    text-transform: uppercase;
-    border: 1px solid #2a6a52;
-    padding: 12px 28px;
-    border-radius: 2px;
-    background: rgba(46, 204, 113, 0.06);
-    transition: background 0.2s, color 0.2s;
-  }
-  .enter-button:hover {
-    background: rgba(46, 204, 113, 0.14);
-    color: #6ef5be;
-  }
-
-  .banner-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 58px;
-    line-height: 1.05;
-    color: #f0ede6;
-    letter-spacing: -0.01em;
-    margin-bottom: 6px;
-  }
-
-  .banner-title .accent-word {
-    color: #4dd9a0;
-    font-style: italic;
-    font-weight: 700;
-  }
-
-  .banner-subtitle {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 22px;
-    color: #8badb5;
-    margin-bottom: 28px;
-    letter-spacing: 0.02em;
-  }
-
-  .tags {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-family: 'Source Code Pro', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: #4a7c6a;
-    border: 1px solid #1e4a38;
-    padding: 4px 10px;
-    border-radius: 2px;
-    text-transform: uppercase;
-    background: rgba(46, 204, 113, 0.04);
-  }
-
-  .right-panel {
-    position: absolute;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 320px;
-    height: 280px;
-    opacity: 0.7;
-  }
-
-  .bottom-rule {
-    position: absolute;
-    bottom: 52px;
-    left: 80px;
-    right: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, #1e4a38, #1a3a52, transparent);
-  }
-
-  .credit {
-    position: absolute;
-    bottom: 24px;
-    left: 80px;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 14px;
-    letter-spacing: 0.12em;
-    color: #4a7c6a;
-    text-transform: uppercase;
-  }
-</style>
-
-<div class="banner">
-  <div class="color-wash"></div>
-
-  <svg class="topo-layer" viewbox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>.contour { fill: none; stroke: #4dd9a0; stroke-width: 0.8; }</style>
-    </defs>
-    <ellipse class="contour" cx="950" cy="180" rx="310" ry="190"></ellipse>
-    <ellipse class="contour" cx="955" cy="178" rx="265" ry="158"></ellipse>
-    <ellipse class="contour" cx="960" cy="175" rx="220" ry="128"></ellipse>
-    <ellipse class="contour" cx="963" cy="172" rx="178" ry="100"></ellipse>
-    <ellipse class="contour" cx="966" cy="170" rx="138" ry="76"></ellipse>
-    <ellipse class="contour" cx="968" cy="168" rx="100" ry="55"></ellipse>
-    <ellipse class="contour" cx="970" cy="167" rx="66" ry="36"></ellipse>
-    <ellipse class="contour" cx="971" cy="166" rx="38" ry="20"></ellipse>
-    <ellipse class="contour" cx="972" cy="165" rx="18" ry="10"></ellipse>
-    <ellipse class="contour" cx="780" cy="310" rx="170" ry="110"></ellipse>
-    <ellipse class="contour" cx="783" cy="308" rx="130" ry="82"></ellipse>
-    <ellipse class="contour" cx="785" cy="306" rx="92" ry="58"></ellipse>
-    <ellipse class="contour" cx="787" cy="305" rx="58" ry="36"></ellipse>
-    <ellipse class="contour" cx="788" cy="304" rx="30" ry="18"></ellipse>
-    <circle cx="870" cy="230" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="920" cy="260" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="860" cy="300" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="1010" cy="200" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="1050" cy="240" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="990" cy="290" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="940" cy="330" r="3" fill="#2ecc71" opacity="0.5"></circle>
-    <circle cx="1080" cy="180" r="3" fill="#1abc9c" opacity="0.5"></circle>
-    <circle cx="830" cy="260" r="3" fill="#1abc9c" opacity="0.5"></circle>
-    <circle cx="1100" cy="290" r="3" fill="#2ecc71" opacity="0.5"></circle>
-  </svg>
-
-  <div class="blob1"></div>
-  <div class="blob2"></div>
-  <div class="blob3"></div>
-  <div class="grain"></div>
-  <div class="accent-bar"></div>
-
-  <svg class="right-panel" viewbox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>text { font-family: 'Source Code Pro', monospace; }</style>
-    </defs>
-    <line x1="40" y1="220" x2="300" y2="220" stroke="#2a5a48" stroke-width="1.2"></line>
-    <line x1="40" y1="220" x2="40" y2="20" stroke="#2a5a48" stroke-width="1.2"></line>
-    <line x1="40" y1="75" x2="290" y2="75" stroke="#4dd9a0" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"></line>
-    <line x1="185" y1="75" x2="185" y2="220" stroke="#3498db" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"></line>
-    <path d="M 52 200 C 80 170, 120 100, 160 80 C 185 72, 210 73, 260 74 L 290 74" fill="none" stroke="#4dd9a0" stroke-width="2.2" stroke-linecap="round"></path>
-    <circle cx="55" cy="196" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="70" cy="178" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="88" cy="152" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="72" cy="165" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="105" cy="130" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="115" cy="115" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="98" cy="138" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="135" cy="98" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="148" cy="88" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="162" cy="80" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="190" cy="76" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="220" cy="75" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="250" cy="76" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="275" cy="74" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="40" cy="210" r="4" fill="none" stroke="#3498db" stroke-width="1.5" opacity="0.6"></circle>
-    <text x="192" y="238" fill="#3a6052" font-size="10" letter-spacing="1">range</text>
-    <text x="42" y="68" fill="#3a6052" font-size="10" letter-spacing="1">sill</text>
-    <text x="46" y="235" fill="#3a6052" font-size="10" letter-spacing="1">lag distance h</text>
-    <text x="18" y="130" fill="#3a6052" font-size="10" letter-spacing="1" transform="rotate(-90 18 130)">γ(h)</text>
-    <text x="200" y="15" fill="#3a6052" font-size="10" letter-spacing="2" opacity="0.8">VARIOGRAM</text>
-  </svg>
-
-  <div class="content">
-    <a href="00Welcome.html" class="enter-button">Welcome →</a>
-    <div class="banner-title">
-      Spatial <span class="accent-word">Analysis</span><br>
-      for Environmental Science
-    </div>
-    <div class="banner-subtitle">patterns, structure, and prediction in space</div>
-    <div class="tags">
-      <span class="tag">Point Patterns</span>
-      <span class="tag">Autocorrelation</span>
-      <span class="tag">Kriging</span>
-      <span class="tag">IDW</span>
-      <span class="tag">GLS</span>
-      <span class="tag">R</span>
-    </div>
-  </div>
-
-  <div class="bottom-rule"></div>
-  <div class="credit">Andy Bunn &nbsp;·&nbsp; ESCI 505</div>
-
+<p>This document was built using the R packages listed below. Citations are automatically generated from the file <code>packages.bib</code>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-R-spatstat" class="csl-entry" role="listitem">
+Baddeley, Adrian, Rolf Turner, and Ege Rubak. 2026. <em>Spatstat:
+Spatial Point Pattern Analysis, Model-Fitting, Simulation, Tests</em>.
+<a href="http://spatstat.org/">http://spatstat.org/</a>.
+</div>
+<div id="ref-R-spdep" class="csl-entry" role="listitem">
+Bivand, Roger. 2026. <em>Spdep: Spatial Dependence: Weighting Schemes,
+Statistics</em>. <a href="https://github.com/r-spatial/spdep/">https://github.com/r-spatial/spdep/</a>.
+</div>
+<div id="ref-R-ncf" class="csl-entry" role="listitem">
+Bjornstad, Ottar N. 2026. <em>Ncf: Spatial Covariance Functions</em>. <a href="https://ento.psu.edu/directory/onb1">https://ento.psu.edu/directory/onb1</a>.
+</div>
+<div id="ref-R-ggnewscale" class="csl-entry" role="listitem">
+Campitelli, Elio. 2025. <em>Ggnewscale: Multiple Fill and Colour Scales
+in Ggplot2</em>. <a href="https://eliocamp.github.io/ggnewscale/">https://eliocamp.github.io/ggnewscale/</a>.
+</div>
+<div id="ref-R-tidyterra" class="csl-entry" role="listitem">
+Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span>
+Objects: The <span class="nocase">tidyterra</span> Package.”</span>
+<em>Journal of Open Source Software</em> 8 (91): 5751. <a href="https://doi.org/10.21105/joss.05751">https://doi.org/10.21105/joss.05751</a>.
+</div>
+<div id="ref-R-terra" class="csl-entry" role="listitem">
+Hijmans, Robert J. 2026. <em>Terra: Spatial Data Analysis</em>. <a href="https://rspatial.org/">https://rspatial.org/</a>.
+</div>
+<div id="ref-R-sf" class="csl-entry" role="listitem">
+Pebesma, Edzer. 2026. <em>Sf: Simple Features for r</em>. <a href="https://r-spatial.github.io/sf/">https://r-spatial.github.io/sf/</a>.
+</div>
+<div id="ref-R-gstat" class="csl-entry" role="listitem">
+Pebesma, Edzer, and Benedikt Graeler. 2026. <em>Gstat: Spatial and
+Spatio-Temporal Geostatistical Modelling, Prediction and
+Simulation</em>. <a href="https://github.com/r-spatial/gstat/">https://github.com/r-spatial/gstat/</a>.
+</div>
+<div id="ref-R-nlme" class="csl-entry" role="listitem">
+Pinheiro, José, Douglas Bates, and R Core Team. 2025. <em>Nlme: Linear
+and Nonlinear Mixed Effects Models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>.
+</div>
+<div id="ref-R-tmap" class="csl-entry" role="listitem">
+Tennekes, Martijn. 2025. <em>Tmap: Thematic Maps</em>. <a href="https://github.com/r-tmap/tmap">https://github.com/r-tmap/tmap</a>.
+</div>
+<div id="ref-R-tidyverse" class="csl-entry" role="listitem">
+Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the
+Tidyverse</em>. <a href="https://tidyverse.tidyverse.org">https://tidyverse.tidyverse.org</a>.
+</div>
 </div>
 
 
 
-
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -804,9 +692,18 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./07xAsideOLS_Algebric_Matrix.html" class="pagination-link" aria-label="Aside: OLS via Algebra and Matrices">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aside: OLS via Algebra and Matrices</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
 </div> <!-- /content -->
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/08PackagesUsed.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="">
+<meta name="description" content="Spatial analysis notes and exercises">
 
-<title>Spatial Analysis for Environmental Science</title>
+<title>Welcome – Spatial Analysis for Environmental Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -31,6 +66,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./01GettingStarted.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -74,7 +111,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="custom.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -93,16 +130,130 @@ ul.task-list li input[type="checkbox"] {
           <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00Welcome.html"><span class="chapter-title">Welcome</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-layout-custom page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#whats-in-these-notes" id="toc-whats-in-these-notes" class="nav-link active" data-scroll-target="#whats-in-these-notes">What’s in These Notes</a></li>
+  <li><a href="#go-do-great-things" id="toc-go-do-great-things" class="nav-link" data-scroll-target="#go-do-great-things">Go Do Great Things</a></li>
+  <li><a href="#technical-setup" id="toc-technical-setup" class="nav-link" data-scroll-target="#technical-setup">Technical Setup</a>
+  <ul class="collapse">
+  <li><a href="#project-structure" id="toc-project-structure" class="nav-link" data-scroll-target="#project-structure">Project Structure</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/00Welcome.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
 <!-- main -->
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Spatial Analysis for Environmental Science</h1>
+<h1 class="title"><span class="chapter-title">Welcome</span></h1>
 </div>
 
 
@@ -119,291 +270,83 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Libre+Baskerville:ital@1&display=swap');
-
-  /* Kill Quarto's auto-generated title block on cover page */
-  #title-block-header { display: none !important; }
-
-  /* Scoped reset -- do NOT use * {} or it kills Quarto's navbar */
-  .banner, .banner * { box-sizing: border-box; }
-
-  .banner {
-    width: 100%;
-    height: calc(100vh - 60px);
-    position: relative;
-    background: #0d1a14;
-    overflow: hidden;
-    font-family: 'Source Code Pro', monospace;
-    margin: 0;
-    padding: 0;
-  }
-
-  .topo-layer {
-    position: absolute;
-    inset: 0;
-    opacity: 0.18;
-  }
-
-  .color-wash {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      #0d1a14 0%,
-      #0f2318 20%,
-      #102b1e 35%,
-      #0e2233 55%,
-      #0b1a2e 75%,
-      #091525 100%
-    );
-  }
-
-  .grain {
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity: 0.06;
-  }
-
-  .blob1 {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(52, 152, 100, 0.12) 0%, transparent 70%);
-    top: -150px;
-    right: 100px;
-  }
-  .blob2 {
-    position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(41, 128, 185, 0.10) 0%, transparent 70%);
-    bottom: -100px;
-    left: 200px;
-  }
-  .blob3 {
-    position: absolute;
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(22, 180, 120, 0.08) 0%, transparent 70%);
-    top: 50px;
-    left: 500px;
-  }
-
-  .accent-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: linear-gradient(180deg, #2ecc71 0%, #3498db 50%, #1abc9c 100%);
-  }
-
-  .content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 48px 64px 48px 80px;
-  }
-
-  .enter-button {
-    display: inline-block;
-    margin-bottom: 32px;
-    align-self: flex-start;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    color: #4dd9a0;
-    text-decoration: none;
-    text-transform: uppercase;
-    border: 1px solid #2a6a52;
-    padding: 12px 28px;
-    border-radius: 2px;
-    background: rgba(46, 204, 113, 0.06);
-    transition: background 0.2s, color 0.2s;
-  }
-  .enter-button:hover {
-    background: rgba(46, 204, 113, 0.14);
-    color: #6ef5be;
-  }
-
-  .banner-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 58px;
-    line-height: 1.05;
-    color: #f0ede6;
-    letter-spacing: -0.01em;
-    margin-bottom: 6px;
-  }
-
-  .banner-title .accent-word {
-    color: #4dd9a0;
-    font-style: italic;
-    font-weight: 700;
-  }
-
-  .banner-subtitle {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 22px;
-    color: #8badb5;
-    margin-bottom: 28px;
-    letter-spacing: 0.02em;
-  }
-
-  .tags {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-family: 'Source Code Pro', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: #4a7c6a;
-    border: 1px solid #1e4a38;
-    padding: 4px 10px;
-    border-radius: 2px;
-    text-transform: uppercase;
-    background: rgba(46, 204, 113, 0.04);
-  }
-
-  .right-panel {
-    position: absolute;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 320px;
-    height: 280px;
-    opacity: 0.7;
-  }
-
-  .bottom-rule {
-    position: absolute;
-    bottom: 52px;
-    left: 80px;
-    right: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, #1e4a38, #1a3a52, transparent);
-  }
-
-  .credit {
-    position: absolute;
-    bottom: 24px;
-    left: 80px;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 14px;
-    letter-spacing: 0.12em;
-    color: #4a7c6a;
-    text-transform: uppercase;
-  }
-</style>
-
-<div class="banner">
-  <div class="color-wash"></div>
-
-  <svg class="topo-layer" viewbox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>.contour { fill: none; stroke: #4dd9a0; stroke-width: 0.8; }</style>
-    </defs>
-    <ellipse class="contour" cx="950" cy="180" rx="310" ry="190"></ellipse>
-    <ellipse class="contour" cx="955" cy="178" rx="265" ry="158"></ellipse>
-    <ellipse class="contour" cx="960" cy="175" rx="220" ry="128"></ellipse>
-    <ellipse class="contour" cx="963" cy="172" rx="178" ry="100"></ellipse>
-    <ellipse class="contour" cx="966" cy="170" rx="138" ry="76"></ellipse>
-    <ellipse class="contour" cx="968" cy="168" rx="100" ry="55"></ellipse>
-    <ellipse class="contour" cx="970" cy="167" rx="66" ry="36"></ellipse>
-    <ellipse class="contour" cx="971" cy="166" rx="38" ry="20"></ellipse>
-    <ellipse class="contour" cx="972" cy="165" rx="18" ry="10"></ellipse>
-    <ellipse class="contour" cx="780" cy="310" rx="170" ry="110"></ellipse>
-    <ellipse class="contour" cx="783" cy="308" rx="130" ry="82"></ellipse>
-    <ellipse class="contour" cx="785" cy="306" rx="92" ry="58"></ellipse>
-    <ellipse class="contour" cx="787" cy="305" rx="58" ry="36"></ellipse>
-    <ellipse class="contour" cx="788" cy="304" rx="30" ry="18"></ellipse>
-    <circle cx="870" cy="230" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="920" cy="260" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="860" cy="300" r="3" fill="#2ecc71" opacity="0.6"></circle>
-    <circle cx="1010" cy="200" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="1050" cy="240" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="990" cy="290" r="3" fill="#3498db" opacity="0.6"></circle>
-    <circle cx="940" cy="330" r="3" fill="#2ecc71" opacity="0.5"></circle>
-    <circle cx="1080" cy="180" r="3" fill="#1abc9c" opacity="0.5"></circle>
-    <circle cx="830" cy="260" r="3" fill="#1abc9c" opacity="0.5"></circle>
-    <circle cx="1100" cy="290" r="3" fill="#2ecc71" opacity="0.5"></circle>
-  </svg>
-
-  <div class="blob1"></div>
-  <div class="blob2"></div>
-  <div class="blob3"></div>
-  <div class="grain"></div>
-  <div class="accent-bar"></div>
-
-  <svg class="right-panel" viewbox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>text { font-family: 'Source Code Pro', monospace; }</style>
-    </defs>
-    <line x1="40" y1="220" x2="300" y2="220" stroke="#2a5a48" stroke-width="1.2"></line>
-    <line x1="40" y1="220" x2="40" y2="20" stroke="#2a5a48" stroke-width="1.2"></line>
-    <line x1="40" y1="75" x2="290" y2="75" stroke="#4dd9a0" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"></line>
-    <line x1="185" y1="75" x2="185" y2="220" stroke="#3498db" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"></line>
-    <path d="M 52 200 C 80 170, 120 100, 160 80 C 185 72, 210 73, 260 74 L 290 74" fill="none" stroke="#4dd9a0" stroke-width="2.2" stroke-linecap="round"></path>
-    <circle cx="55" cy="196" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="70" cy="178" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="88" cy="152" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="72" cy="165" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="105" cy="130" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="115" cy="115" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="98" cy="138" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="135" cy="98" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="148" cy="88" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="162" cy="80" r="3" fill="#4dd9a0" opacity="0.7"></circle>
-    <circle cx="190" cy="76" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="220" cy="75" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="250" cy="76" r="3" fill="#4dd9a0" opacity="0.5"></circle>
-    <circle cx="275" cy="74" r="3" fill="#4dd9a0" opacity="0.6"></circle>
-    <circle cx="40" cy="210" r="4" fill="none" stroke="#3498db" stroke-width="1.5" opacity="0.6"></circle>
-    <text x="192" y="238" fill="#3a6052" font-size="10" letter-spacing="1">range</text>
-    <text x="42" y="68" fill="#3a6052" font-size="10" letter-spacing="1">sill</text>
-    <text x="46" y="235" fill="#3a6052" font-size="10" letter-spacing="1">lag distance h</text>
-    <text x="18" y="130" fill="#3a6052" font-size="10" letter-spacing="1" transform="rotate(-90 18 130)">γ(h)</text>
-    <text x="200" y="15" fill="#3a6052" font-size="10" letter-spacing="2" opacity="0.8">VARIOGRAM</text>
-  </svg>
-
-  <div class="content">
-    <a href="00Welcome.html" class="enter-button">Welcome →</a>
-    <div class="banner-title">
-      Spatial <span class="accent-word">Analysis</span><br>
-      for Environmental Science
-    </div>
-    <div class="banner-subtitle">patterns, structure, and prediction in space</div>
-    <div class="tags">
-      <span class="tag">Point Patterns</span>
-      <span class="tag">Autocorrelation</span>
-      <span class="tag">Kriging</span>
-      <span class="tag">IDW</span>
-      <span class="tag">GLS</span>
-      <span class="tag">R</span>
-    </div>
-  </div>
-
-  <div class="bottom-rule"></div>
-  <div class="credit">Andy Bunn &nbsp;·&nbsp; ESCI 505</div>
-
+<p>These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.</p>
+<p>The notes are hands-on by design. You will write code, look at data, make maps, fit models, and interpret results. Each section builds on what came before. The math shows up when it needs to, but the emphasis throughout is on doing spatial analysis and understanding what you’re doing – not on deriving things for their own sake.</p>
+<p>I’ll point you to textbooks and papers along the way. Read them. They complement what we’re doing here and will matter when you’re working on your own data and I’m not around to ask.</p>
+<p>These notes are a living document. They change based on what works, what doesn’t, and what you ask about in class. If something is wrong or unclear, tell me.</p>
+<section id="whats-in-these-notes" class="level2">
+<h2 class="anchored" data-anchor-id="whats-in-these-notes">What’s in These Notes</h2>
+<p>The notes move through the core ideas of spatial analysis in roughly this order:</p>
+<ul>
+<li><strong>Introduction to Geospatial Concepts</strong> <em>(Data Carpentry)</em> – Before we can analyze spatial data, we need to be able to handle it. These workshops get you there. Think of it as building the workbench before we start making things.</li>
+<li><strong>An Aside: Methods and Generics in R</strong> – A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why <code>plot()</code> and <code>summary()</code> behave differently depending on what you give them.</li>
+<li><strong>Mt Baker Map</strong> – A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.</li>
+<li><strong>Point Patterns</strong> – How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley’s K.</li>
+<li><strong>Intro to Autocorrelation</strong> – How to measure and describe spatial structure in a continuous variable using variograms, Moran’s I, and correlograms.</li>
+<li><strong>Geostats I: Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
+<li><strong>Geostats I: Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
+<li><strong>Geostats II: Kriging</strong> – The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.</li>
+<li><strong>Geostats II: Regression Kriging</strong> – Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.</li>
+<li><strong>Regression: GLS with Autocorrelated Residuals</strong> – What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.</li>
+</ul>
+<p>The asides are optional deep dives. They won’t be on any assignment, but they’re there if you want to understand what’s happening under the hood.</p>
+<p>Each chapter builds on the last, so working through them in order is recommended.</p>
+</section>
+<section id="go-do-great-things" class="level2">
+<h2 class="anchored" data-anchor-id="go-do-great-things">Go Do Great Things</h2>
+<p>You are going to learn to see the world spatially. That sounds dramatic, but I mean it practically: by the end of this course you will be able to look at a dataset, ask where things are happening and why, and have real tools to answer those questions. That is not a small thing.</p>
+<p>The people who do this work well are not necessarily the ones who find it easiest. They’re the ones who run the code when it breaks, read the error messages, ask questions, and keep going. That’s it. That’s the whole secret.</p>
+<p>So: set up your project, download the data, and let’s get to work.</p>
+</section>
+<section id="technical-setup" class="level2">
+<h2 class="anchored" data-anchor-id="technical-setup">Technical Setup</h2>
+<p>This document was written in Markdown using the <strong>bookdown</strong> package and built with <strong>R version 4.5.2</strong>. You should be reasonably up to date on your versions of R, RStudio, and relevant packages. You can update your packages by running:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">update.packages</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="project-structure" class="level3">
+<h3 class="anchored" data-anchor-id="project-structure">Project Structure</h3>
+<p>To follow along with the examples, you’ll want a working RStudio project.</p>
+<ol type="1">
+<li><p><strong>Create a new RStudio project</strong><br>
+Go to <strong>File → New Project → New Directory → New Project</strong>. Give it a name (for example <code>spatial-course</code>) and choose where to save it.</p></li>
+<li><p><strong>Download the <code>data/</code> folder</strong><br>
+The datasets used in the examples are available in the <code>data/</code> folder of the course repository. Download that folder and place it inside your project directory.</p></li>
+</ol>
+<p>You can download the data directly from the GitHub <a href="https://github.com/AndyBunn/spatialNotes">repo</a>. The hard link to it is: https://github.com/AndyBunn/spatialNotes/releases/download/data-latest/data.zip</p>
+<p>Once it’s unzipped your folder structure should look something like this:</p>
+<pre><code>spatial-course/
+├── data/
+│   ├── birdRichnessMexico.rds
+│   ├── mtbDEM.tif
+│   └── ...
+└── spatial-course.Rproj</code></pre>
+<ol start="3" type="1">
+<li><strong>Refer to data files using relative paths</strong></li>
+</ol>
+<p>In your code, use paths like <code>"data/birdRichnessMexico.rds"</code> rather than full file paths. This keeps the code portable and ensures it will run on different machines without modification. E.g.,</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>birdRichness <span class="ot">&lt;-</span>  <span class="fu">readRDS</span>(<span class="st">"data/birdRichnessMexico.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
+<ol start="4" type="1">
+<li><strong>Save your Rmd files in the project root</strong></li>
+</ol>
+<p>When you make a Rmd file for your work, save it in the project’s root directory. For instance if you have the first two assignments saved in files called “MtBakerHomework.Rmd” and “pointPatternHomework.Rmd,” your file and folder structure might look something like this:</p>
+<pre><code>spatial-course/
+├── data/
+│   ├── birdRichnessMexico.rds
+│   ├── mtbDEM.tif
+│   └── ...
+├── MtBakerHomework.Rmd
+├── pointPatternHomework.Rmd
+└── spatial-course.Rproj</code></pre>
 
 
+</section>
+</section>
 
-
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -804,9 +747,21 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Cover Page">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Cover Page</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./01GettingStarted.html" class="pagination-link" aria-label="Introduction: Getting Your Bearings">
+        <span class="nav-page-text"><span class="chapter-title">Introduction: Getting Your Bearings</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/00Welcome.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

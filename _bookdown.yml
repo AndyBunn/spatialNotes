@@ -1,6 +1,0 @@
-book_filename: "Spatial Analysis Notes"
-language:
-  ui:
-delete_merged_file: true
-new_session: yes
-output_dir: "docs"

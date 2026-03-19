@@ -1,0 +1,49 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Spatial Analysis for Environmental Science"
+  subtitle: "Course Notes"
+  author: "Andy Bunn"
+  date: today
+  description: "Spatial analysis notes and exercises"
+  navbar:
+    background: dark
+    search: true
+  chapters:
+    - file: index.qmd
+      text: "Cover Page"
+    - 00Welcome.qmd
+    - 01GettingStarted.qmd
+    - 01xAsideMethods_and_generics.qmd
+    - 02MtBakerMap.qmd
+    - 03Point_Patterns.qmd
+    - 04Intro2Autocorrelation.qmd
+    - 05aGeostatsIDW.qmd
+    - 05bGeostat2TPS.qmd
+    - 06aGeostatsKriging.qmd
+    - 06bGeostatsRegressionKriging.qmd
+    - 06xAsideGeostatsKrigingVariance.qmd
+    - 07RegressionGLS.qmd
+    - 07xAsideOLS_Algebric_Matrix.qmd
+    - 08PackagesUsed.qmd
+  repo-url: https://github.com/AndyBunn/spatialNotes
+  repo-actions: [edit, issue]
+
+bibliography: packages.bib
+reference-location: document
+
+format:
+  html:
+    theme: cosmo
+    css: custom.css
+    code-fold: show
+    toc: true
+    toc-depth: 3
+    number-sections: false
+
+execute:
+  warning: false
+  message: false
+  freeze: auto

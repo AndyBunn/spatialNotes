@@ -1,0 +1,149 @@
+/* ============================================================
+   custom.css — Spatial Analysis for Environmental Science
+   Layers on top of cosmo. Pulls design language from cover:
+   Playfair Display headings, Source Code Pro code, teal accents.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Source+Code+Pro:wght@400;600&display=swap');
+
+/* ------------------------------------------------------------
+   Navbar — thin teal top border echoes the cover accent bar
+   ------------------------------------------------------------ */
+.navbar {
+  border-top: 3px solid #2ecc71;
+}
+
+/* ------------------------------------------------------------
+   Headings — Playfair Display, teal underline accent on h1/h2
+   ------------------------------------------------------------ */
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+}
+
+h1.title {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 600;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #d4ede6;
+  margin-top: 2rem;
+}
+
+h3 {
+  font-weight: 600;
+  color: #2a5a48;
+}
+
+/* ------------------------------------------------------------
+   Links — teal family
+   ------------------------------------------------------------ */
+a {
+  color: #1a8a62;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #4dd9a0;
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------
+   Inline code — subtle teal tint, Source Code Pro
+   ------------------------------------------------------------ */
+code {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.875em;
+  background-color: #f0faf5;
+  color: #1a6a4a;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+}
+
+/* ------------------------------------------------------------
+   Code blocks — clean, slightly warm background
+   ------------------------------------------------------------ */
+pre {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.875em;
+  background-color: #f8faf9;
+  border: 1px solid #d4ede6;
+  border-left: 3px solid #2ecc71;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------
+   Blockquotes — left border in teal family
+   ------------------------------------------------------------ */
+blockquote {
+  border-left: 3px solid #4dd9a0;
+  background-color: #f5fbf8;
+  padding: 0.75rem 1rem;
+  color: #3a5a4a;
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------
+   TOC — teal active/hover states
+   ------------------------------------------------------------ */
+#TOC a {
+  color: #444;
+}
+
+#TOC a:hover {
+  color: #1a8a62;
+}
+
+#TOC a.active {
+  color: #1a8a62;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------
+   Sidebar nav links
+   ------------------------------------------------------------ */
+.sidebar-item-text {
+  font-size: 0.9rem;
+}
+
+.sidebar-item a.active {
+  color: #1a8a62 !important;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------
+   Horizontal rules — thin teal gradient, echoes cover
+   ------------------------------------------------------------ */
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, #2ecc71, #3498db, transparent);
+  margin: 2rem 0;
+}
+
+/* ------------------------------------------------------------
+   Figure captions — small, muted, Source Code Pro
+   ------------------------------------------------------------ */
+.figure-caption, figcaption {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.8rem;
+  color: #6a8a7a;
+  margin-top: 0.4rem;
+}
+
+/* ------------------------------------------------------------
+   Math — just a touch of breathing room
+   ------------------------------------------------------------ */
+.math.display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
