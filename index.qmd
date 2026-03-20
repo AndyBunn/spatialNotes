@@ -281,10 +281,8 @@ date: ""
     <div class="tags">
       <span class="tag">Point Patterns</span>
       <span class="tag">Autocorrelation</span>
-      <span class="tag">Kriging</span>
-      <span class="tag">IDW</span>
       <span class="tag">GLS</span>
-      <span class="tag">R</span>
+      <span class="tag">Geostatistics</span>
     </div>
   </div>
 
