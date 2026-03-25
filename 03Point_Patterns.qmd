@@ -324,7 +324,7 @@ env <- envelope(foo, Lest, nsim = 100)
 plot(env)
 ```
 
-Note that you can just do this on your own. No need to show me in your assignment. To put this part of "Your Work" into a R Markdown doc for me to see would take some work because the `clickppp` function is interactive. You'd have to make `foo` by clicking and then save it using something like `saveRDS` and then reading it in for your R Markdown doc with `readRDS`. It's overkill to do that amount of work. So just do this on your own. 
+Note that you can just do this on your own. No need to show me in your assignment. To put this part of "Your Work" into your knitted doc for me to see would take some work because the `clickppp` function is interactive. You'd have to make `foo` by clicking and then save it using something like `saveRDS` and then reading it into your doc with `readRDS`. It's overkill to do that amount of work. So just do this on your own. 
 
 ## More than trees
 The `spatstat` library has a ludicrous number of data sets to work with. If you are not interested in trees for some reason (weird, I know) you can look at point patterns for all kinds of things: anemones, ants, gorilla nests, mycorrhizal fungi, waterstriders. Type `demo(data)` at the prompt to see all the `spatstat` data sets if you want to get an appreciation for all the different types of point pattern data that exist in `spatstat`. 

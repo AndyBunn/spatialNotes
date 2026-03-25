@@ -202,6 +202,6 @@ ggplot() +
 ## Your work
 Make a pretty map of the Mt Baker ski hill area using the data above. You can color outside the lines (e.g., pull in imagery from Google Earth or use other ancillary data) if you like. There are few limits to what you can do but you need to use all three data sets in one map. The idea here is to make sure you can handle raster data and two types of vector data (points and lines) simultaneously.
 
-Turn in a knitted R Markdown document in HTML that has a map and explain what you did. Make sure all your code is clean, your variables named well, your explanations clear. Show all the code.
+Turn in a knitted document in HTML that has a map and explain what you did. Make sure all your code is clean, your variables named well, your explanations clear. I suggest using either RMarkdown (.Rmd) or quarto (.qmd). Show all the code.
 
 Finally, there is a lot to do in this class. As such, I'm not going to ask you to do a bunch of fancy cartography. In general I want you to focus on the spatial analysis and not fall into time sinks of map making. But I'm not against you making cool maps! Feel free to experiment with cartography. The Lovelace chapter [Making maps with R](https://geocompr.robinlovelace.net/adv-map.html) is a great resource for `tmap` etc.
