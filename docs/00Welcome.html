@@ -8,7 +8,7 @@
 
 <meta name="description" content="Spatial analysis notes and exercises">
 
-<title>Welcome – Spatial Analysis for Environmental Science</title>
+<title>Welcome and Set Up – Spatial Analysis for Environmental Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -135,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00Welcome.html"><span class="chapter-title">Welcome</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00Welcome.html"><span class="chapter-title">Welcome and Set Up</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -158,7 +158,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Welcome</span></a>
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Welcome and Set Up</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -253,7 +253,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Welcome</span></h1>
+<h1 class="title"><span class="chapter-title">Welcome and Set Up</span></h1>
 </div>
 
 
@@ -289,7 +289,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Geostats II: Regression Kriging</strong> – Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.</li>
 <li><strong>Regression: GLS with Autocorrelated Residuals</strong> – What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.</li>
 </ul>
-<p>The asides are optional deep dives. They won’t be on any assignment, but they’re there if you want to understand what’s happening under the hood.</p>
 <p>Each chapter builds on the last, so working through them in order is recommended.</p>
 </section>
 <section id="go-do-great-things" class="level2">
@@ -300,9 +299,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="technical-setup" class="level2">
 <h2 class="anchored" data-anchor-id="technical-setup">Technical Setup</h2>
-<p>This document was written in Markdown using the <strong>quatro</strong> and built with <strong>R version 4.5.2</strong>. You should be reasonably up to date on your versions of R, RStudio, and relevant packages. You can update your packages by running:</p>
+<p>This document was written in Markdown using using <a href="https://quarto.org">quarto</a> and built with <strong>R version 4.5.2</strong>. You should be reasonably up to date on your versions of R, RStudio, and relevant packages. You can update your packages by running:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">update.packages</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Run that now. And anytime it occurs to you. It’s always a good idea to be up to date with your packages.</p>
+<p><strong>Run that now.</strong> And anytime it occurs to you. It’s always a good idea to be up to date with your packages.</p>
 <section id="project-structure" class="level3">
 <h3 class="anchored" data-anchor-id="project-structure">Project Structure</h3>
 <p>To follow along with the examples, you’ll want a working RStudio project.</p>
@@ -312,7 +311,8 @@ Go to <strong>File → New Project → New Directory → New Project</strong>. G
 <li><p><strong>Download the <code>data/</code> folder</strong><br>
 The datasets used in the examples are available in the <code>data/</code> folder of the course repository. Download that folder and place it inside your project directory.</p></li>
 </ol>
-<p>You can download the data directly from the GitHub <a href="https://github.com/AndyBunn/spatialNotes">repo</a>. The hard link to it is: https://github.com/AndyBunn/spatialNotes/releases/download/data-latest/data.zip</p>
+<p>You can <a href="https://github.com/AndyBunn/spatialNotes/releases/download/data-latest/data.zip">download the data directly</a> from the GitHub <a href="https://github.com/AndyBunn/spatialNotes">repo</a>. Here is hard link to it:</p>
+<pre><code>https://github.com/AndyBunn/spatialNotes/releases/download/data-latest/data.zip</code></pre>
 <p>Once it’s unzipped your folder structure should look something like this:</p>
 <pre><code>spatial-course/
 ├── data/
@@ -327,7 +327,7 @@ The datasets used in the examples are available in the <code>data/</code> folder
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>birdRichness <span class="ot">&lt;-</span>  <span class="fu">readRDS</span>(<span class="st">"data/birdRichnessMexico.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>birdRichness <span class="ot">&lt;-</span>  <span class="fu">readRDS</span>(<span class="st">"data/birdRichnessMexico.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <ol start="4" type="1">
