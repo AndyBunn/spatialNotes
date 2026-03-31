@@ -23,7 +23,6 @@ The notes move through the core ideas of spatial analysis in roughly this order:
 - **Geostats II: Regression Kriging** -- Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.
 - **Regression: GLS with Autocorrelated Residuals** -- What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
 
-The asides are optional deep dives. They won't be on any assignment, but they're there if you want to understand what's happening under the hood.
 
 Each chapter builds on the last, so working through them in order is recommended.
 
