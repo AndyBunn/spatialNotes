@@ -9,13 +9,11 @@ We will be using R throughout this course for spatial analysis. This is not a GI
 For those of you who want to go deeper on the GIS and mapping side of things, [Geocomputation with R](https://r.geocompx.org) by Lovelace et al. is an outstanding resource. It's freely available online and covers everything from basic spatial data handling to advanced mapping and geoprocessing. I'll point you to specific chapters from time to time, and it's worth bookmarking as a reference you'll return to throughout the course — especially if you find yourself wanting more out of your maps or needing to wrangle spatial data in ways we don't cover in class.
 
 ## Your Work
-Complete both of the Data Carpentry workshops below before our next meeting. These are excellent, well-crafted workshops. Run the code as you go. Don't just read through it. This is one of those cases where the difference between passively reading and actually typing the commands into R is the difference between thinking you understand something and actually understanding it.
+Complete both of the Data Carpentry. These are excellent, well-crafted workshops. Run the code as you go. Don't just read through it. This is one of those cases where the difference between passively reading and actually typing the commands into R is the difference between thinking you understand something and actually understanding it.
 
 How long will this take? It depends. Some of you are GIS veterans and some of you are very comfortable in R. Others are newer to one or both. The workshops are designed to be accessible regardless of your background, but your time will vary. Budget accordingly and don't leave it until the night before.
 
-You don't need to turn anything in, but you are responsible for the material. The Mt Baker assignment in the next chapter will assume you've done this work.
-
-We'll be using some of these data for the tests as well. So you'll want to be familiar with them starting now.
+You don't need to turn anything in, but you are responsible for the material. The Mt Baker assignment in the next chapter will assume you've done this work. And we'll be using some of these data later in the class as well. So you'll want to be familiar with them starting now.
 
 **[Introduction to Geospatial Concepts](https://datacarpentry.org/organization-geospatial/)**
 We are going to work with the good folks at Data Carpentry for this intro to the organization of geospatial data. The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros and conversant with different data types and spatial schemas. Others are spatial novices. Finishing this will help establish a common baseline of knowledge.
