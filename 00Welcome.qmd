@@ -42,7 +42,7 @@ This document was written in Markdown using using [quarto](https://quarto.org) a
 update.packages()
 ```
 
-Run that now. And anytime it occurs to you. It's always a good idea to be up to date with your packages. 
+**Run that now.** And anytime it occurs to you. It's always a good idea to be up to date with your packages. 
 
 ### Project Structure
 
