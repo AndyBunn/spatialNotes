@@ -1,4 +1,4 @@
-# Welcome
+# Welcome and Set Up
 
 These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
 
