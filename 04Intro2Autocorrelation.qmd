@@ -1,7 +1,9 @@
 # Spatial Autocorrelation
 
-```{r,echo=FALSE}
+```{r,echo=FALSE, include=FALSE}
 set.seed(1984)
+knitr::purl("04Intro2Autocorrelation.qmd", output = "04Intro2Autocorrelation.R", documentation = 1)
+
 ```
 
 ## Big Idea
@@ -13,11 +15,12 @@ variation operates.
 ## Reading
 Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to Fortin et al. (2016) from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand (2008) but we will get to that in the next module more deeply.
 
-
 Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
 
 Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
 
+## Distance Refresh
+Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside first](03xAsideDistanceMatrices.html).
 
 ## Packages
 The packages we are going to use are below. 
@@ -45,44 +48,7 @@ In the first half of the 20th century, the pioneering ecologist Alex Watt gave u
 
 Environmental data are typically characterized by a pattern: observations from nearby locations are more likely to have similar magnitude than by chance alone. This is spatial autocorrelation and the first challenge we have with environmental data is to quantify the magnitude, intensity, and extent of spatial structure in the data.
 
-The two tools we are going to cover in this module are variograms and Moran's I. But first...
-
-## Getting Back to Distance Matrices
-Distance matrices and nearest neighbors are the bread and butter of spatial analysis -- much as it is in ordination and multivariate analysis. In ESCI 503 you think about distance and dissimilarity matrices a lot. If you haven't thought about distance in awhile, recall that we can calculate geographic distances on a plane using the Pythagorean theorem. There are more sophisticated ways (e.g., cost paths), but this is the simplest form of distance to calculate and almost always what we use in spatial analyses if our data are projected (not in latitude and longitude). So, if we have two points with locations specified by `x` and `y` we find the the Euclidean distance between them as:
-$$D=\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$$
-
-It's important that you are comfortable with the idea of calculating pairwise distances for a set of points. E.g., let's look at an example of five points:
-
-```{r,echo=FALSE}
-dat <- data.frame(x=runif(5),y=runif(5))
-getAxisLimits <- range(dat)
-p1 <- ggplot() + geom_point(data = dat,mapping = aes(x=x,y=y), size=3) +
-  coord_fixed(ratio = 1,xlim = getAxisLimits, ylim = getAxisLimits) +
-  theme_minimal()
-p1
-```
-
-We can look at the distance matrix **D** via
-```{r}
-D <- dist(dat)
-D
-```
-
-where the elements $d_ij$ give the distance between points $i$ and $j$. There are $n*(n-1)/2$ pairwise elements of **D** -- so 10 pairs of values here. Thus, the distance between the first and second points is D[1,2]: 
-```{r}
-d12 <- round(as.matrix(D)[1,2],2)
-d12
-```
-
-```{r,echo=FALSE}
-p1 + annotate(geom = "segment", 
-              x=dat$x[1],y=dat$y[1],
-              xend=dat$x[2],yend=dat$y[2]) +
-  annotate(geom="text",x=mean(dat$x[c(1,2)]),y=mean(dat$y[c(1,2)]),
-           label=d12,hjust=1, vjust=-2)
-```
-
-Now imagine that at each one of those points we also measured some variable. If the point locations were trees we might measure their height or diameters. One thing we might want to know is whether or not some measured variable $z$ has a spatial pattern. E.g., how closely correlated are points that are close together vs points that are further apart. In general, environmental data tends to be positively autocorrelated meaning points near each other tend to be more alike that points that are further away. Characterizing those scales is what we will move onto now. 
+The two tools we are going to cover in this module are variograms and Moran's I.
 
 ## Meuse River 
 Let's use the Meuse River data to illustrate the idea behind autocorrelation. This is a classic spatial data set that has coordinate data (a plain `data.frame`) with measurements on metal concentrations in soils as well as some other soil variables. We will return to these data again and again. It's a classic data set. Look at the help file for more details as well as the projection info. [Here is a link to a Google Map of the site](http://www.google.com/maps/place/50%C2%B057'46.6%22N+5%C2%B044'06.1%22E/@50.9629384,5.7350233,13z/data=!4m2!3m1!1s0x0:0x0) which is in the Netherlands on the border with Belgium. Someday I'll visit this site after so many years of working with these data. 

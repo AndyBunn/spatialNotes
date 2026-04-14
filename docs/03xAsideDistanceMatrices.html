@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Spatial analysis notes and exercises">
+
+<title>Aside: Distance Matrices – Spatial Analysis for Environmental Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./03Point_Patterns.html" rel="next">
+<link href="./02MtBakerMap.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a04a01d9790747593e0658c5ce91c85b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Spatial Analysis for Environmental Science</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/AndyBunn/spatialNotes" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03xAsideDistanceMatrices.html">Aside: Distance Matrices</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Welcome and Set Up</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Aside: Distance Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why This Matters</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#euclidean-distance-the-foundation" id="toc-euclidean-distance-the-foundation" class="nav-link" data-scroll-target="#euclidean-distance-the-foundation">Euclidean Distance: The Foundation</a></li>
+  <li><a href="#what-dist-actually-returns" id="toc-what-dist-actually-returns" class="nav-link" data-scroll-target="#what-dist-actually-returns">What <code>dist()</code> Actually Returns</a></li>
+  <li><a href="#nearest-neighbors" id="toc-nearest-neighbors" class="nav-link" data-scroll-target="#nearest-neighbors">Nearest Neighbors</a></li>
+  <li><a href="#when-distance-isnt-symmetric" id="toc-when-distance-isnt-symmetric" class="nav-link" data-scroll-target="#when-distance-isnt-symmetric">When Distance Isn’t Symmetric</a></li>
+  <li><a href="#least-cost-paths" id="toc-least-cost-paths" class="nav-link" data-scroll-target="#least-cost-paths">Least Cost Paths</a></li>
+  <li><a href="#the-scale-problem" id="toc-the-scale-problem" class="nav-link" data-scroll-target="#the-scale-problem">The Scale Problem</a></li>
+  <li><a href="#working-with-real-spatial-data-sfst_distance" id="toc-working-with-real-spatial-data-sfst_distance" class="nav-link" data-scroll-target="#working-with-real-spatial-data-sfst_distance">Working with Real Spatial Data: <code>sf::st_distance()</code></a></li>
+  <li><a href="#why-projection-matters-a-concrete-example" id="toc-why-projection-matters-a-concrete-example" class="nav-link" data-scroll-target="#why-projection-matters-a-concrete-example">Why Projection Matters: A Concrete Example</a></li>
+  <li><a href="#quick-reference" id="toc-quick-reference" class="nav-link" data-scroll-target="#quick-reference">Quick Reference</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/03xAsideDistanceMatrices.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Aside: Distance Matrices</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why This Matters</h2>
+<p>Distance matrices show up everywhere in this course – in point pattern analysis, variograms, spatial weights, IDW, kriging, and nearest-neighbor analyses. You will use them so often and in so many different forms that it’s worth slowing down and really understanding what they are, how R stores them, and what they’re doing under the hood before you need to rely on them for something more complex.</p>
+<p>None of it is hard. But the details matter more here, because a lot of subtle bugs in spatial analysis can come from misunderstanding the structure of a distance matrix.</p>
+</section>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="euclidean-distance-the-foundation" class="level2">
+<h2 class="anchored" data-anchor-id="euclidean-distance-the-foundation">Euclidean Distance: The Foundation</h2>
+<p>You likely already know this, but let’s set up the notation properly because we’ll use it throughout. For two points <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> with coordinates <span class="math inline">\((x_i, y_i)\)</span> and <span class="math inline">\((x_j, y_j)\)</span>, the Euclidean distance is:</p>
+<p><span class="math display">\[d_{ij} = \sqrt{(x_j - x_i)^2 + (y_j - y_i)^2}\]</span></p>
+<p>Nothing new here right? This is the Pythagorean theorem. We’re just being precise about the subscripts. The distance between point <span class="math inline">\(i\)</span> and point <span class="math inline">\(j\)</span> is <span class="math inline">\(d_{ij}\)</span>, and the full set of those distances for all pairs in a dataset is the distance matrix <strong>D</strong>.</p>
+<p>Let’s make a small dataset to work with throughout this aside – six points in a hypothetical coordinate space.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">4</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">3</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03xAsideDistanceMatrices_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-dist-actually-returns" class="level2">
+<h2 class="anchored" data-anchor-id="what-dist-actually-returns">What <code>dist()</code> Actually Returns</h2>
+<p>The natural way to compute a distance matrix in R is <code>dist()</code>:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">dist</span>(dat)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>D</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1        2        3        4        5
+2 3.605551                                    
+3 4.123106 2.828427                           
+4 5.099020 2.236068 5.000000                  
+5 6.403124 3.162278 3.162278 4.123106         
+6 3.605551 1.414214 1.414214 3.605551 2.828427</code></pre>
+</div>
+</div>
+<p>Look carefully at what that prints. It’s a triangular table – only the lower half of what you might expect if you were thinking of a square matrix. That’s not a bug. It’s by design. But before getting into why, check the class of <code>D</code>:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(D)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "dist"</code></pre>
+</div>
+</div>
+<p>It’s not a matrix – it’s a <code>dist</code> object. If you’ve read the <a href="01xAsideMethods_and_generics.html">aside on methods and generics</a>, you know that class determines how R behaves when you call functions on an object. Here, <code>print(D)</code> is actually calling <code>print.dist()</code> under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The <code>dist</code> class is a compact, special-purpose way of storing pairwise distances – not a general-purpose matrix.</p>
+<p>Here’s why that compactness makes sense. With <span class="math inline">\(n\)</span> points, the full distance matrix would be <span class="math inline">\(n \times n\)</span> – that’s 36 numbers for our 6-point dataset. But a lot of those numbers are redundant. Two things are always true:</p>
+<ol type="1">
+<li>The distance from point <span class="math inline">\(i\)</span> to itself is zero: <span class="math inline">\(d_{ii} = 0\)</span>. Every diagonal element is zero, so we don’t need to store them.</li>
+<li>Distance is symmetric: <span class="math inline">\(d_{ij} = d_{ji}\)</span>. The distance from point 1 to point 3 is the same as from point 3 to point 1. So the upper triangle is just a mirror of the lower triangle.</li>
+</ol>
+<p>That means we only need the lower triangle – <span class="math inline">\(n(n-1)/2\)</span> unique values. For our 6 points that’s <span class="math inline">\(6 \times 5 / 2 = 15\)</span> distances. R stores exactly those 15 numbers in the <code>dist</code> object rather than a full 36-element matrix. That’s fine for printing and for passing to functions that know how to handle the <code>dist</code> class – but it can matter a lot when you try to pass it to something that is expecting something that is class <code>matrix</code>. You’ll get used to converting to a matrix first:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Dmat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(D)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Dmat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1        2        3        4        5        6
+1 0.000000 3.605551 4.123106 5.099020 6.403124 3.605551
+2 3.605551 0.000000 2.828427 2.236068 3.162278 1.414214
+3 4.123106 2.828427 0.000000 5.000000 3.162278 1.414214
+4 5.099020 2.236068 5.000000 0.000000 4.123106 3.605551
+5 6.403124 3.162278 3.162278 4.123106 0.000000 2.828427
+6 3.605551 1.414214 1.414214 3.605551 2.828427 0.000000</code></pre>
+</div>
+</div>
+<p>Check the class of <code>Dmat</code> vs <code>D</code></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(Dmat) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "matrix" "array" </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(D)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "dist"</code></pre>
+</div>
+</div>
+<p>With <code>Dmat</code>, you get the full <span class="math inline">\(n \times n\)</span> symmetric matrix with zeros on the diagonal. You’ll be doing this <code>as.matrix()</code> conversion so often it’ll become muscle memory.</p>
+<p>A few things to notice in this full matrix: - Rows and columns correspond to the same points in the same order as your data - It’s symmetric across the diagonal: <code>Dmat[i,j] == Dmat[j,i]</code> - The diagonal is all zeros</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify symmetry</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(Dmat <span class="sc">==</span> <span class="fu">t</span>(Dmat))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify diagonal</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">diag</span>(Dmat) <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+<section id="nearest-neighbors" class="level2">
+<h2 class="anchored" data-anchor-id="nearest-neighbors">Nearest Neighbors</h2>
+<p>Once you have the full matrix, finding nearest neighbors is just a row-wise sorting problem. For each point (each row), you want to know which other point is closest – i.e., which column index has the smallest non-zero value.</p>
+<p>The trick is to handle the diagonal. A zero on the diagonal will always “win” if you don’t deal with it, and every point would be its own nearest neighbor. Mask the diagonal with <code>NA</code> first:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Dnn <span class="ot">&lt;-</span> Dmat</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(Dnn) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Index of the nearest neighbor for each point</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>nn1 <span class="ot">&lt;-</span> <span class="fu">apply</span>(Dnn, <span class="dv">1</span>, which.min)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>nn1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 2 3 4 5 6 
+2 6 6 2 6 2 </code></pre>
+</div>
+</div>
+<p>So point 1’s nearest neighbor is point 2, point 2’s nearest neighbor is point 6, and so on. You can verify a few of these by eye from the plot above.</p>
+<p>For <span class="math inline">\(k\)</span> nearest neighbors, you sort each row and take the first <span class="math inline">\(k\)</span> non-NA indices:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 nearest neighbors for each point</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>nn2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(Dnn, <span class="dv">1</span>, <span class="cf">function</span>(row) <span class="fu">order</span>(row)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>nn2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     1 2 3 4 5 6
+[1,] 2 6 6 2 6 2
+[2,] 6 4 2 6 2 3</code></pre>
+</div>
+</div>
+<p>The columns of <code>nn2</code> are the point indices and the rows are the 1st and 2nd nearest neighbor for each. This is the conceptual core of what functions like <code>spdep::knearneigh()</code> are doing – we’ll use those in the main text, but now you know what’s happening inside.</p>
+</section>
+<section id="when-distance-isnt-symmetric" class="level2">
+<h2 class="anchored" data-anchor-id="when-distance-isnt-symmetric">When Distance Isn’t Symmetric</h2>
+<p>Everything above assumes that the distance from point <span class="math inline">\(i\)</span> to point <span class="math inline">\(j\)</span> is the same as the distance from <span class="math inline">\(j\)</span> to <span class="math inline">\(i\)</span> – i.e., <span class="math inline">\(d_{ij} = d_{ji}\)</span>. For straight-line Euclidean distance that’s always true. But depending on what you mean by “distance,” it isn’t always.</p>
+<p>If you work in streams or rivers, think about what distance means for an organism moving through the water. The straight-line distance between two sites might be 500 meters, but the effective distance – how hard it actually is to get from one place to the other – depends on which direction you’re traveling. Swimming downstream is easy; swimming upstream against the current is not. For a fish or an invertebrate, upstream and downstream are different functional distances, even between the same two sites.</p>
+<p>The same idea applies in marine systems. Ocean currents can make travel in one direction much cheaper than the other. A larva drifting with a coastal current might easily reach a site 200 km away, while a larva trying to go the other direction faces a very different journey.</p>
+<p>When distances are asymmetric like this, you can’t use a <code>dist</code> object – that class assumes symmetry by design. You represent asymmetric distances as a plain R matrix where <code>M[i,j]</code> is the cost of traveling <em>from</em> <span class="math inline">\(i\)</span> <em>to</em> <span class="math inline">\(j\)</span>, and <code>M[i,j]</code> is not required to equal <code>M[j,i]</code>.</p>
+<p>Here’s a simple example. Imagine three sites along a stream where site 1 is downstream and site 3 is upstream. The straight-line distances between them are 300, 400, and 700 meters. But upstream travel is hard – let’s say it costs four times as much as the equivalent downstream leg.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cost[i,j] = effective distance traveling FROM site i TO site j</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Sites: 1=downstream, 2=mid, 3=upstream</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Upstream travel (against current) penalized 4x</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>stream_cost <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>, <span class="dv">300</span><span class="sc">*</span><span class="dv">4</span>, <span class="dv">700</span><span class="sc">*</span><span class="dv">4</span>,   <span class="co"># from site 1: going up to 2 or 3 is hard</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">300</span>,     <span class="dv">0</span>, <span class="dv">400</span><span class="sc">*</span><span class="dv">4</span>,   <span class="co"># from site 2: going down to 1 is easy, up to 3 is hard</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">700</span>,   <span class="dv">400</span>,     <span class="dv">0</span>    <span class="co"># from site 3: going down to 1 or 2 is easy</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>), <span class="at">nrow=</span><span class="dv">3</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="at">dimnames=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"down"</span>,<span class="st">"mid"</span>,<span class="st">"up"</span>), <span class="fu">c</span>(<span class="st">"down"</span>,<span class="st">"mid"</span>,<span class="st">"up"</span>)))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>stream_cost</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     down  mid   up
+down    0 1200 2800
+mid   300    0 1600
+up    700  400    0</code></pre>
+</div>
+</div>
+<p>The asymmetry is obvious in the numbers – traveling from <code>down</code> to <code>up</code> costs 2800 effective meters, while the return trip costs only 700. You can verify formally:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">isSymmetric</span>(stream_cost)   <span class="co"># FALSE -- as expected</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">isSymmetric</span>(Dmat)          <span class="co"># TRUE  -- Euclidean is always symmetric</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>How you model this in practice depends on the question. Sometimes you’ll use asymmetric cost matrices directly (e.g., in circuit theory or graph-based connectivity analyses). Other times you’ll take the average of the two directions as a symmetrized approximation. Neither is universally right – it depends on the biology or physics of your system.</p>
+</section>
+<section id="least-cost-paths" class="level2">
+<h2 class="anchored" data-anchor-id="least-cost-paths">Least Cost Paths</h2>
+<p>A related idea: even when distances <em>are</em> symmetric, the straight line between two points might not be the meaningful measure of distance for your question.</p>
+<p>Imagine two forest patches separated by 2 km of open agricultural land. The Euclidean distance is 2 km, but for a forest-dependent bird or mammal that avoids open habitat, the functional distance between those patches is much larger – or possibly infinite if the species won’t cross open ground at all. What matters ecologically is the path of least resistance through the landscape, not the crow-flies distance.</p>
+<p>This is the idea behind <strong>least cost path (LCP)</strong> analysis. You define a cost surface – a raster where each cell has a value representing how difficult it is to move through that habitat type. Roads might be very costly. Dense forest might be cheap. Urban areas might be impassable. Then you find the path between two locations that minimizes accumulated cost. The resulting <strong>cost distance</strong> replaces Euclidean distance as your measure of connectivity.</p>
+<p>A few things worth knowing about LCP distances:</p>
+<ul>
+<li>They are always <strong>greater than or equal to</strong> Euclidean distance. The straight line is a lower bound; everything else is a detour.</li>
+<li>They can be <strong>asymmetric</strong> if the cost surface is directional. Traveling uphill costs more than traveling downhill, so a path across rugged terrain may have different cost depending on which direction you go.</li>
+<li>The <code>gdistance</code> package is the standard tool for this in R. It takes a cost raster, builds a transition matrix between neighboring cells, and then uses graph algorithms to find minimum cost paths between any pair of points.</li>
+</ul>
+<p>We won’t implement LCP analyses in this course, but you should know the concept exists and why it matters. When you’re thinking about habitat connectivity, dispersal corridors, or movement between patches, Euclidean distance is often a poor proxy for what’s actually constraining your organisms. Cost distances – even rough ones based on broad land cover classes – tend to do much better.</p>
+</section>
+<section id="the-scale-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-scale-problem">The Scale Problem</h2>
+<p>Here’s something that will eventually bite you if you’re not thinking about it. The number of pairwise distances grows as <span class="math inline">\(n(n-1)/2\)</span>, which feels abstract until you see the numbers:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>n_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">5000</span>, <span class="dv">10000</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>n_pairs <span class="ot">&lt;-</span> n_vals <span class="sc">*</span> (n_vals <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">n=</span>n_vals, <span class="at">pairs=</span><span class="fu">format</span>(n_pairs, <span class="at">big.mark=</span><span class="st">","</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      n      pairs
+1    10         45
+2   100      4,950
+3   500    124,750
+4  1000    499,500
+5  5000 12,497,500
+6 10000 49,995,000</code></pre>
+</div>
+</div>
+<p>Ten thousand points – not an unusually large spatial dataset – gives you nearly 50 million pairwise distances. That’s a lot of numbers to compute and store, and <code>dist()</code> will try to hold all of them in memory at once. Let’s see how the size of the <code>dist</code> object scales:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sizes <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2000</span>), <span class="cf">function</span>(n){</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  fake <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">runif</span>(n), <span class="at">y=</span><span class="fu">runif</span>(n))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">object.size</span>(<span class="fu">dist</span>(fake))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">n     =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2000</span>),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">size  =</span> <span class="fu">paste</span>(<span class="fu">round</span>(sizes<span class="sc">/</span><span class="fl">1e6</span>, <span class="dv">2</span>), <span class="st">"MB"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     n     size
+1  100  0.04 MB
+2  500     1 MB
+3 1000     4 MB
+4 2000 15.99 MB</code></pre>
+</div>
+</div>
+<p>You can see the memory blowing up fast. At <span class="math inline">\(n = 2000\)</span> you’re already into tens of megabytes for just the distance matrix. Scale that to a dense point cloud or a raster sample and you have a problem. When we get to geostatistics and spatial weights, keep this in mind. Packages like <code>gstat</code> and <code>spdep</code> are smart about this – they don’t always compute the full distance matrix – but it helps to know why.</p>
+</section>
+<section id="working-with-real-spatial-data-sfst_distance" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-real-spatial-data-sfst_distance">Working with Real Spatial Data: <code>sf::st_distance()</code></h2>
+<p>In the toy examples above we used <code>dist()</code> on a plain <code>data.frame</code> of <code>x</code> and <code>y</code> coordinates. That works fine, but once your data are in an <code>sf</code> object – which they will be for most real analyses – the right tool is <code>sf::st_distance()</code>.</p>
+<p>Why use <code>st_distance()</code> instead of just pulling the coordinates out and passing them to <code>dist()</code>? Two reasons. First, <code>st_distance()</code> knows about the projection of your data and computes distances in the right units (meters, usually). Second, it returns a proper matrix, not a <code>dist</code> object, so you don’t need the <code>as.matrix()</code> step.</p>
+<p>Let’s see both approaches on our toy dataset:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First approach: dist() on raw coordinates</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>D_dist <span class="ot">&lt;-</span> <span class="fu">dist</span>(dat)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Second approach: st_distance() on an sf object</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>dat_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(dat, <span class="at">coords=</span><span class="fu">c</span>(<span class="st">"x"</span>,<span class="st">"y"</span>), <span class="at">crs=</span><span class="dv">32610</span>)  <span class="co"># UTM Zone 10N, meters</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>D_sf <span class="ot">&lt;-</span> <span class="fu">st_distance</span>(dat_sf)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare: upper-left 3x3 corner</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">as.matrix</span>(D_dist)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      1     2     3
+1 0.000 3.606 4.123
+2 3.606 0.000 2.828
+3 4.123 2.828 0.000</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(D_sf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Units: [m]
+      1     2     3
+1 0.000 3.606 4.123
+2 3.606 0.000 2.828
+3 4.123 2.828 0.000</code></pre>
+</div>
+</div>
+<p>The values match here because our toy coordinates are in a made-up Cartesian space. In practice, once your data have a real CRS, <code>st_distance()</code> is the right call. It also handles the case where you need distances between two <em>different</em> sets of points (e.g., sample locations to prediction locations) – just pass both objects as arguments: <code>st_distance(samples_sf, predictions_sf)</code>.</p>
+</section>
+<section id="why-projection-matters-a-concrete-example" class="level2">
+<h2 class="anchored" data-anchor-id="why-projection-matters-a-concrete-example">Why Projection Matters: A Concrete Example</h2>
+<p>You’ve probably heard “make sure your data are projected” enough times that it starts to sound like a ritual incantation. Here’s the concrete reason it matters for distance calculations.</p>
+<p>Let’s place a few sample sites around the Mt. Baker area. We’ll compute distances from their raw lat/lon coordinates and then from their properly projected coordinates and see what happens.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"Bellingham"</span>, <span class="st">"Glacier"</span>, <span class="st">"Concrete"</span>, <span class="st">"Anacortes"</span>),</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon  =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">122.48</span>, <span class="sc">-</span><span class="fl">121.93</span>, <span class="sc">-</span><span class="fl">121.75</span>, <span class="sc">-</span><span class="fl">122.61</span>),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat  =</span> <span class="fu">c</span>(  <span class="fl">48.75</span>,   <span class="fl">48.89</span>,   <span class="fl">48.54</span>,   <span class="fl">48.51</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>First, the naive approach – just hand the lat/lon columns to <code>dist()</code>:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>D_latlon <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(sites[, <span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>)]))</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(D_latlon, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      1     2     3     4
+1 0.000 0.568 0.760 0.273
+2 0.568 0.000 0.394 0.779
+3 0.760 0.394 0.000 0.861
+4 0.273 0.779 0.861 0.000</code></pre>
+</div>
+</div>
+<p>These numbers are in <em>decimal degrees</em>, which is not a unit of distance. The value of 0.568 between Bellingham and Glacier doesn’t mean 0.568 km, or 0.568 miles, or 0.568 anything useful. It’s a number that mixes together differences in longitude and differences in latitude, which are not the same physical distance – especially at 48°N where a degree of longitude is only about 74 km while a degree of latitude is about 111 km.</p>
+<p>Now let’s do it properly. We’ll create an <code>sf</code> object and project to UTM Zone 10N (EPSG:32610), which puts everything in meters:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sites_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(sites, <span class="at">coords=</span><span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>), <span class="at">crs=</span><span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">32610</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>D_proj <span class="ot">&lt;-</span> <span class="fu">st_distance</span>(sites_sf)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(D_proj) <span class="ot">&lt;-</span> sites<span class="sc">$</span>name</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(D_proj) <span class="ot">&lt;-</span> sites<span class="sc">$</span>name</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(D_proj <span class="sc">/</span> <span class="dv">1000</span>, <span class="dv">1</span>)  <span class="co"># convert to km</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Units: [m]
+           Bellingham Glacier Concrete Anacortes
+Bellingham        0.0    43.3     58.6      28.3
+Glacier          43.3     0.0     41.1      65.5
+Concrete         58.6    41.1      0.0      63.6
+Anacortes        28.3    65.5     63.6       0.0</code></pre>
+</div>
+</div>
+<p>Now we have real distances in kilometers. Bellingham to Glacier is about 43 km. Bellingham to Anacortes is about 28 km. These match what you’d get from a map.</p>
+<p>Compare the two matrices directly and you’ll see that not only are the magnitudes different, the <em>relative</em> distances can shift too – which means that nearest-neighbor analyses, variogram bins, and spatial weights based on lat/lon distances will all be subtly wrong in ways that are hard to detect. Always project your data before computing distances.</p>
+</section>
+<section id="quick-reference" class="level2">
+<h2 class="anchored" data-anchor-id="quick-reference">Quick Reference</h2>
+<p>Here’s a cheat sheet for some of the distance-related functions you’ll use in this course:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Function</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Points in a <code>data.frame</code>, same CRS</td>
+<td><code>dist(coords)</code></td>
+<td><code>dist</code> object (lower triangle)</td>
+</tr>
+<tr class="even">
+<td>Convert to indexable matrix</td>
+<td><code>as.matrix(D)</code></td>
+<td><code>matrix</code></td>
+</tr>
+<tr class="odd">
+<td>Points in an <code>sf</code> object</td>
+<td><code>st_distance(sf_obj)</code></td>
+<td><code>matrix</code> (with units)</td>
+</tr>
+<tr class="even">
+<td>Two different sets of points</td>
+<td><code>st_distance(sf1, sf2)</code></td>
+<td>rectangular <code>matrix</code></td>
+</tr>
+<tr class="odd">
+<td>Distances in geostat code</td>
+<td><code>fields::rdist(coords)</code></td>
+<td><code>matrix</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>fields::rdist()</code> function appears in the kriging aside and a few other places. It’s essentially <code>as.matrix(dist())</code> but faster for large <span class="math inline">\(n\)</span>, and it handles the two-set case like <code>st_distance()</code> does.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./02MtBakerMap.html" class="pagination-link" aria-label="Mt Baker Map">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Mt Baker Map</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./03Point_Patterns.html" class="pagination-link" aria-label="Point Patterns">
+        <span class="nav-page-text"><span class="chapter-title">Point Patterns</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/03xAsideDistanceMatrices.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

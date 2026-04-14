@@ -1,0 +1,275 @@
+# Aside: Distance Matrices {- .aside-chapter}
+
+```{r, echo=FALSE}
+set.seed(1984)
+```
+
+## Why This Matters
+
+Distance matrices show up everywhere in this course -- in point pattern analysis, variograms, spatial weights, IDW, kriging, and nearest-neighbor analyses. You will use them so often and in so many different forms that it's worth slowing down and really understanding what they are, how R stores them, and what they're doing under the hood before you need to rely on them for something more complex.
+
+None of it is hard. But the details matter more here, because a lot of subtle bugs in spatial analysis can come from misunderstanding the structure of a distance matrix.
+
+## Packages
+
+```{r, message=FALSE}
+library(tidyverse)
+library(sf)
+```
+
+## Euclidean Distance: The Foundation
+
+You likely already know this, but let's set up the notation properly because we'll use it throughout. For two points $i$ and $j$ with coordinates $(x_i, y_i)$ and $(x_j, y_j)$, the Euclidean distance is:
+
+$$d_{ij} = \sqrt{(x_j - x_i)^2 + (y_j - y_i)^2}$$
+
+Nothing new here right? This is the Pythagorean theorem. We're just being precise about the subscripts. The distance between point $i$ and point $j$ is $d_{ij}$, and the full set of those distances for all pairs in a dataset is the distance matrix **D**.
+
+Let's make a small dataset to work with throughout this aside -- six points in a hypothetical coordinate space.
+
+```{r}
+dat <- data.frame(
+  x = c(1, 3, 5, 2, 6, 4),
+  y = c(1, 4, 2, 6, 5, 3)
+)
+```
+
+```{r, echo=FALSE}
+ggplot(dat, aes(x=x, y=y, label=1:nrow(dat))) +
+  geom_point(size=4) +
+  geom_text(nudge_y=0.3, size=3.5) +
+  coord_fixed() +
+  theme_minimal() +
+  labs(title="Six sample locations")
+```
+
+## What `dist()` Actually Returns
+
+The natural way to compute a distance matrix in R is `dist()`:
+
+```{r}
+D <- dist(dat)
+D
+```
+
+Look carefully at what that prints. It's a triangular table -- only the lower half of what you might expect if you were thinking of a square matrix. That's not a bug. It's by design. But before getting into why, check the class of `D`:
+
+```{r}
+class(D)
+```
+
+It's not a matrix -- it's a `dist` object. If you've read the [aside on methods and generics](01xAsideMethods_and_generics.html), you know that class determines how R behaves when you call functions on an object. Here, `print(D)` is actually calling `print.dist()` under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The `dist` class is a compact, special-purpose way of storing pairwise distances -- not a general-purpose matrix.
+
+Here's why that compactness makes sense. With $n$ points, the full distance matrix would be $n \times n$ -- that's 36 numbers for our 6-point dataset. But a lot of those numbers are redundant. Two things are always true:
+
+1. The distance from point $i$ to itself is zero: $d_{ii} = 0$. Every diagonal element is zero, so we don't need to store them.
+2. Distance is symmetric: $d_{ij} = d_{ji}$. The distance from point 1 to point 3 is the same as from point 3 to point 1. So the upper triangle is just a mirror of the lower triangle.
+
+That means we only need the lower triangle -- $n(n-1)/2$ unique values. For our 6 points that's $6 \times 5 / 2 = 15$ distances. R stores exactly those 15 numbers in the `dist` object rather than a full 36-element matrix. That's fine for printing and for passing to functions that know how to handle the `dist` class -- but it can matter a lot when you try to pass it to something that is expecting something that is class `matrix`. You'll get used to converting to a matrix first:
+
+```{r}
+Dmat <- as.matrix(D)
+Dmat
+```
+
+Check the class of `Dmat` vs `D`
+
+```{r}
+class(Dmat) 
+class(D)
+```
+
+With `Dmat`, you get the full $n \times n$ symmetric matrix with zeros on the diagonal. You'll be doing this `as.matrix()` conversion so often it'll become muscle memory.
+
+A few things to notice in this full matrix:
+- Rows and columns correspond to the same points in the same order as your data
+- It's symmetric across the diagonal: `Dmat[i,j] == Dmat[j,i]`
+- The diagonal is all zeros
+
+```{r}
+# Verify symmetry
+all(Dmat == t(Dmat))
+
+# Verify diagonal
+all(diag(Dmat) == 0)
+```
+
+## Nearest Neighbors
+
+Once you have the full matrix, finding nearest neighbors is just a row-wise sorting problem. For each point (each row), you want to know which other point is closest -- i.e., which column index has the smallest non-zero value.
+
+The trick is to handle the diagonal. A zero on the diagonal will always "win" if you don't deal with it, and every point would be its own nearest neighbor. Mask the diagonal with `NA` first:
+
+```{r}
+Dnn <- Dmat
+diag(Dnn) <- NA
+
+# Index of the nearest neighbor for each point
+nn1 <- apply(Dnn, 1, which.min)
+nn1
+```
+
+So point 1's nearest neighbor is point `r nn1[1]`, point 2's nearest neighbor is point `r nn1[2]`, and so on. You can verify a few of these by eye from the plot above.
+
+For $k$ nearest neighbors, you sort each row and take the first $k$ non-NA indices:
+
+```{r}
+# 2 nearest neighbors for each point
+nn2 <- apply(Dnn, 1, function(row) order(row)[1:2])
+nn2
+```
+
+The columns of `nn2` are the point indices and the rows are the 1st and 2nd nearest neighbor for each. This is the conceptual core of what functions like `spdep::knearneigh()` are doing -- we'll use those in the main text, but now you know what's happening inside.
+
+## When Distance Isn't Symmetric
+
+Everything above assumes that the distance from point $i$ to point $j$ is the same as the distance from $j$ to $i$ -- i.e., $d_{ij} = d_{ji}$. For straight-line Euclidean distance that's always true. But depending on what you mean by "distance," it isn't always.
+
+If you work in streams or rivers, think about what distance means for an organism moving through the water. The straight-line distance between two sites might be 500 meters, but the effective distance -- how hard it actually is to get from one place to the other -- depends on which direction you're traveling. Swimming downstream is easy; swimming upstream against the current is not. For a fish or an invertebrate, upstream and downstream are different functional distances, even between the same two sites.
+
+The same idea applies in marine systems. Ocean currents can make travel in one direction much cheaper than the other. A larva drifting with a coastal current might easily reach a site 200 km away, while a larva trying to go the other direction faces a very different journey.
+
+When distances are asymmetric like this, you can't use a `dist` object -- that class assumes symmetry by design. You represent asymmetric distances as a plain R matrix where `M[i,j]` is the cost of traveling *from* $i$ *to* $j$, and `M[i,j]` is not required to equal `M[j,i]`.
+
+Here's a simple example. Imagine three sites along a stream where site 1 is downstream and site 3 is upstream. The straight-line distances between them are 300, 400, and 700 meters. But upstream travel is hard -- let's say it costs four times as much as the equivalent downstream leg.
+
+```{r}
+# cost[i,j] = effective distance traveling FROM site i TO site j
+# Sites: 1=downstream, 2=mid, 3=upstream
+# Upstream travel (against current) penalized 4x
+
+stream_cost <- matrix(c(
+    0, 300*4, 700*4,   # from site 1: going up to 2 or 3 is hard
+  300,     0, 400*4,   # from site 2: going down to 1 is easy, up to 3 is hard
+  700,   400,     0    # from site 3: going down to 1 or 2 is easy
+), nrow=3, byrow=TRUE,
+dimnames=list(c("down","mid","up"), c("down","mid","up")))
+
+stream_cost
+```
+
+The asymmetry is obvious in the numbers -- traveling from `down` to `up` costs `r stream_cost["down","up"]` effective meters, while the return trip costs only `r stream_cost["up","down"]`. You can verify formally:
+
+```{r}
+isSymmetric(stream_cost)   # FALSE -- as expected
+isSymmetric(Dmat)          # TRUE  -- Euclidean is always symmetric
+```
+
+How you model this in practice depends on the question. Sometimes you'll use asymmetric cost matrices directly (e.g., in circuit theory or graph-based connectivity analyses). Other times you'll take the average of the two directions as a symmetrized approximation. Neither is universally right -- it depends on the biology or physics of your system.
+
+## Least Cost Paths
+
+A related idea: even when distances *are* symmetric, the straight line between two points might not be the meaningful measure of distance for your question.
+
+Imagine two forest patches separated by 2 km of open agricultural land. The Euclidean distance is 2 km, but for a forest-dependent bird or mammal that avoids open habitat, the functional distance between those patches is much larger -- or possibly infinite if the species won't cross open ground at all. What matters ecologically is the path of least resistance through the landscape, not the crow-flies distance.
+
+This is the idea behind **least cost path (LCP)** analysis. You define a cost surface -- a raster where each cell has a value representing how difficult it is to move through that habitat type. Roads might be very costly. Dense forest might be cheap. Urban areas might be impassable. Then you find the path between two locations that minimizes accumulated cost. The resulting **cost distance** replaces Euclidean distance as your measure of connectivity.
+
+A few things worth knowing about LCP distances:
+
+- They are always **greater than or equal to** Euclidean distance. The straight line is a lower bound; everything else is a detour.
+- They can be **asymmetric** if the cost surface is directional. Traveling uphill costs more than traveling downhill, so a path across rugged terrain may have different cost depending on which direction you go.
+- The `gdistance` package is the standard tool for this in R. It takes a cost raster, builds a transition matrix between neighboring cells, and then uses graph algorithms to find minimum cost paths between any pair of points.
+
+We won't implement LCP analyses in this course, but you should know the concept exists and why it matters. When you're thinking about habitat connectivity, dispersal corridors, or movement between patches, Euclidean distance is often a poor proxy for what's actually constraining your organisms. Cost distances -- even rough ones based on broad land cover classes -- tend to do much better.
+
+## The Scale Problem
+
+Here's something that will eventually bite you if you're not thinking about it. The number of pairwise distances grows as $n(n-1)/2$, which feels abstract until you see the numbers:
+
+```{r}
+n_vals <- c(10, 100, 500, 1000, 5000, 10000)
+n_pairs <- n_vals * (n_vals - 1) / 2
+
+data.frame(n=n_vals, pairs=format(n_pairs, big.mark=","))
+```
+
+Ten thousand points -- not an unusually large spatial dataset -- gives you nearly 50 million pairwise distances. That's a lot of numbers to compute and store, and `dist()` will try to hold all of them in memory at once. Let's see how the size of the `dist` object scales:
+
+```{r}
+sizes <- sapply(c(100, 500, 1000, 2000), function(n){
+  fake <- data.frame(x=runif(n), y=runif(n))
+  object.size(dist(fake))
+})
+
+data.frame(n     = c(100, 500, 1000, 2000),
+           size  = paste(round(sizes/1e6, 2), "MB"))
+```
+
+You can see the memory blowing up fast. At $n = 2000$ you're already into tens of megabytes for just the distance matrix. Scale that to a dense point cloud or a raster sample and you have a problem. When we get to geostatistics and spatial weights, keep this in mind. Packages like `gstat` and `spdep` are smart about this -- they don't always compute the full distance matrix -- but it helps to know why.
+
+## Working with Real Spatial Data: `sf::st_distance()`
+
+In the toy examples above we used `dist()` on a plain `data.frame` of `x` and `y` coordinates. That works fine, but once your data are in an `sf` object -- which they will be for most real analyses -- the right tool is `sf::st_distance()`.
+
+Why use `st_distance()` instead of just pulling the coordinates out and passing them to `dist()`? Two reasons. First, `st_distance()` knows about the projection of your data and computes distances in the right units (meters, usually). Second, it returns a proper matrix, not a `dist` object, so you don't need the `as.matrix()` step.
+
+Let's see both approaches on our toy dataset:
+
+```{r}
+# First approach: dist() on raw coordinates
+D_dist <- dist(dat)
+
+# Second approach: st_distance() on an sf object
+dat_sf <- st_as_sf(dat, coords=c("x","y"), crs=32610)  # UTM Zone 10N, meters
+D_sf <- st_distance(dat_sf)
+
+# Compare: upper-left 3x3 corner
+round(as.matrix(D_dist)[1:3, 1:3], 3)
+round(D_sf[1:3, 1:3], 3)
+```
+
+The values match here because our toy coordinates are in a made-up Cartesian space. In practice, once your data have a real CRS, `st_distance()` is the right call. It also handles the case where you need distances between two *different* sets of points (e.g., sample locations to prediction locations) -- just pass both objects as arguments: `st_distance(samples_sf, predictions_sf)`.
+
+## Why Projection Matters: A Concrete Example
+
+You've probably heard "make sure your data are projected" enough times that it starts to sound like a ritual incantation. Here's the concrete reason it matters for distance calculations.
+
+Let's place a few sample sites around the Mt. Baker area. We'll compute distances from their raw lat/lon coordinates and then from their properly projected coordinates and see what happens.
+
+```{r}
+sites <- data.frame(
+  name = c("Bellingham", "Glacier", "Concrete", "Anacortes"),
+  lon  = c(-122.48, -121.93, -121.75, -122.61),
+  lat  = c(  48.75,   48.89,   48.54,   48.51)
+)
+```
+
+First, the naive approach -- just hand the lat/lon columns to `dist()`:
+
+```{r}
+D_latlon <- as.matrix(dist(sites[, c("lon","lat")]))
+round(D_latlon, 3)
+```
+
+These numbers are in *decimal degrees*, which is not a unit of distance. The value of `r round(D_latlon[1,2], 3)` between Bellingham and Glacier doesn't mean `r round(D_latlon[1,2], 3)` km, or `r round(D_latlon[1,2], 3)` miles, or `r round(D_latlon[1,2], 3)` anything useful. It's a number that mixes together differences in longitude and differences in latitude, which are not the same physical distance -- especially at 48°N where a degree of longitude is only about 74 km while a degree of latitude is about 111 km.
+
+Now let's do it properly. We'll create an `sf` object and project to UTM Zone 10N (EPSG:32610), which puts everything in meters:
+
+```{r}
+sites_sf <- st_as_sf(sites, coords=c("lon","lat"), crs=4326) %>%
+  st_transform(32610)
+
+D_proj <- st_distance(sites_sf)
+rownames(D_proj) <- sites$name
+colnames(D_proj) <- sites$name
+round(D_proj / 1000, 1)  # convert to km
+```
+
+Now we have real distances in kilometers. Bellingham to Glacier is about `r round(as.numeric(D_proj[1,2]) / 1000)` km. Bellingham to Anacortes is about `r round(as.numeric(D_proj[1,4]) / 1000)` km. These match what you'd get from a map.
+
+Compare the two matrices directly and you'll see that not only are the magnitudes different, the *relative* distances can shift too -- which means that nearest-neighbor analyses, variogram bins, and spatial weights based on lat/lon distances will all be subtly wrong in ways that are hard to detect. Always project your data before computing distances.
+
+## Quick Reference
+
+Here's a cheat sheet for some of the distance-related functions you'll use in this course:
+
+| Situation | Function | Returns |
+|---|---|---|
+| Points in a `data.frame`, same CRS | `dist(coords)` | `dist` object (lower triangle) |
+| Convert to indexable matrix | `as.matrix(D)` | `matrix` |
+| Points in an `sf` object | `st_distance(sf_obj)` | `matrix` (with units) |
+| Two different sets of points | `st_distance(sf1, sf2)` | rectangular `matrix` |
+| Distances in geostat code | `fields::rdist(coords)` | `matrix` |
+
+The `fields::rdist()` function appears in the kriging aside and a few other places. It's essentially `as.matrix(dist())` but faster for large $n$, and it handles the two-set case like `st_distance()` does.

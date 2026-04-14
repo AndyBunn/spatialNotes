@@ -18,6 +18,7 @@ book:
     - 01GettingStarted.qmd
     - 01xAsideMethods_and_generics.qmd
     - 02MtBakerMap.qmd
+    - 03xAsideDistanceMatrices.qmd
     - 03Point_Patterns.qmd
     - 04Intro2Autocorrelation.qmd
     - 05aGeostatsIDW.qmd

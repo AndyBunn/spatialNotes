@@ -1,7 +1,8 @@
 # Point Patterns
 
-```{r,echo=FALSE}
+```{r,echo=FALSE, include=FALSE}
 set.seed(1984)
+knitr::purl("03Point_Patterns.qmd", output = "03Point_Patterns.R", documentation = 1)
 ```
 
 ## Big Idea
@@ -14,10 +15,12 @@ We can quantify the pattern of points themselves or in the presence of an explan
 ## Reading
 Read chapter 7 in Bivand's book up to section 7.5. Also start reading through Fortin et al. (2016) as a great overall short chapter on spatial analysis. Don't worry about some of the details in there yet. We will revisit as we go along.
 
-
 Bivand R (2008) Spatial Point Pattern Analysis. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
 
 Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
+
+## Distance Refresh
+Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside first](03xAsideDistanceMatrices.html).
 
 ## Packages
 We will use `spatstat`[@R-spatstat] for point pattern analysis and I've thrown in some tidyverse[@R-tidyverse] syntax as well. 
@@ -34,8 +37,7 @@ PPA doesn't require any other measurement besides the location of points. The ea
 
 What we want to know is whether a bunch of points are randomly arranged or if they have some kind of spatial structure. We call a random pattern complete spatial randomness (CSR) and model it as a Poisson point process (which has convenient mathematical properties discussed in the reading). If a pattern doesn't look like CSR we are generally interested in whether the points are clumped or repulsed. But we can't just eyeball it -- brains make patterns where there are none. Thus, we'll look at two methods for determining CSR: kernel estimation and Ripley's K. As always we hope to make inference about process (e.g., contagion or competition) by understanding pattern.
 
-Point patterns are a very simple form of spatial analysis but can really make clear concepts like clustering and uniformity.
-
+Point patterns are a relatively simple form of spatial analysis but can really make clear concepts like clustering and uniformity.
 
 ### Simulated Example
 Let's illustrate. I'll generate four maps. Each has 100 points. Your job is to figure out if the pattern is: random, clumped (clustered), or uniform (repulsed). Note that the code that goes into making these patterns is using random normal or random uniform distributions to accomplish this. I often simulate patterns in data that I know exist and then see if I can detect them using some method. In fact, we will do a lot of this during class. If you look at `simDat` below you'll see that it is four `data.frame` objects bound together. Each one shows a different pattern. Don't worry if you don't understand all the code that makes up `simDat`. I'll walk through it online. 

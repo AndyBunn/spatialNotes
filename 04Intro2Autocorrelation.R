@@ -1,0 +1,533 @@
+## ----echo=FALSE, include=FALSE------------------------------------------------
+set.seed(1984)
+knitr::purl("04Intro2Autocorrelation.qmd", output = "04Intro2Autocorrelation.R", documentation = 1)
+
+
+
+## ----message=FALSE------------------------------------------------------------
+library(sf)
+library(tidyverse)
+library(tmap)
+library(gstat)
+library(ncf)
+library(spdep)
+
+
+## -----------------------------------------------------------------------------
+data(meuse.all)
+class(meuse.all)
+head(meuse.all)
+
+
+## -----------------------------------------------------------------------------
+meuse_sf <- st_as_sf(meuse.all, coords = c("x", "y")) %>%
+  st_set_crs(value = 28992)
+
+
+## -----------------------------------------------------------------------------
+ggplot(data = meuse_sf) + 
+  geom_sf(mapping = aes(fill=lead,size=lead),shape=21,alpha=0.6) +
+  scale_fill_continuous(type = "viridis",name="ppm")
+
+
+## ----results='hide'-----------------------------------------------------------
+tmap_mode('view')
+tm_shape(meuse_sf) +
+  tm_dots(col = "lead", palette = "viridis")
+
+
+
+## -----------------------------------------------------------------------------
+leadVarCloud <- variogram(lead~1, locations = meuse_sf, cloud = TRUE)
+plot(leadVarCloud,pch=20,cex=1.5,col="black",alpha=0.1,
+     ylab=expression(Semivariance~(gamma)),
+     xlab="Distance (m)",main = "Lead concentrations (ppm)")
+
+
+## -----------------------------------------------------------------------------
+leadVar <- variogram(lead~1, locations = meuse_sf, cloud = FALSE)
+plot(leadVar,pch=20,cex=1.5,col="black",
+     ylab=expression(Semivariance~(gamma)),
+     xlab="Distance (m)", main = "Lead concentrations (ppm)")
+
+
+## -----------------------------------------------------------------------------
+summary(lm(lead~1,data=meuse_sf))
+
+
+## -----------------------------------------------------------------------------
+mean(meuse_sf$lead)
+sd(meuse_sf$lead)/sqrt(nrow(meuse_sf))
+
+
+## ----echo=FALSE,fig.width=6,fig.height=6--------------------------------------
+foo <- matrix(NA,nrow=10,ncol=10)
+for(i in seq(1,10,by=2)){
+  foo[i,] <- rep(c(1,0),times=5)
+}
+for(i in seq(2,10,by=2)){
+  foo[i,] <- rep(c(0,1),times=5)
+}
+image(foo,col=c("black","white"),main="Moran's I = -1",asp=1,axes=FALSE)
+image(matrix(1,nrow=10,ncol=10),col="grey",main="Moran's I = 1",asp=1,axes=FALSE)
+
+
+## ----warning=FALSE------------------------------------------------------------
+# distance matrix 
+d <- dist(st_coordinates(meuse_sf))
+# inverse distance matrix
+w <- as.matrix(1/d)
+# convert a the weights matrix to a weights list object
+# so spdep is happy
+wList <- mat2listw(w)
+# calculate I
+moran.test(meuse_sf$lead,wList)
+
+
+## ----warning=FALSE------------------------------------------------------------
+x <- as.vector(as.matrix(dist(st_coordinates(meuse_sf))))
+y <- as.vector(w)
+ggplot() + geom_line(aes(x=x[x>0],y=y[x>0])) +
+  labs(x="Distance (m)",y="Inverse distance (aka W)") +
+  lims(x=c(0,1500))
+
+
+## ----warning=FALSE------------------------------------------------------------
+d <- as.matrix(dist(st_coordinates(meuse_sf)))
+# make an empty weights matrix
+w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+# set some values to 1 using a logical mask of d<100
+w[d<100] <- 1
+# convert a the weights matrix to a weights list object
+# so spdep is happy
+wList <- mat2listw(w)
+# calculate I
+moran.test(meuse_sf$lead,wList)
+
+
+## ----warning=FALSE------------------------------------------------------------
+# make an empty weights matrix of the right dimensions
+w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+# set some values to 1
+w[d>500 & d<=1000] <- 1
+# convert a the weights matrix to a weights list object
+# so spdep is happy
+wList <- mat2listw(w)
+# calculate I
+moran.test(meuse_sf$lead,wList)
+
+
+## ----warning=FALSE------------------------------------------------------------
+distanceInterval <- 200
+distanceVector <- seq(0,2000,by=distanceInterval)
+n <- length(distanceVector)
+d <- as.matrix(dist(st_coordinates(meuse_sf)))
+# make an object to hold results
+res <- data.frame(midBin=rep(NA,n-1),I=rep(NA,n-1))
+for(i in 2:n){
+  w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+  # set some values to 1
+  w[d >= distanceVector[i-1] & d < distanceVector[i]] <- 1
+  # convert a the weights matrix to a weights list object
+  # so spdep is happy
+  wList <- mat2listw(w)
+  # calculate I
+  res$I[i-1] <- moran.test(meuse_sf$lead,wList,zero.policy=TRUE)$estimate[1]
+  # centered distance bin
+  res$midBin[i-1] <- distanceVector[i] - distanceInterval/2
+}
+ggplot(data=res, mapping = aes(x=midBin,y=I)) + 
+  geom_hline(yintercept = 0, linetype="dashed") +
+  geom_line() + geom_point(size=3) +
+  labs(x="Distance (m)",y="Moran's I")
+
+
+
+## -----------------------------------------------------------------------------
+w <- knn2nb(knearneigh(meuse_sf,k=8))
+moran.test(meuse_sf$lead,nb2listw(w))
+
+
+## ----warning=FALSE------------------------------------------------------------
+n <- 7
+res <- data.frame(k=2^(1:n),I=rep(NA,n))
+for(i in 1:n){
+  w <- knn2nb(knearneigh(meuse_sf,k=2^i))
+  res$I[i] <- moran.test(meuse_sf$lead,nb2listw(w))$estimate[1]
+}
+ggplot(data=res, mapping = aes(x=k,y=I)) + 
+  geom_hline(yintercept = 0, linetype="dashed") +
+  geom_line() + geom_point(size=3) +
+  labs(x="K neighbors",y="Moran's I")
+
+
+## -----------------------------------------------------------------------------
+meuseX <- st_coordinates(meuse_sf)[,1]
+meuseY <- st_coordinates(meuse_sf)[,2]
+meuseLead <- meuse_sf$lead
+
+
+## -----------------------------------------------------------------------------
+leadI <- correlog(x=meuseX, y=meuseY, z=meuseLead,
+                  increment=100, resamp=100, quiet=TRUE)
+plot(leadI,xlim=c(0,1500))
+abline(h=0,lty="dashed")
+
+
+## -----------------------------------------------------------------------------
+plot(leadI)
+abline(h=0,lty="dashed")
+
+
+## -----------------------------------------------------------------------------
+max(meuseX) - min(meuseX)
+max(meuseY) - min(meuseY)
+
+
+## -----------------------------------------------------------------------------
+meuseD <- dist(cbind(meuseX,meuseY))
+max(meuseD)
+
+
+## -----------------------------------------------------------------------------
+data.frame(n=leadI$n,
+           I = leadI$correlation, 
+           d = leadI$mean.of.class,
+           p = leadI$p) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=5,pch=21) +
+  lims(x=c(0,1500),y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       title = "Autocorrelation of Lead",subtitle = "Crit value of p<0.01")
+
+
+## -----------------------------------------------------------------------------
+# continuous
+leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$lead, 
+                         resamp=100, xmax=1500, quiet=TRUE)
+plot(leadI)
+
+
+## ----echo=FALSE, message=FALSE------------------------------------------------
+library(fields)
+library(plotly)
+
+n <- 100
+nVec <- 0:(n-1)
+
+###################################################################
+#
+## Sine Wave 10
+#
+###################################################################
+
+amp <- 0.5
+nBumps <- 10
+nBumps2 <- n/nBumps
+z <- amp * sin(2 * pi / nBumps2 * nVec)
+Z <- matrix(rep(z,n),nrow=n, ncol=n)
+Z <- Z + t(Z)
+eps <- matrix(abs(rnorm(n^2,sd=0.1)),nrow=n, ncol=n)
+Z <- Z + eps
+# make flat
+Z[Z<0] <- 0
+foo <- expand.grid(x=nVec,y=nVec)
+foo$z <- as.vector(Z)
+
+p10BumpsMap <- ggplot(foo,aes(x=x,y=y,fill=z)) + 
+  geom_raster() + 
+  scale_fill_viridis_c() + 
+  coord_fixed() + 
+  labs(x="Easting (m)", y="Northing (m)") + 
+  theme_minimal() +
+  theme(legend.position = "none")
+
+
+fooMat <- matrix(foo$z,n,n)
+p10BumpsPersp <- plot_ly(z = fooMat) %>% 
+  add_surface() %>%
+  hide_colorbar() %>%
+  layout(title = "",
+         scene = list(
+           xaxis = list(title = "Easting (m)"),
+           yaxis = list(title = "Northing (m)"),
+           camera = list(eye = list(x = 1.95, y = -1.25, z = 1.25))
+         ))
+
+samps2get <- sample(n^2,size = 500)
+bar <- foo[samps2get,]
+zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
+#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+#dimnames(zI$boot$boot.summary$predicted$y)
+z2plot <- data.frame(x=zI$real$predicted$x[1,],
+                     y=zI$real$predicted$y[1,],
+                     yLower = zI$boot$boot.summary$predicted$y[3,],
+                     yUpper = zI$boot$boot.summary$predicted$y[9,])
+p10BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
+  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
+  geom_ribbon(fill="grey") +
+  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
+  labs(x="Distance (m)", y="Moran's I") 
+
+###################################################################
+#
+## Sine Wave 4
+#
+###################################################################
+
+nBumps <- 5
+nBumps2 <- n/nBumps
+z <- amp * sin(2 * pi / nBumps2 * nVec)
+Z <- matrix(rep(z,n),nrow=n, ncol=n)
+Z <- Z + t(Z)
+eps <- matrix(abs(rnorm(n^2,sd=0.1)),nrow=n, ncol=n)
+Z <- Z + eps
+# make flat
+Z[Z<0] <- 0
+foo <- expand.grid(x=nVec,y=nVec)
+foo$z <- as.vector(Z)
+
+p5BumpsMap <- ggplot(foo,aes(x=x,y=y,fill=z)) + 
+  geom_raster() + 
+  scale_fill_viridis_c() + 
+  coord_fixed() + 
+  labs(x="Easting (m)", y="Northing (m)") + 
+  theme_minimal() +
+  theme(legend.position = "none")
+
+fooMat <- matrix(foo$z,n,n)
+p5BumpsPersp <- plot_ly(z = fooMat) %>% 
+  add_surface() %>%
+  hide_colorbar() %>%
+  layout(title = "",
+         scene = list(
+           xaxis = list(title = "Easting (m)"),
+           yaxis = list(title = "Northing (m)"),
+           camera = list(eye = list(x = 1.95, y = -1.25, z = 1.25))
+         ))
+
+samps2get <- sample(n^2,size = 500)
+bar <- foo[samps2get,]
+zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
+#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+
+#dimnames(zI$boot$boot.summary$predicted$y)
+z2plot <- data.frame(x=zI$real$predicted$x[1,],
+                     y=zI$real$predicted$y[1,],
+                     yLower = zI$boot$boot.summary$predicted$y[3,],
+                     yUpper = zI$boot$boot.summary$predicted$y[9,])
+p5BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
+  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
+  geom_ribbon(fill="grey") +
+  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
+  labs(x="Distance (m)", y="Moran's I") 
+
+
+###################################################################
+#
+## Random bumps 
+#
+###################################################################
+
+foo <- expand.grid(x=nVec,y=nVec)
+foo$z <- NA
+
+# pin corners
+foo$z[foo$x == 0 & foo$y == 0] <- 0
+foo$z[foo$x == 0 & foo$y == 99] <- 0
+foo$z[foo$x == 99 & foo$y == 0] <- 0
+foo$z[foo$x == 99 & foo$y == 99] <- 0
+
+# fill in random zeros
+ran0 <- sample(1:nrow(foo),size=1000)
+foo$z[ran0] <- 0
+
+# make a random hillS
+# small
+foo$z[foo$x %in% 73:77 & foo$y %in% 73:77] <- runif(25,0.5,1)
+foo$z[foo$x %in% 53:57 & foo$y %in% 43:47] <- runif(25,0.5,1)
+
+#bigger
+foo$z[foo$x %in% 21:30 & foo$y %in% 33:42] <- runif(100,0.25,1)
+foo$z[foo$x %in% 11:15 & foo$y %in% 13:22] <- runif(50,0.25,1)
+
+#INTERPOLATE
+fooTPS <- Tps(x = foo[,1:2], Y = foo$z,verbose=FALSE)
+fooTPS <- c(predict(object=fooTPS, x = cbind(foo[,1:2])))
+foo$z <- fooTPS
+eps <- abs(rnorm(n^2,sd=0.1))
+foo$z <- foo$z + eps
+
+pRanBumpsMap <- ggplot(foo,aes(x=x,y=y,fill=z)) + 
+  geom_raster() + 
+  scale_fill_viridis_c() + 
+  coord_fixed() + 
+  labs(x="Easting (m)", y="Northing (m)") + 
+  theme_minimal() +
+  theme(legend.position = "none")
+
+fooMat <- matrix(foo$z,n,n)
+pRanBumpsPersp <- plot_ly(z = fooMat) %>% 
+  add_surface() %>%
+  hide_colorbar() %>%
+  layout(title = "",
+         scene = list(
+           xaxis = list(title = "Easting (m)"),
+           yaxis = list(title = "Northing (m)"),
+           camera = list(eye = list(x = 1.95, y = -1.25, z = 1.25))
+         ))
+
+samps2get <- sample(n^2,size = 500)
+bar <- foo[samps2get,]
+zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
+#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+
+#dimnames(zI$boot$boot.summary$predicted$y)
+z2plot <- data.frame(x=zI$real$predicted$x[1,],
+                     y=zI$real$predicted$y[1,],
+                     yLower = zI$boot$boot.summary$predicted$y[3,],
+                     yUpper = zI$boot$boot.summary$predicted$y[9,])
+pRanBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
+  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
+  geom_ribbon(fill="grey") +
+  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
+  labs(x="Distance (m)", y="Moran's I") 
+
+
+###################################################################
+#
+## Random bumps on a gradient
+#
+###################################################################
+
+# add a gradient to foo
+for(i in 1:n-1){
+  foo$z[foo$x==i] <- foo$z[foo$x==i] + i*0.005
+}
+
+pGradBumpsMap <- ggplot(foo,aes(x=x,y=y,fill=z)) + 
+  geom_raster() + 
+  scale_fill_viridis_c() + 
+  coord_fixed() + 
+  labs(x="Easting (m)", y="Northing (m)") + 
+  theme_minimal() +
+  theme(legend.position = "none")
+
+fooMat <- matrix(foo$z,n,n)
+pGradBumpsPersp <- plot_ly(z = fooMat) %>% 
+  add_surface() %>%
+  hide_colorbar() %>%
+  layout(title = "",
+         scene = list(
+           xaxis = list(title = "Easting (m)"),
+           yaxis = list(title = "Northing (m)"),
+           camera = list(eye = list(x = 1.95, y = -1.25, z = 1.25))
+         ))
+
+
+samps2get <- sample(n^2,size = 500)
+bar <- foo[samps2get,]
+zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
+#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+
+#dimnames(zI$boot$boot.summary$predicted$y)
+z2plot <- data.frame(x=zI$real$predicted$x[1,],
+                     y=zI$real$predicted$y[1,],
+                     yLower = zI$boot$boot.summary$predicted$y[3,],
+                     yUpper = zI$boot$boot.summary$predicted$y[9,])
+pGradBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
+  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
+  geom_ribbon(fill="grey") +
+  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
+  labs(x="Distance (m)", y="Moran's I") 
+
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p5BumpsMap
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p5BumpsPersp
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p5BumpsI
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p10BumpsMap
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p10BumpsPersp
+
+
+## ----echo=FALSE---------------------------------------------------------------
+p10BumpsI
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pRanBumpsMap
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pRanBumpsPersp
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pRanBumpsI
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pGradBumpsMap
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pGradBumpsPersp
+
+
+## ----echo=FALSE---------------------------------------------------------------
+pGradBumpsI
+
+
+## ----message=FALSE------------------------------------------------------------
+library(tmap)
+birds_sf <- readRDS("data/birdRichnessMexico.rds")
+tmap_mode("view")
+tm_shape(birds_sf) + 
+  tm_symbols(col="nSpecies", alpha = 0.7)
+
+
+## -----------------------------------------------------------------------------
+birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
+
+
+## -----------------------------------------------------------------------------
+max(dist(st_coordinates(birds_sf)))/3
+
+
+## ----eval=FALSE---------------------------------------------------------------
+# birdVar <- variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
+
+
+## ----echo=FALSE,eval=FALSE----------------------------------------------------
+# birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
+# foo <- correlog(x=birdsDF[,1],y=birdsDF[,2],
+#                 z =birds_sf$nSpecies,increment = 50,resamp = 100)
+# plot(foo) # yucky!
+# plot(foo,xlim=c(0,1e3))
+# abline(h=0)
+# # classic gradient!
+# 
+# birdVar<-variogram(nSpecies~1, data = birds_sf)
+# plot(birdVar,pch=20)
+# # look at NS vs EW
+# birdVar<-variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
+# plot(birdVar,pch=20)
+

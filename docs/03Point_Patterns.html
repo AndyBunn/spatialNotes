@@ -87,7 +87,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./04Intro2Autocorrelation.html" rel="next">
-<link href="./02MtBakerMap.html" rel="prev">
+<link href="./03xAsideDistanceMatrices.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -228,6 +228,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Distance Matrices</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Point Patterns</span></a>
   </div>
 </li>
@@ -290,6 +296,7 @@ window.Quarto = {
   <ul>
   <li><a href="#big-idea" id="toc-big-idea" class="nav-link active" data-scroll-target="#big-idea">Big Idea</a></li>
   <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#distance-refresh" id="toc-distance-refresh" class="nav-link" data-scroll-target="#distance-refresh">Distance Refresh</a></li>
   <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#point-patterns" id="toc-point-patterns" class="nav-link" data-scroll-target="#point-patterns">Point Patterns</a>
   <ul class="collapse">
@@ -347,6 +354,10 @@ window.Quarto = {
 <p>Bivand R (2008) Spatial Point Pattern Analysis. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.</p>
 <p>Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766</p>
 </section>
+<section id="distance-refresh" class="level2">
+<h2 class="anchored" data-anchor-id="distance-refresh">Distance Refresh</h2>
+<p>Before diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the <a href="03xAsideDistanceMatrices.html">Distance Matrix aside first</a>.</p>
+</section>
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <p>We will use <code>spatstat</code><span class="citation" data-cites="R-spatstat">(<a href="08PackagesUsed.html#ref-R-spatstat" role="doc-biblioref">Baddeley, Turner, and Rubak 2026</a>)</span> for point pattern analysis and I’ve thrown in some tidyverse<span class="citation" data-cites="R-tidyverse">(<a href="08PackagesUsed.html#ref-R-tidyverse" role="doc-biblioref">Wickham 2023</a>)</span> syntax as well.</p>
@@ -363,7 +374,7 @@ window.Quarto = {
 <p>Point pattern analysis (PPA) is the study of the spatial arrangements of points in space. It fundamentally deals with whether or not points are randomly distributed, clumped, or repulsed from each other.</p>
 <p>PPA doesn’t require any other measurement besides the location of points. The easiest way to think about this is to imagine a scatter plot of the points – i.e., a simple point map of the locations. Quantifying the pattern of these points is the goal of the analysis and we do so over the boundary of the data which is called the bounding box, or the convex hull of the points.</p>
 <p>What we want to know is whether a bunch of points are randomly arranged or if they have some kind of spatial structure. We call a random pattern complete spatial randomness (CSR) and model it as a Poisson point process (which has convenient mathematical properties discussed in the reading). If a pattern doesn’t look like CSR we are generally interested in whether the points are clumped or repulsed. But we can’t just eyeball it – brains make patterns where there are none. Thus, we’ll look at two methods for determining CSR: kernel estimation and Ripley’s K. As always we hope to make inference about process (e.g., contagion or competition) by understanding pattern.</p>
-<p>Point patterns are a very simple form of spatial analysis but can really make clear concepts like clustering and uniformity.</p>
+<p>Point patterns are a relatively simple form of spatial analysis but can really make clear concepts like clustering and uniformity.</p>
 <section id="simulated-example" class="level3">
 <h3 class="anchored" data-anchor-id="simulated-example">Simulated Example</h3>
 <p>Let’s illustrate. I’ll generate four maps. Each has 100 points. Your job is to figure out if the pattern is: random, clumped (clustered), or uniform (repulsed). Note that the code that goes into making these patterns is using random normal or random uniform distributions to accomplish this. I often simulate patterns in data that I know exist and then see if I can detect them using some method. In fact, we will do a lot of this during class. If you look at <code>simDat</code> below you’ll see that it is four <code>data.frame</code> objects bound together. Each one shows a different pattern. Don’t worry if you don’t understand all the code that makes up <code>simDat</code>. I’ll walk through it online.</p>
@@ -1625,8 +1636,8 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./02MtBakerMap.html" class="pagination-link" aria-label="Mt Baker Map">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Mt Baker Map</span></span>
+      <a href="./03xAsideDistanceMatrices.html" class="pagination-link" aria-label="Aside: Distance Matrices">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aside: Distance Matrices</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
