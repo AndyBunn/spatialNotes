@@ -23,7 +23,7 @@ date: ""
     width: 100%;
     height: calc(100vh - 60px);
     position: relative;
-    background: #0d1a14;
+    background: #1e3028;
     overflow: hidden;
     font-family: 'Source Code Pro', monospace;
     margin: 0;
@@ -33,7 +33,7 @@ date: ""
   .topo-layer {
     position: absolute;
     inset: 0;
-    opacity: 0.18;
+    opacity: 0.28;
   }
 
   .color-wash {
@@ -41,12 +41,12 @@ date: ""
     inset: 0;
     background: linear-gradient(
       135deg,
-      #0d1a14 0%,
-      #0f2318 20%,
-      #102b1e 35%,
-      #0e2233 55%,
-      #0b1a2e 75%,
-      #091525 100%
+      #1e3028 0%,
+      #22382c 20%,
+      #254030 35%,
+      #1e3448 55%,
+      #182c42 75%,
+      #162438 100%
     );
   }
 
@@ -62,7 +62,7 @@ date: ""
     width: 500px;
     height: 500px;
     border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(52, 152, 100, 0.12) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(52, 152, 100, 0.20) 0%, transparent 70%);
     top: -150px;
     right: 100px;
   }
@@ -71,7 +71,7 @@ date: ""
     width: 350px;
     height: 350px;
     border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(41, 128, 185, 0.10) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(41, 128, 185, 0.18) 0%, transparent 70%);
     bottom: -100px;
     left: 200px;
   }
@@ -80,7 +80,7 @@ date: ""
     width: 280px;
     height: 280px;
     border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(22, 180, 120, 0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(22, 180, 120, 0.15) 0%, transparent 70%);
     top: 50px;
     left: 500px;
   }
@@ -114,7 +114,7 @@ date: ""
     color: #4dd9a0;
     text-decoration: none;
     text-transform: uppercase;
-    border: 1px solid #2a6a52;
+    border: 1px solid #3a8068;
     padding: 12px 28px;
     border-radius: 2px;
     background: rgba(46, 204, 113, 0.06);
@@ -161,8 +161,8 @@ date: ""
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.12em;
-    color: #4a7c6a;
-    border: 1px solid #1e4a38;
+    color: #6a9c8a;
+    border: 1px solid #2e6a54;
     padding: 4px 10px;
     border-radius: 2px;
     text-transform: uppercase;
@@ -185,7 +185,7 @@ date: ""
     left: 80px;
     right: 60px;
     height: 1px;
-    background: linear-gradient(90deg, #1e4a38, #1a3a52, transparent);
+    background: linear-gradient(90deg, #2e6a54, #2a5a72, transparent);
   }
 
   .credit {
@@ -195,7 +195,7 @@ date: ""
     font-family: 'Source Code Pro', monospace;
     font-size: 14px;
     letter-spacing: 0.12em;
-    color: #4a7c6a;
+    color: #6a9c8a;
     text-transform: uppercase;
   }
 </style>
@@ -243,8 +243,8 @@ date: ""
     <defs>
       <style>text { font-family: 'Source Code Pro', monospace; }</style>
     </defs>
-    <line x1="40" y1="220" x2="300" y2="220" stroke="#2a5a48" stroke-width="1.2"/>
-    <line x1="40" y1="220" x2="40" y2="20" stroke="#2a5a48" stroke-width="1.2"/>
+    <line x1="40" y1="220" x2="300" y2="220" stroke="#3a7a68" stroke-width="1.2"/>
+    <line x1="40" y1="220" x2="40" y2="20" stroke="#3a7a68" stroke-width="1.2"/>
     <line x1="40" y1="75" x2="290" y2="75" stroke="#4dd9a0" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"/>
     <line x1="185" y1="75" x2="185" y2="220" stroke="#3498db" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.5"/>
     <path d="M 52 200 C 80 170, 120 100, 160 80 C 185 72, 210 73, 260 74 L 290 74"
@@ -264,11 +264,11 @@ date: ""
     <circle cx="250" cy="76"  r="3" fill="#4dd9a0" opacity="0.5"/>
     <circle cx="275" cy="74"  r="3" fill="#4dd9a0" opacity="0.6"/>
     <circle cx="40"  cy="210" r="4" fill="none" stroke="#3498db" stroke-width="1.5" opacity="0.6"/>
-    <text x="192" y="238" fill="#3a6052" font-size="10" letter-spacing="1">range</text>
-    <text x="42"  y="68"  fill="#3a6052" font-size="10" letter-spacing="1">sill</text>
-    <text x="46"  y="235" fill="#3a6052" font-size="10" letter-spacing="1">lag distance h</text>
-    <text x="18"  y="130" fill="#3a6052" font-size="10" letter-spacing="1" transform="rotate(-90 18 130)">γ(h)</text>
-    <text x="200" y="15"  fill="#3a6052" font-size="10" letter-spacing="2" opacity="0.8">VARIOGRAM</text>
+    <text x="192" y="238" fill="#5a8a78" font-size="10" letter-spacing="1">range</text>
+    <text x="42"  y="68"  fill="#5a8a78" font-size="10" letter-spacing="1">sill</text>
+    <text x="46"  y="235" fill="#5a8a78" font-size="10" letter-spacing="1">lag distance h</text>
+    <text x="18"  y="130" fill="#5a8a78" font-size="10" letter-spacing="1" transform="rotate(-90 18 130)">γ(h)</text>
+    <text x="200" y="15"  fill="#5a8a78" font-size="10" letter-spacing="2" opacity="0.8">VARIOGRAM</text>
   </svg>
 
   <div class="content">
