@@ -420,6 +420,86 @@
     ]
   },
   {
+    "objectID": "04xCorrelationVersusRegression.html",
+    "href": "04xCorrelationVersusRegression.html",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "",
+    "text": "Why This Matters\nBefore we start talking about spatial autocorrelation, we need to talk about correlation and regression. Not because you haven’t seen them before, but because the two concepts get conflated constantly by students – but also by people who really should know better.\nThe conflation has a tell. It looks like this: someone makes a scatter plot, right-clicks on it in Excel, and adds a “best fit line.” They didn’t think about whether a line was appropriate. They didn’t ask what question the line is answering. They just added it because it was there. Please do not do this. A scatter plot is complete without a regression line. Adding one implies something about direction, prediction, and causation that you may not actually mean.\nOne more thing before we start. This aside is about linear association. Pearson correlation measures the strength of a linear relationship between two variables. Linear regression models that relationship with a line. If the underlying relationship is curved, both will mislead you in their own ways – correlation will understate the association and the regression line will be a poor summary of the data. That is a real limitation and worth knowing, but it is a topic for another day. Everything that follows assumes linearity.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#here-is-some-data",
+    "href": "04xCorrelationVersusRegression.html#here-is-some-data",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "Here is Some Data",
+    "text": "Here is Some Data\nLet’s generate a small data set first. Two variables x and y.\n\n\nCode\nn &lt;- 80\nx &lt;- rnorm(n, mean = 50, sd = 10)\ny &lt;- 2 + 0.6 * x + rnorm(n, sd = 6)\n\nggplot(data.frame(x, y), aes(x = x, y = y)) +\n  geom_point(alpha = 0.5) + theme_minimal()\n\n\n\n\n\n\n\n\n\nCool? Now let’s get the concepts sorted out. But first, a rule that applies to everything in this aside and most of statistics: plot your data before you calculate anything. Anscombe’s quartet is the classic demonstration of why. It is a set of four datasets with nearly identical means, standard deviations, correlations, and regression coefficients. They look completely different when plotted. One is a clean linear relationship. One is a perfect curve that a line describes badly. One has an outlier that is driving everything. Look them up. The lesson is that summary statistics, including \\(r\\) and \\(\\hat{\\beta}_1\\), can be identical across datasets that have nothing in common. The plot catches what the numbers miss.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#correlation",
+    "href": "04xCorrelationVersusRegression.html#correlation",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "Correlation",
+    "text": "Correlation\nCorrelation measures the strength and direction of a linear association between two variables. The Pearson correlation coefficient \\(r\\) is:\n\\[r = \\frac{\\sum_{i=1}^{n}(x_i - \\bar{x})(y_i - \\bar{y})}{(n-1) s_x s_y}\\]\nIt is bounded between -1 and 1. It is unitless. And it is symmetric:\n\\[r_{xy} = r_{yx}\\]\nThe correlation between \\(x\\) and \\(y\\) is identical to the correlation between \\(y\\) and \\(x\\). There is no dependent variable. There is no independent variable. There is no implied direction of effect. You are just asking: do these two things move together?\nFor the data we made above \\[r_{xy} = r_{yx} = 0.79\\]\n\n\nCode\ncor(x,y)\n\n\n[1] 0.7904728\n\n\nCode\ncor(y,x)\n\n\n[1] 0.7904728",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#regression",
+    "href": "04xCorrelationVersusRegression.html#regression",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "Regression",
+    "text": "Regression\nRegression is different. When you fit a linear model \\(y = \\beta_0 + \\beta_1 x + \\epsilon\\), you are making a directional claim. \\(y\\) is the thing you are trying to predict or explain. \\(x\\) is the thing doing the explaining. The slope \\(\\hat{\\beta}_1\\) tells you how much \\(y\\) changes, on average, for a one-unit increase in \\(x\\).\nRegression is not symmetric. Regressing \\(y\\) on \\(x\\) gives you a different line than regressing \\(x\\) on \\(y\\). Let’s show that directly.\n\n\nCode\n# Regression of y on x\nfit_yx &lt;- lm(y ~ x)\n# Regression of x on y\nfit_xy &lt;- lm(x ~ y)\n\n\nTo compare these on the same plot, we need to rearrange the second model to express \\(y\\) as a function of \\(x\\). We use a and b here rather than \\(\\hat{\\beta}_0\\) and \\(\\hat{\\beta}_1\\) deliberately. Those are already in use for lm(y ~ x), and reusing them for a model predicting a different variable would invite exactly the kind of confusion we are trying to avoid. Think of a and b as temporary labels for the intercept and slope of lm(x ~ y). If that model gives us \\(\\hat{x} = a + b \\cdot y\\), then solving for \\(y\\) gives \\(y = -a/b + (1/b) \\cdot x\\).\n\n\nCode\na &lt;- coef(fit_xy)[1]\nb &lt;- coef(fit_xy)[2]\n\n# Rearranged: y = -a/b + (1/b) * x\nintercept_rearranged &lt;- -a / b\nslope_rearranged &lt;- 1 / b\n\n\n\n\n\n\n\n\n\n\n\nThey are not the same line. They will only be the same line when \\(|r| = 1\\), meaning the data fall perfectly on a line with no scatter at all. In real data, that never happens.\nSo which line is “the” line? That depends on what question you are asking. If you are modeling \\(y\\) as a function of \\(x\\), use lm(y ~ x). If you are modeling \\(x\\) as a function of \\(y\\), use lm(x ~ y). If you just want to know whether the two variables are associated, use correlation and skip the line entirely.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#regression-direction-and-causality",
+    "href": "04xCorrelationVersusRegression.html#regression-direction-and-causality",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "Regression, Direction, and Causality",
+    "text": "Regression, Direction, and Causality\nWhen you write \\(y = \\beta_0 + \\beta_1 x + \\epsilon\\), you are not just describing an association. You are saying that \\(x\\) belongs on the right side of the equation and \\(y\\) belongs on the left. That is a claim about structure. It is, at minimum, a claim that you have thought about which variable might be driving which.\nThis is why regression gets associated with causality even though it cannot establish it. A regression model is consistent with a causal interpretation, but it does not require one and it does not prove one. Two variables can be strongly related through a common cause, through confounding, or through coincidence, and a regression model will fit them all the same way.\nThere is a real and ongoing debate about this in statistics. For decades the discipline largely avoided causal language, treating everything as “association” and leaving causal inference to subject matter experts. Judea Pearl, among others, argued forcefully that this was a mistake – that researchers need explicit tools for thinking about causality, not just instructions to be careful. The counter-argument is that statistics summarizes data, and causal claims require assumptions about the world that go beyond what data alone can support. Both sides have a point.\nWhere does that leave you? Here: when you decide to regress \\(y\\) on \\(x\\) rather than \\(x\\) on \\(y\\), you are making a choice that should reflect your understanding of the system. Correlation requires no such choice. Regression does. And this is one more reason to think twice before adding a best fit line to a scatter plot. That line implies you have made the choice. If you have not thought about it, the line is doing work you did not authorize.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#the-mathematical-link-between-correlation-and-regression",
+    "href": "04xCorrelationVersusRegression.html#the-mathematical-link-between-correlation-and-regression",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "The Mathematical Link Between Correlation and Regression",
+    "text": "The Mathematical Link Between Correlation and Regression\nCorrelation and regression are related. The slope in a simple linear regression is:\n\\[\\hat{\\beta}_1 = r \\cdot \\frac{s_y}{s_x}\\]\nThe slope is the correlation scaled by the ratio of the standard deviations. That ratio matters. You can have \\(r = 0.95\\) and a slope of 0.002, or \\(r = 0.95\\) and a slope of 500, depending on the spread of your variables. Correlation is scale-free. Regression is not.\n\n\nCode\nr &lt;- cor(x, y)\nslope_formula &lt;- r * (sd(y) / sd(x))\nslope_lm &lt;- coef(fit_yx)[2]\n\nround(c(from_formula = slope_formula, from_lm = slope_lm), 6)\n\n\nfrom_formula    from_lm.x \n    0.657933     0.657933 \n\n\nThey match. This also tells you something useful: if you standardize both variables to have mean 0 and standard deviation 1 before fitting, the regression slope equals the correlation coefficient exactly. But in real data with real units, they are different quantities that answer different questions.\nThis relationship also only holds cleanly in simple linear regression with one predictor. The moment you add a second predictor, the slope on \\(x_1\\) is no longer a simple function of the bivariate correlation between \\(x_1\\) and \\(y\\). It depends on the correlations among all the predictors. Two predictors that are themselves correlated will have slopes that cannot be read off from their individual correlations with \\(y\\) at all. Keep that in mind when you move to multiple regression.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#hypothesis-tests-what-are-you-actually-testing",
+    "href": "04xCorrelationVersusRegression.html#hypothesis-tests-what-are-you-actually-testing",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "Hypothesis Tests: What Are You Actually Testing?",
+    "text": "Hypothesis Tests: What Are You Actually Testing?\nBoth correlation and regression have standard hypothesis tests, and they are not the same test even though they often produce the same p-value in simple regression.\nThe regression test for the slope tests \\(H_0: \\beta_1 = 0\\). The test statistic is:\n\\[t = \\frac{\\hat{\\beta}_1}{SE(\\hat{\\beta}_1)}\\]\nThis is the p-value you see in the output of summary(lm(...)) next to the slope coefficient. When someone fits a regression and reports a p-value, this is almost always what they are testing, whether they realize it or not.\nThe correlation test tests \\(H_0: \\rho = 0\\), where \\(\\rho\\) is the population correlation. The test statistic is:\n\\[t = \\frac{r\\sqrt{n-2}}{\\sqrt{1-r^2}}\\]\nLook at that formula. The only things in it are \\(r\\) and \\(n\\). That means the p-value depends entirely on how many observations you have. A correlation of \\(r = 0.11\\) with \\(n = 1000\\) will be highly significant. That does not mean the association is strong or scientifically meaningful. It means you had a lot of data.\n\n\nCode\n# Small correlation, large n\nr_small &lt;- 0.11\nn_large &lt;- 1000\nt_stat &lt;- r_small * sqrt(n_large - 2) / sqrt(1 - r_small^2)\np_val &lt;- 2 * pt(-abs(t_stat), df = n_large - 2)\np_val\n\n\n[1] 0.0004926257\n\n\nSignificant. And also \\(r = 0.11\\), which means \\(R^2 = 0.0121\\). The predictor explains about 1.2% of the variance in the response. Be careful with the word “significant.”",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
+    "objectID": "04xCorrelationVersusRegression.html#the-short-version",
+    "href": "04xCorrelationVersusRegression.html#the-short-version",
+    "title": "Aside: Correlation and Regression Are Not the Same Thing",
+    "section": "The Short Version",
+    "text": "The Short Version\nHere is what to take away from this:\n\nCorrelation quantifies the strength of a linear association. It is symmetric and scale-free.\nRegression models the relationship between a dependent and an independent variable. It is directional and has units.\nThe slope of a regression is not the correlation. It is the correlation scaled by the ratio of standard deviations.\nRegressing \\(y\\) on \\(x\\) and regressing \\(x\\) on \\(y\\) give different lines.\nA significant correlation test just means \\(r \\neq 0\\). With enough data, almost any correlation will be significant. Report the magnitude of \\(r\\), not just the p-value.\nDo not add a regression line to a scatter plot unless you have a reason to. Describing an association does not require one.",
+    "crumbs": [
+      "Aside: Correlation and Regression Are Not the Same Thing"
+    ]
+  },
+  {
     "objectID": "04Intro2Autocorrelation.html",
     "href": "04Intro2Autocorrelation.html",
     "title": "Spatial Autocorrelation",
@@ -440,11 +520,11 @@
     ]
   },
   {
-    "objectID": "04Intro2Autocorrelation.html#distance-refresh",
-    "href": "04Intro2Autocorrelation.html#distance-refresh",
+    "objectID": "04Intro2Autocorrelation.html#refresh",
+    "href": "04Intro2Autocorrelation.html#refresh",
     "title": "Spatial Autocorrelation",
-    "section": "Distance Refresh",
-    "text": "Distance Refresh\nBefore diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the Distance Matrix aside first.",
+    "section": "Refresh",
+    "text": "Refresh\nBefore diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the Distance Matrix aside first. Also, check out the rant about correlation and regression in the Correlation versus Regression aside",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spatial Autocorrelation</span>"
     ]
@@ -475,6 +555,16 @@
     "title": "Spatial Autocorrelation",
     "section": "Space in Environmental Data",
     "text": "Space in Environmental Data\nIn the first half of the 20th century, the pioneering ecologist Alex Watt gave us the “pattern-process paradigm” that we use today. Typically, in environmental science, and especially in ecology, we make a huge effort to understand ecological processes by understanding the patterns they produce.\nEnvironmental data are typically characterized by a pattern: observations from nearby locations are more likely to have similar magnitude than by chance alone. This is spatial autocorrelation and the first challenge we have with environmental data is to quantify the magnitude, intensity, and extent of spatial structure in the data.\nThe two tools we are going to cover in this module are variograms and Moran’s I.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spatial Autocorrelation</span>"
+    ]
+  },
+  {
+    "objectID": "04Intro2Autocorrelation.html#from-correlation-to-autocorrelation",
+    "href": "04Intro2Autocorrelation.html#from-correlation-to-autocorrelation",
+    "title": "Spatial Autocorrelation",
+    "section": "From Correlation to Autocorrelation",
+    "text": "From Correlation to Autocorrelation\nYou already know about correlation. If I give you a scatter plot of air temperature on the x-axis and ice cream sales on the y-axis, you know what to do with that. You’ve got two variables – call them \\(A\\) and \\(B\\) – measured across some set of observations, and you’re asking whether high values of \\(A\\) tend to go with high values of \\(B\\). Pearson’s \\(r\\) puts a number on that.\nNow here’s the twist. What if both axes are the same variable?\nThat’s not a typo. Autocorrelation is what you get when you correlate a variable with a version of itself – just measured somewhere else. The “auto” means self. You’re asking: does the value of \\(z\\) at one location tell me something about the value of \\(z\\) at a nearby location?\nThink about soil lead. If I know the lead concentration at one spot is high, does that help me guess the concentration 50 meters away? 200 meters? 1000 meters? If the answer is yes at short distances, the data are spatially autocorrelated. That correlation should decay as you move farther away – at some point, knowing the lead here tells you nothing about lead over there.\nSo the conceptual move is this: instead of plotting \\(A\\) vs \\(B\\), you plot \\(z_i\\) vs \\(z_j\\), where \\(i\\) and \\(j\\) are two locations. You do that for every pair of points in your data set. If nearby pairs cluster in the upper right and lower left of that scatter plot (both high or both low), you’ve got positive spatial autocorrelation. If nearby pairs tend toward opposite corners (one high, one low), that’s negative autocorrelation. And if the scatter looks like a shotgun blast, there’s no pattern.\nThe distance between \\(i\\) and \\(j\\) is what makes this spatial. Rather than asking about the correlation across the whole data set at once, we ask: what does the correlation look like at 100m? At 500m? At 1km? That distance-dependence is the whole game.\nThe two tools we’ll use – variograms and Moran’s I – are both trying to describe that relationship between geographic distance and the similarity of values. They approach it differently, but they’re answering the same question.\n\nA small example\nLet me make this concrete with a tiny data set. Eight stations along a transect, spaced 100m apart. At each station we measure some variable – soil nitrogen, temperature, whatever you like. The point is we have one variable measured at eight locations.\nI’m keeping this example in one dimension – stations strung out along a line – because it’s the easiest way to see the logic. But nothing about the math requires it. When we get to the Meuse data, each point has both an \\(x\\) and a \\(y\\) coordinate, and the distance between two points is just the familiar Euclidean distance \\(d_{ij} = \\sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}\\). The pairing logic is identical. More points, more pairs, same idea.\n\n\nCode\ntransect &lt;- data.frame(\n  x = seq(0, 700, by = 100),\n  z = c(10, 12, 11, 13, 5, 4, 6, 5)\n)\n\n\nHere’s what it looks like along the transect:\n\n\nCode\nggplot(transect, aes(x = x, y = z)) +\n  geom_line() +\n  geom_point(size = 4) +\n  labs(x = \"Location (m)\", y = \"z\")\n\n\n\n\n\n\n\n\n\nValues are high on the left end and low on the right. Nearby stations look similar to each other.\nNow the key question: how do we turn one column of data into two things we can correlate? We make pairs. For every pair of stations \\(i\\) and \\(j\\) we record their distance and both their values of \\(z\\).\n\n\nCode\n# Step 1: compute all pairwise distances between stations.\n# dist() returns a distance object; we convert it to a plain matrix\n# so we can index into it like a spreadsheet.\nDmat &lt;- as.matrix(dist(transect$x))\n\n# Step 2: we only want each pair once (i,j is the same pair as j,i),\n# so we pull out just the upper triangle of the distance matrix.\n# upper.tri() returns a logical matrix -- TRUE above the diagonal, FALSE elsewhere.\nDmatUpperTri &lt;- upper.tri(Dmat)\n\n# Step 3: find the row and column positions of those TRUE cells.\n# Each row of idx is one pair: idx[,1] is the i station, idx[,2] is the j station.\nidx &lt;- which(DmatUpperTri, arr.ind = TRUE)\n\n# Step 4: build the pairs data frame.\n# For each pair, grab the z value at station i, the z value at station j,\n# and the distance between them from the matrix.\npairs_df &lt;- data.frame(\n  zi   = transect$z[idx[,1]],  # z at station i\n  zj   = transect$z[idx[,2]],  # z at station j\n  dist = Dmat[DmatUpperTri]     # distance between i and j\n)\npairs_df\n\n\n   zi zj dist\n1  10 12  100\n2  10 11  200\n3  12 11  100\n4  10 13  300\n5  12 13  200\n6  11 13  100\n7  10  5  400\n8  12  5  300\n9  11  5  200\n10 13  5  100\n11 10  4  500\n12 12  4  400\n13 11  4  300\n14 13  4  200\n15  5  4  100\n16 10  6  600\n17 12  6  500\n18 11  6  400\n19 13  6  300\n20  5  6  200\n21  4  6  100\n22 10  5  700\n23 12  5  600\n24 11  5  500\n25 13  5  400\n26  5  5  300\n27  4  5  200\n28  6  5  100\n\n\nSpend some time with pairs_df and look back up at the plot:\n\nThe first row has the leftmost point and the second leftmost point with values of \\(z\\) being 10 and 12 and a distance of 100m.\nThe second row has the leftmost point and the third leftmost point with values of \\(z\\) being 10 and 11 and a distance of 200m.\nThe third row has the second leftmost point and the third leftmost point with values of \\(z\\) being 12 and 11 and a distance of 100m.\nand so on…\n\nThat gives us \\(n(n-1)/2 = 28\\) pairs. Now we can ask: for short-distance pairs, do high values of \\(z_i\\) go with high values of \\(z_j\\)? What about far-apart pairs?\n\n\nCode\n# compute r for each group to use as labels in the plot\ncor_labels &lt;- pairs_df %&gt;%\n  filter(dist &lt;= 100 | dist &gt; 200) %&gt;%\n  mutate(group = ifelse(dist &lt;= 100, \"Close (≤ 100m)\", \"Far (≥ 200m)\")) %&gt;%\n  group_by(group) %&gt;%\n  summarise(r = round(cor(zi, zj), 2)) %&gt;%\n  mutate(label = paste0(\"r = \", r))\n\npairs_df %&gt;%\n  filter(dist &lt;= 100 | dist &gt; 200) %&gt;%\n  mutate(group = ifelse(dist &lt;= 100, \"Close (≤ 100m)\", \"Far (≥ 200m)\")) %&gt;%\n  ggplot(aes(x = zi, y = zj)) +\n  geom_point(size = 3) +\n  geom_text(data = cor_labels, aes(label = label),\n            x = Inf, y = Inf, hjust = 1.1, vjust = 1.5) +\n  facet_wrap(~group) +\n  labs(x = expression(z[i]), y = expression(z[j]))\n\n\n\n\n\n\n\n\n\nIn the close pairs panel, high values of \\(z_i\\) go with high values of \\(z_j\\). That’s positive spatial autocorrelation. In the far pairs panel the scatter looks like a shotgun blast – knowing \\(z_i\\) tells you nothing about \\(z_j\\).\nThat scatter of \\(z_i\\) vs \\(z_j\\) is the conceptual core of everything we’re doing in this module. Variograms and Moran’s I are two more rigorous ways of quantifying what you can already see in those plots. One quick note on Moran’s I specifically: it isn’t exactly Pearson’s \\(r\\), but the intuition holds. It’s a weighted version that accounts for the spatial arrangement of points rather than treating all pairs equally. More on that below.",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spatial Autocorrelation</span>"
     ]

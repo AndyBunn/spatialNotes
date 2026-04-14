@@ -19,8 +19,8 @@ Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analys
 
 Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
 
-## Distance Refresh
-Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside first](03xAsideDistanceMatrices.html).
+## Refresh
+Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside first](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [Correlation versus Regression aside](04xCorrelationVersusRegression.html)
 
 ## Packages
 The packages we are going to use are below. 
@@ -49,6 +49,108 @@ In the first half of the 20th century, the pioneering ecologist Alex Watt gave u
 Environmental data are typically characterized by a pattern: observations from nearby locations are more likely to have similar magnitude than by chance alone. This is spatial autocorrelation and the first challenge we have with environmental data is to quantify the magnitude, intensity, and extent of spatial structure in the data.
 
 The two tools we are going to cover in this module are variograms and Moran's I.
+
+## From Correlation to Autocorrelation
+
+You already know about correlation. If I give you a scatter plot of air temperature on the x-axis and ice cream sales on the y-axis, you know what to do with that. You've got two variables -- call them $A$ and $B$ -- measured across some set of observations, and you're asking whether high values of $A$ tend to go with high values of $B$. Pearson's $r$ puts a number on that.
+
+Now here's the twist. What if both axes are the *same* variable?
+
+That's not a typo. Autocorrelation is what you get when you correlate a variable with a version of itself -- just measured somewhere else. The "auto" means self. You're asking: does the value of $z$ at one location tell me something about the value of $z$ at a nearby location?
+
+Think about soil lead. If I know the lead concentration at one spot is high, does that help me guess the concentration 50 meters away? 200 meters? 1000 meters? If the answer is yes at short distances, the data are spatially autocorrelated. That correlation should decay as you move farther away -- at some point, knowing the lead here tells you nothing about lead over there.
+
+So the conceptual move is this: instead of plotting $A$ vs $B$, you plot $z_i$ vs $z_j$, where $i$ and $j$ are two locations. You do that for every pair of points in your data set. If nearby pairs cluster in the upper right and lower left of that scatter plot (both high or both low), you've got positive spatial autocorrelation. If nearby pairs tend toward opposite corners (one high, one low), that's negative autocorrelation. And if the scatter looks like a shotgun blast, there's no pattern.
+
+The distance between $i$ and $j$ is what makes this spatial. Rather than asking about the correlation across the whole data set at once, we ask: what does the correlation look like at 100m? At 500m? At 1km? That distance-dependence is the whole game.
+
+The two tools we'll use -- variograms and Moran's I -- are both trying to describe that relationship between geographic distance and the similarity of values. They approach it differently, but they're answering the same question.
+
+### A small example
+
+Let me make this concrete with a tiny data set. Eight stations along a transect, spaced 100m apart. At each station we measure some variable -- soil nitrogen, temperature, whatever you like. The point is we have one variable measured at eight locations.
+
+I'm keeping this example in one dimension -- stations strung out along a line -- because it's the easiest way to see the logic. But nothing about the math requires it. When we get to the Meuse data, each point has both an $x$ and a $y$ coordinate, and the distance between two points is just the familiar Euclidean distance $d_{ij} = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}$. The pairing logic is identical. More points, more pairs, same idea.
+
+```{r}
+transect <- data.frame(
+  x = seq(0, 700, by = 100),
+  z = c(10, 12, 11, 13, 5, 4, 6, 5)
+)
+```
+
+Here's what it looks like along the transect:
+
+```{r}
+ggplot(transect, aes(x = x, y = z)) +
+  geom_line() +
+  geom_point(size = 4) +
+  labs(x = "Location (m)", y = "z")
+```
+
+Values are high on the left end and low on the right. Nearby stations look similar to each other.
+
+Now the key question: how do we turn one column of data into two things we can correlate? We make pairs. For every pair of stations $i$ and $j$ we record their distance and both their values of $z$.
+
+```{r}
+# Step 1: compute all pairwise distances between stations.
+# dist() returns a distance object; we convert it to a plain matrix
+# so we can index into it like a spreadsheet.
+Dmat <- as.matrix(dist(transect$x))
+
+# Step 2: we only want each pair once (i,j is the same pair as j,i),
+# so we pull out just the upper triangle of the distance matrix.
+# upper.tri() returns a logical matrix -- TRUE above the diagonal, FALSE elsewhere.
+DmatUpperTri <- upper.tri(Dmat)
+
+# Step 3: find the row and column positions of those TRUE cells.
+# Each row of idx is one pair: idx[,1] is the i station, idx[,2] is the j station.
+idx <- which(DmatUpperTri, arr.ind = TRUE)
+
+# Step 4: build the pairs data frame.
+# For each pair, grab the z value at station i, the z value at station j,
+# and the distance between them from the matrix.
+pairs_df <- data.frame(
+  zi   = transect$z[idx[,1]],  # z at station i
+  zj   = transect$z[idx[,2]],  # z at station j
+  dist = Dmat[DmatUpperTri]     # distance between i and j
+)
+pairs_df
+```
+
+Spend some time with `pairs_df` and look back up at the plot:
+
+* The first row has the leftmost point and the second leftmost point with values of $z$ being 10 and 12 and a distance of 100m.
+* The second row has the leftmost point and the third leftmost point with values of $z$ being 10 and 11 and a distance of 200m.
+* The third row has the second leftmost point and the third leftmost point with values of $z$ being 12 and 11 and a distance of 100m.
+* and so on...
+
+That gives us $n(n-1)/2 = 28$ pairs. Now we can ask: for short-distance pairs, do high values of $z_i$ go with high values of $z_j$? What about far-apart pairs?
+
+```{r}
+# compute r for each group to use as labels in the plot
+cor_labels <- pairs_df %>%
+  filter(dist <= 100 | dist > 200) %>%
+  mutate(group = ifelse(dist <= 100, "Close (≤ 100m)", "Far (≥ 200m)")) %>%
+  group_by(group) %>%
+  summarise(r = round(cor(zi, zj), 2)) %>%
+  mutate(label = paste0("r = ", r))
+
+pairs_df %>%
+  filter(dist <= 100 | dist > 200) %>%
+  mutate(group = ifelse(dist <= 100, "Close (≤ 100m)", "Far (≥ 200m)")) %>%
+  ggplot(aes(x = zi, y = zj)) +
+  geom_point(size = 3) +
+  geom_text(data = cor_labels, aes(label = label),
+            x = Inf, y = Inf, hjust = 1.1, vjust = 1.5) +
+  facet_wrap(~group) +
+  labs(x = expression(z[i]), y = expression(z[j]))
+```
+
+In the close pairs panel, high values of $z_i$ go with high values of $z_j$. That's positive spatial autocorrelation. In the far pairs panel the scatter looks like a shotgun blast -- knowing $z_i$ tells you nothing about $z_j$.
+
+That scatter of $z_i$ vs $z_j$ is the conceptual core of everything we're doing in this module. Variograms and Moran's I are two more rigorous ways of quantifying what you can already see in those plots. One quick note on Moran's I specifically: it isn't exactly Pearson's $r$, but the intuition holds. It's a weighted version that accounts for the spatial arrangement of points rather than treating all pairs equally. More on that below.
+
 
 ## Meuse River 
 Let's use the Meuse River data to illustrate the idea behind autocorrelation. This is a classic spatial data set that has coordinate data (a plain `data.frame`) with measurements on metal concentrations in soils as well as some other soil variables. We will return to these data again and again. It's a classic data set. Look at the help file for more details as well as the projection info. [Here is a link to a Google Map of the site](http://www.google.com/maps/place/50%C2%B057'46.6%22N+5%C2%B044'06.1%22E/@50.9629384,5.7350233,13z/data=!4m2!3m1!1s0x0:0x0) which is in the Netherlands on the border with Belgium. Someday I'll visit this site after so many years of working with these data. 

@@ -14,6 +14,66 @@ library(spdep)
 
 
 ## -----------------------------------------------------------------------------
+transect <- data.frame(
+  x = seq(0, 700, by = 100),
+  z = c(10, 12, 11, 13, 5, 4, 6, 5)
+)
+
+
+## -----------------------------------------------------------------------------
+ggplot(transect, aes(x = x, y = z)) +
+  geom_line() +
+  geom_point(size = 4) +
+  labs(x = "Location (m)", y = "z")
+
+
+## -----------------------------------------------------------------------------
+# Step 1: compute all pairwise distances between stations.
+# dist() returns a distance object; we convert it to a plain matrix
+# so we can index into it like a spreadsheet.
+Dmat <- as.matrix(dist(transect$x))
+
+# Step 2: we only want each pair once (i,j is the same pair as j,i),
+# so we pull out just the upper triangle of the distance matrix.
+# upper.tri() returns a logical matrix -- TRUE above the diagonal, FALSE elsewhere.
+DmatUpperTri <- upper.tri(Dmat)
+
+# Step 3: find the row and column positions of those TRUE cells.
+# Each row of idx is one pair: idx[,1] is the i station, idx[,2] is the j station.
+idx <- which(DmatUpperTri, arr.ind = TRUE)
+
+# Step 4: build the pairs data frame.
+# For each pair, grab the z value at station i, the z value at station j,
+# and the distance between them from the matrix.
+pairs_df <- data.frame(
+  zi   = transect$z[idx[,1]],  # z at station i
+  zj   = transect$z[idx[,2]],  # z at station j
+  dist = Dmat[DmatUpperTri]     # distance between i and j
+)
+pairs_df
+
+
+## -----------------------------------------------------------------------------
+# compute r for each group to use as labels in the plot
+cor_labels <- pairs_df %>%
+  filter(dist <= 100 | dist > 200) %>%
+  mutate(group = ifelse(dist <= 100, "Close (≤ 100m)", "Far (≥ 200m)")) %>%
+  group_by(group) %>%
+  summarise(r = round(cor(zi, zj), 2)) %>%
+  mutate(label = paste0("r = ", r))
+
+pairs_df %>%
+  filter(dist <= 100 | dist > 200) %>%
+  mutate(group = ifelse(dist <= 100, "Close (≤ 100m)", "Far (≥ 200m)")) %>%
+  ggplot(aes(x = zi, y = zj)) +
+  geom_point(size = 3) +
+  geom_text(data = cor_labels, aes(label = label),
+            x = Inf, y = Inf, hjust = 1.1, vjust = 1.5) +
+  facet_wrap(~group) +
+  labs(x = expression(z[i]), y = expression(z[j]))
+
+
+## -----------------------------------------------------------------------------
 data(meuse.all)
 class(meuse.all)
 head(meuse.all)

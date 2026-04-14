@@ -8,7 +8,7 @@
 
 <meta name="description" content="Spatial analysis notes and exercises">
 
-<title>Mt Baker Map – Spatial Analysis for Environmental Science</title>
+<title>Aside: Correlation and Regression Are Not the Same Thing – Spatial Analysis for Environmental Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -56,27 +56,7 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -86,8 +66,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./03xAsideDistanceMatrices.html" rel="next">
-<link href="./01xAsideMethods_and_generics.html" rel="prev">
+<link href="./04Intro2Autocorrelation.html" rel="next">
+<link href="./03Point_Patterns.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -127,6 +107,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="custom.css">
 </head>
@@ -155,7 +164,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02MtBakerMap.html"><span class="chapter-title">Mt Baker Map</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04xCorrelationVersusRegression.html">Aside: Correlation and Regression Are Not the Same Thing</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -194,7 +203,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Mt Baker Map</span></a>
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -210,7 +219,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04xCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
+  <a href="./04xCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Aside: Correlation and Regression Are Not the Same Thing</span></a>
   </div>
 </li>
@@ -271,22 +280,23 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#big-idea" id="toc-big-idea" class="nav-link active" data-scroll-target="#big-idea">Big Idea</a></li>
-  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
-  <li><a href="#prepratory-work" id="toc-prepratory-work" class="nav-link" data-scroll-target="#prepratory-work">Prepratory Work</a></li>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
-  <li><a href="#a-map" id="toc-a-map" class="nav-link" data-scroll-target="#a-map">A Map</a></li>
-  <li><a href="#your-work" id="toc-your-work" class="nav-link" data-scroll-target="#your-work">Your work</a></li>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why This Matters</a></li>
+  <li><a href="#here-is-some-data" id="toc-here-is-some-data" class="nav-link" data-scroll-target="#here-is-some-data">Here is Some Data</a></li>
+  <li><a href="#correlation" id="toc-correlation" class="nav-link" data-scroll-target="#correlation">Correlation</a></li>
+  <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression">Regression</a></li>
+  <li><a href="#regression-direction-and-causality" id="toc-regression-direction-and-causality" class="nav-link" data-scroll-target="#regression-direction-and-causality">Regression, Direction, and Causality</a></li>
+  <li><a href="#the-mathematical-link-between-correlation-and-regression" id="toc-the-mathematical-link-between-correlation-and-regression" class="nav-link" data-scroll-target="#the-mathematical-link-between-correlation-and-regression">The Mathematical Link Between Correlation and Regression</a></li>
+  <li><a href="#hypothesis-tests-what-are-you-actually-testing" id="toc-hypothesis-tests-what-are-you-actually-testing" class="nav-link" data-scroll-target="#hypothesis-tests-what-are-you-actually-testing">Hypothesis Tests: What Are You Actually Testing?</a></li>
+  <li><a href="#the-short-version" id="toc-the-short-version" class="nav-link" data-scroll-target="#the-short-version">The Short Version</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/02MtBakerMap.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/04xCorrelationVersusRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Mt Baker Map</span></h1>
+<h1 class="title">Aside: Correlation and Regression Are Not the Same Thing</h1>
 </div>
 
 
@@ -303,252 +313,164 @@ div.csl-indent {
 </header>
 
 
-<section id="big-idea" class="level2">
-<h2 class="anchored" data-anchor-id="big-idea">Big Idea</h2>
-<p>The nuts and bolts of working with spatial data are critical to get right. Being able to use raster and vector data are going to be important as we learn spatial analytic methods.</p>
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why This Matters</h2>
+<p>Before we start talking about spatial autocorrelation, we need to talk about correlation and regression. Not because you haven’t seen them before, but because the two concepts get conflated constantly by students – but also by people who really should know better.</p>
+<p>The conflation has a tell. It looks like this: someone makes a scatter plot, right-clicks on it in Excel, and adds a “best fit line.” They didn’t think about whether a line was appropriate. They didn’t ask what question the line is answering. They just added it because it was there. Please do not do this. A scatter plot is complete without a regression line. Adding one implies something about direction, prediction, and causation that you may not actually mean.</p>
+<p>One more thing before we start. This aside is about linear association. Pearson correlation measures the strength of a linear relationship between two variables. Linear regression models that relationship with a line. If the underlying relationship is curved, both will mislead you in their own ways – correlation will understate the association and the regression line will be a poor summary of the data. That is a real limitation and worth knowing, but it is a topic for another day. Everything that follows assumes linearity.</p>
 </section>
-<section id="packages" class="level2">
-<h2 class="anchored" data-anchor-id="packages">Packages</h2>
-<p>Install these if you need them: <code>sf</code><span class="citation" data-cites="R-sf">(<a href="08PackagesUsed.html#ref-R-sf" role="doc-biblioref">Pebesma 2026</a>)</span>, <code>terra</code><span class="citation" data-cites="R-terra">(<a href="08PackagesUsed.html#ref-R-terra" role="doc-biblioref">Hijmans 2026</a>)</span>, and <code>tidyverse</code><span class="citation" data-cites="R-tidyverse">(<a href="08PackagesUsed.html#ref-R-tidyverse" role="doc-biblioref">Wickham 2023</a>)</span> but if you completed the workshop from Data Carpentry they should be all good to go on your system. We’ll use <code>tidyterra</code><span class="citation" data-cites="R-tidyterra">(<a href="08PackagesUsed.html#ref-R-tidyterra" role="doc-biblioref">Hernangómez 2023</a>)</span> and <code>ggnewscale</code><span class="citation" data-cites="R-ggnewscale">(<a href="08PackagesUsed.html#ref-R-ggnewscale" role="doc-biblioref">Campitelli 2025</a>)</span> as well.</p>
-<p>But first…</p>
-<p>For the past couple of years there has been major upheaval underway in how projection information is getting stored and how R is working with spatial data in general (e.g., the <code>PROJ</code> projection standard is being replaced by <code>WKT</code> and the <code>raster</code> library is being superseded by <code>terra</code>. It’s both complicated and extremely boring. But while the details are getting worked out, many of the different R libraries that work with the old projection scheme are throwing warnings sometimes. I’ll try to anticipate that and give you workarounds if we need them.</p>
-<p>Ok. Let’s go.</p>
+<section id="here-is-some-data" class="level2">
+<h2 class="anchored" data-anchor-id="here-is-some-data">Here is Some Data</h2>
+<p>Let’s generate a small data set first. Two variables <code>x</code> and <code>y</code>.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">80</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">10</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.6</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(x, y), <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04xCorrelationVersusRegression_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
+</div>
+</div>
+<p>Cool? Now let’s get the concepts sorted out. But first, a rule that applies to everything in this aside and most of statistics: <strong>plot your data before you calculate anything.</strong> Anscombe’s quartet is the classic demonstration of why. It is a set of four datasets with nearly identical means, standard deviations, correlations, and regression coefficients. They look completely different when plotted. One is a clean linear relationship. One is a perfect curve that a line describes badly. One has an outlier that is driving everything. Look them up. The lesson is that summary statistics, including <span class="math inline">\(r\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span>, can be identical across datasets that have nothing in common. The plot catches what the numbers miss.</p>
 </section>
-<section id="prepratory-work" class="level2">
-<h2 class="anchored" data-anchor-id="prepratory-work">Prepratory Work</h2>
-<p>Before continuing you should have completed <a href="https://datacarpentry.org/organization-geospatial/">this Introduction to Geospatial Concepts</a> from the good folks at Data Carpentry as well as <a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction to Geospatial Raster and Vector Data with R</a>.</p>
-<p>The people in this class have tremendously varying levels of experience working with spatial data. Some are GIS pros (literally) and conversant with different data types and spatial schemas. Others are spatial novices. Finishing both of these will help establish a common baseline of knowledge.</p>
-</section>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Because some of you are GIS experts and some of you have only done a tiny bit of GIS, we a tough dynamic in class. This is because a lot of working with spatial data is in the mechanics of displaying and handling data from different sources as well as the whole idea of projecting data from a roundish planet onto a plane. We will focus as much as we can on the big picture of how spatial patterns let us make inference about environmental processes. But we need to be able to do some basic GIS work in R. This assignment builds on what you’ve done in the Data Carpentry workshops and has you make a map using data you haven’t seen before.</p>
-<p>I’ve been working on a cool spatial analysis project up at the Mt Baker ski hill. I won’t go into it now, but it is a project to improve geolocation for skiers and riders using very inexpensive RFID equipment. We will look at some of those data later in class but let’s start with just making a map of some of the features at the ski hill. Many of you are familiar with the area from recreating.</p>
-</section>
-<section id="the-data" class="level2">
-<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
-<p>First we have a digital elevation model (DEM) of the area near the ski hill. I’ll read this in here using <code>raster</code> from the <code>terra</code> library. Note that these data are projected in UTM (EPSG:32610) so the units are in meters. The DEM has five meter resolution.</p>
+<section id="correlation" class="level2">
+<h2 class="anchored" data-anchor-id="correlation">Correlation</h2>
+<p>Correlation measures the strength and direction of a linear association between two variables. The Pearson correlation coefficient <span class="math inline">\(r\)</span> is:</p>
+<p><span class="math display">\[r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{(n-1) s_x s_y}\]</span></p>
+<p>It is bounded between -1 and 1. It is unitless. And it is <strong>symmetric</strong>:</p>
+<p><span class="math display">\[r_{xy} = r_{yx}\]</span></p>
+<p>The correlation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> is identical to the correlation between <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span>. There is no dependent variable. There is no independent variable. There is no implied direction of effect. You are just asking: do these two things move together?</p>
+<p>For the data we made above <span class="math display">\[r_{xy} = r_{yx} = 0.79\]</span></p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mtbDEM <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/mtbDEM.tif"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mtbDEM</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>class       : SpatRaster 
-size        : 409, 628, 1  (nrow, ncol, nlyr)
-resolution  : 5, 5  (x, y)
-extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
-coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
-source      : mtbDEM.tif 
-name        :      elev 
-min value   :  826.4308 
-max value   : 1689.3694 </code></pre>
+<pre><code>[1] 0.7904728</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>mtbDEM_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mtbDEM, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> mtbDEM_df , <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">fill =</span> elev)) <span class="sc">+</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">100</span>)) <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Easting (m)"</span>, <span class="at">y =</span> <span class="st">"Northing (m)"</span>) <span class="sc">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>This is very similar to the way that the carpentries workshop approached mapping where you take the raster layer from <code>rast</code> and then turn it into a <code>data.frame</code> for plotting. And that works fine. I’ve using the <code>tidyterra</code> library which has a <code>ggplot</code> geometry for the <code>SpatRaster</code> class. That seems easier to me. So here is a simpler approach using <code>geom_spatraster</code>. Oh, and <code>tidyterra</code> has some very cool color schemes. Look at <code>?hypso.colors</code>.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">"usgs-gswa2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Note that unlike <code>geom_raster()</code>, <code>geom_spatraster()</code> uses the projection information and shows us the plot using latitude and longitude. That can mess us up if we aren’t careful because the projection for <code>mtbDEM</code> is un UTM. If we wanted to we can plot in the original projection with <code>coord_sf()</code>.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">palette =</span> <span class="st">"usgs-gswa2"</span>) <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">datum =</span> <span class="dv">32610</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Next, I made a hillshade layer from the elevation model.This is a common way to get a 3D representation of a surface that basically shines a light onto a surface at a specified angle and elevation to create shading the image. We need make a slope raster and an aspect raster in order to be able to calculate hillshade.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mtbSlope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">"slope"</span>, <span class="at">unit=</span><span class="st">"radians"</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mtbAspect <span class="ot">&lt;-</span> <span class="fu">terrain</span>(mtbDEM, <span class="st">"aspect"</span>, <span class="at">unit=</span><span class="st">"radians"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mtbHillshade <span class="ot">&lt;-</span> <span class="fu">shade</span>(mtbSlope, mtbAspect, <span class="at">angle =</span> <span class="dv">40</span>, <span class="at">direction =</span> <span class="dv">270</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>mtbHillshade[mtbHillshade <span class="sc">&lt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mtbHillshade) <span class="ot">&lt;-</span> <span class="st">"value"</span> <span class="co"># these are unitless</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>mtbHillshade</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(y,x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>class       : SpatRaster 
-size        : 409, 628, 1  (nrow, ncol, nlyr)
-resolution  : 5, 5  (x, y)
-extent      : 596210.7, 599350.7, 5411132, 5413177  (xmin, xmax, ymin, ymax)
-coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
-source(s)   : memory
-varname     : mtbDEM 
-name        :    value 
-min value   : 0.000000 
-max value   : 0.999856 </code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># and a quick plot</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>You can combine these with and show both rasters using transparency.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbHillshade) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> <span class="fu">gray.colors</span>(<span class="dv">100</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">start =</span> <span class="fl">0.1</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">end =</span> <span class="fl">0.9</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> mtbDEM) <span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_hypso_c</span>(<span class="at">name =</span> <span class="st">"Elevation (m)"</span>, </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">palette =</span> <span class="st">"usgs-gswa2"</span>,<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>p1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Walk through the code and note how I added the hillshade in grey first and then added the elevation layer afterwards with a transparency. I used <code>new_scale_fill</code> from the <code>ggnewscale</code> library to allow for more than one scale for the fill aesthetic. Refer back to the last module for mapping hillshades for a different approach.</p>
-<p>Next, we have a shapefile of line data showing where the chairlifts are. I’ll read that in using <code>st_read()</code> from the <code>sf</code> library. These data are also projected in UTM.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>chairs <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/mtbChairLines.shp"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `mtbChairLines' from data source 
-  `/Users/andybunn/Documents/teaching/current/ESCI505/spatialNotes/data/mtbChairLines.shp' 
-  using driver `ESRI Shapefile'
-Simple feature collection with 8 features and 1 field
-Geometry type: LINESTRING
-Dimension:     XY
-Bounding box:  xmin: 596713.7 ymin: 5411451 xmax: 599131.5 ymax: 5412970
-Projected CRS: UTM_Zone_10_Northern_Hemisphere</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data=</span>chairs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>And finally, here is the location of the three lodges stored in a simple csv file.The coordinates are in UTM as above.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>buildings <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/mtbLodges.csv"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>buildings</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>         X       Y                    id
-1 598732.6 5412985    White Salmon Lodge
-2 596891.9 5412928 Heather Meadows Lodge
-3 598253.1 5412510           Raven's Hut</code></pre>
-</div>
-</div>
-<p>Note that I’ve given you three different kinds of spatial data. As geospatially-explicit raster in an external file (a GeoTif), a shapefile (shp) of lines, and a text file of points. The first two are already projected. The last is not (but the units are at least the same).</p>
-</section>
-<section id="a-map" class="level2">
-<h2 class="anchored" data-anchor-id="a-map">A Map</h2>
-<p>Here is a map of the area I made with <code>ggplot</code> using the objects <code>mtbDEM</code>, <code>chairs</code>, and <code>buildings</code>. I’ll be the first to tell you that I’m no cartographer and this is not an excellent map but it is adequate. In most cases, I show you exactly what I’m doing with all the R code by setting <code>echo=TRUE</code> in all my chunks. For this map, I hid the code I used because I want you to make your own as I explain below in the “Your Work” section.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02MtBakerMap_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="768"></p>
-</figure>
-</div>
+<pre><code>[1] 0.7904728</code></pre>
 </div>
 </div>
 </section>
-<section id="your-work" class="level2">
-<h2 class="anchored" data-anchor-id="your-work">Your work</h2>
-<p>Make a pretty map of the Mt Baker ski hill area using the data above. You can color outside the lines (e.g., pull in imagery from Google Earth or use other ancillary data) if you like. There are few limits to what you can do but you need to use all three data sets in one map. The idea here is to make sure you can handle raster data and two types of vector data (points and lines) simultaneously.</p>
-<p>Turn in a knitted document in HTML that has a map and explain what you did. Make sure all your code is clean, your variables named well, your explanations clear. I suggest using either RMarkdown (.Rmd) or quarto (.qmd). Show all the code.</p>
-<p>Finally, there is a lot to do in this class. As such, I’m not going to ask you to do a bunch of fancy cartography. In general I want you to focus on the spatial analysis and not fall into time sinks of map making. But I’m not against you making cool maps! Feel free to experiment with cartography. The Lovelace chapter <a href="https://geocompr.robinlovelace.net/adv-map.html">Making maps with R</a> is a great resource for <code>tmap</code> etc.</p>
+<section id="regression" class="level2">
+<h2 class="anchored" data-anchor-id="regression">Regression</h2>
+<p>Regression is different. When you fit a linear model <span class="math inline">\(y = \beta_0 + \beta_1 x + \epsilon\)</span>, you are making a directional claim. <span class="math inline">\(y\)</span> is the thing you are trying to predict or explain. <span class="math inline">\(x\)</span> is the thing doing the explaining. The slope <span class="math inline">\(\hat{\beta}_1\)</span> tells you how much <span class="math inline">\(y\)</span> changes, on average, for a one-unit increase in <span class="math inline">\(x\)</span>.</p>
+<p>Regression is <strong>not symmetric</strong>. Regressing <span class="math inline">\(y\)</span> on <span class="math inline">\(x\)</span> gives you a different line than regressing <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>. Let’s show that directly.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression of y on x</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fit_yx <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression of x on y</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>fit_xy <span class="ot">&lt;-</span> <span class="fu">lm</span>(x <span class="sc">~</span> y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>To compare these on the same plot, we need to rearrange the second model to express <span class="math inline">\(y\)</span> as a function of <span class="math inline">\(x\)</span>. We use <code>a</code> and <code>b</code> here rather than <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> deliberately. Those are already in use for <code>lm(y ~ x)</code>, and reusing them for a model predicting a different variable would invite exactly the kind of confusion we are trying to avoid. Think of <code>a</code> and <code>b</code> as temporary labels for the intercept and slope of <code>lm(x ~ y)</code>. If that model gives us <span class="math inline">\(\hat{x} = a + b \cdot y\)</span>, then solving for <span class="math inline">\(y\)</span> gives <span class="math inline">\(y = -a/b + (1/b) \cdot x\)</span>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_xy)[<span class="dv">1</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_xy)[<span class="dv">2</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Rearranged: y = -a/b + (1/b) * x</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>intercept_rearranged <span class="ot">&lt;-</span> <span class="sc">-</span>a <span class="sc">/</span> b</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>slope_rearranged <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04xCorrelationVersusRegression_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>They are not the same line. They will only be the same line when <span class="math inline">\(|r| = 1\)</span>, meaning the data fall perfectly on a line with no scatter at all. In real data, that never happens.</p>
+<p>So which line is “the” line? That depends on what question you are asking. If you are modeling <span class="math inline">\(y\)</span> as a function of <span class="math inline">\(x\)</span>, use <code>lm(y ~ x)</code>. If you are modeling <span class="math inline">\(x\)</span> as a function of <span class="math inline">\(y\)</span>, use <code>lm(x ~ y)</code>. If you just want to know whether the two variables are associated, use correlation and skip the line entirely.</p>
+</section>
+<section id="regression-direction-and-causality" class="level2">
+<h2 class="anchored" data-anchor-id="regression-direction-and-causality">Regression, Direction, and Causality</h2>
+<p>When you write <span class="math inline">\(y = \beta_0 + \beta_1 x + \epsilon\)</span>, you are not just describing an association. You are saying that <span class="math inline">\(x\)</span> belongs on the right side of the equation and <span class="math inline">\(y\)</span> belongs on the left. That is a claim about structure. It is, at minimum, a claim that you have thought about which variable might be driving which.</p>
+<p>This is why regression gets associated with causality even though it cannot establish it. A regression model is consistent with a causal interpretation, but it does not require one and it does not prove one. Two variables can be strongly related through a common cause, through confounding, or through coincidence, and a regression model will fit them all the same way.</p>
+<p>There is a real and ongoing debate about this in statistics. For decades the discipline largely avoided causal language, treating everything as “association” and leaving causal inference to subject matter experts. Judea Pearl, among others, argued forcefully that this was a mistake – that researchers need explicit tools for thinking about causality, not just instructions to be careful. The counter-argument is that statistics summarizes data, and causal claims require assumptions about the world that go beyond what data alone can support. Both sides have a point.</p>
+<p>Where does that leave you? Here: when you decide to regress <span class="math inline">\(y\)</span> on <span class="math inline">\(x\)</span> rather than <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>, you are making a choice that should reflect your understanding of the system. Correlation requires no such choice. Regression does. And this is one more reason to think twice before adding a best fit line to a scatter plot. That line implies you have made the choice. If you have not thought about it, the line is doing work you did not authorize.</p>
+</section>
+<section id="the-mathematical-link-between-correlation-and-regression" class="level2">
+<h2 class="anchored" data-anchor-id="the-mathematical-link-between-correlation-and-regression">The Mathematical Link Between Correlation and Regression</h2>
+<p>Correlation and regression are related. The slope in a simple linear regression is:</p>
+<p><span class="math display">\[\hat{\beta}_1 = r \cdot \frac{s_y}{s_x}\]</span></p>
+<p>The slope is the correlation scaled by the ratio of the standard deviations. That ratio matters. You can have <span class="math inline">\(r = 0.95\)</span> and a slope of 0.002, or <span class="math inline">\(r = 0.95\)</span> and a slope of 500, depending on the spread of your variables. Correlation is scale-free. Regression is not.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">cor</span>(x, y)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>slope_formula <span class="ot">&lt;-</span> r <span class="sc">*</span> (<span class="fu">sd</span>(y) <span class="sc">/</span> <span class="fu">sd</span>(x))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>slope_lm <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_yx)[<span class="dv">2</span>]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">from_formula =</span> slope_formula, <span class="at">from_lm =</span> slope_lm), <span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>from_formula    from_lm.x 
+    0.657933     0.657933 </code></pre>
+</div>
+</div>
+<p>They match. This also tells you something useful: if you standardize both variables to have mean 0 and standard deviation 1 before fitting, the regression slope equals the correlation coefficient exactly. But in real data with real units, they are different quantities that answer different questions.</p>
+<p>This relationship also only holds cleanly in simple linear regression with one predictor. The moment you add a second predictor, the slope on <span class="math inline">\(x_1\)</span> is no longer a simple function of the bivariate correlation between <span class="math inline">\(x_1\)</span> and <span class="math inline">\(y\)</span>. It depends on the correlations among all the predictors. Two predictors that are themselves correlated will have slopes that cannot be read off from their individual correlations with <span class="math inline">\(y\)</span> at all. Keep that in mind when you move to multiple regression.</p>
+</section>
+<section id="hypothesis-tests-what-are-you-actually-testing" class="level2">
+<h2 class="anchored" data-anchor-id="hypothesis-tests-what-are-you-actually-testing">Hypothesis Tests: What Are You Actually Testing?</h2>
+<p>Both correlation and regression have standard hypothesis tests, and they are not the same test even though they often produce the same p-value in simple regression.</p>
+<p><strong>The regression test</strong> for the slope tests <span class="math inline">\(H_0: \beta_1 = 0\)</span>. The test statistic is:</p>
+<p><span class="math display">\[t = \frac{\hat{\beta}_1}{SE(\hat{\beta}_1)}\]</span></p>
+<p>This is the p-value you see in the output of <code>summary(lm(...))</code> next to the slope coefficient. When someone fits a regression and reports a p-value, this is almost always what they are testing, whether they realize it or not.</p>
+<p><strong>The correlation test</strong> tests <span class="math inline">\(H_0: \rho = 0\)</span>, where <span class="math inline">\(\rho\)</span> is the population correlation. The test statistic is:</p>
+<p><span class="math display">\[t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}}\]</span></p>
+<p>Look at that formula. The only things in it are <span class="math inline">\(r\)</span> and <span class="math inline">\(n\)</span>. That means the p-value depends entirely on how many observations you have. A correlation of <span class="math inline">\(r = 0.11\)</span> with <span class="math inline">\(n = 1000\)</span> will be highly significant. That does not mean the association is strong or scientifically meaningful. It means you had a lot of data.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Small correlation, large n</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>r_small <span class="ot">&lt;-</span> <span class="fl">0.11</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>n_large <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>t_stat <span class="ot">&lt;-</span> r_small <span class="sc">*</span> <span class="fu">sqrt</span>(n_large <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> r_small<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>p_val <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(t_stat), <span class="at">df =</span> n_large <span class="sc">-</span> <span class="dv">2</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>p_val</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0004926257</code></pre>
+</div>
+</div>
+<p>Significant. And also <span class="math inline">\(r = 0.11\)</span>, which means <span class="math inline">\(R^2 = 0.0121\)</span>. The predictor explains about 1.2% of the variance in the response. Be careful with the word “significant.”</p>
+</section>
+<section id="the-short-version" class="level2">
+<h2 class="anchored" data-anchor-id="the-short-version">The Short Version</h2>
+<p>Here is what to take away from this:</p>
+<ul>
+<li><strong>Correlation</strong> quantifies the strength of a linear association. It is symmetric and scale-free.</li>
+<li><strong>Regression</strong> models the relationship between a dependent and an independent variable. It is directional and has units.</li>
+<li>The slope of a regression is not the correlation. It is the correlation scaled by the ratio of standard deviations.</li>
+<li>Regressing <span class="math inline">\(y\)</span> on <span class="math inline">\(x\)</span> and regressing <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span> give different lines.</li>
+<li>A significant correlation test just means <span class="math inline">\(r \neq 0\)</span>. With enough data, almost any correlation will be significant. Report the magnitude of <span class="math inline">\(r\)</span>, not just the p-value.</li>
+<li>Do not add a regression line to a scatter plot unless you have a reason to. Describing an association does not require one.</li>
+</ul>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-R-ggnewscale" class="csl-entry" role="listitem">
-Campitelli, Elio. 2025. <em>Ggnewscale: Multiple Fill and Colour Scales in Ggplot2</em>. <a href="https://eliocamp.github.io/ggnewscale/">https://eliocamp.github.io/ggnewscale/</a>.
-</div>
-<div id="ref-R-tidyterra" class="csl-entry" role="listitem">
-Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span> Objects: The <span class="nocase">tidyterra</span> Package.”</span> <em>Journal of Open Source Software</em> 8 (91): 5751. <a href="https://doi.org/10.21105/joss.05751">https://doi.org/10.21105/joss.05751</a>.
-</div>
-<div id="ref-R-terra" class="csl-entry" role="listitem">
-Hijmans, Robert J. 2026. <em>Terra: Spatial Data Analysis</em>. <a href="https://rspatial.org/">https://rspatial.org/</a>.
-</div>
-<div id="ref-R-sf" class="csl-entry" role="listitem">
-Pebesma, Edzer. 2026. <em>Sf: Simple Features for r</em>. <a href="https://r-spatial.github.io/sf/">https://r-spatial.github.io/sf/</a>.
-</div>
-<div id="ref-R-tidyverse" class="csl-entry" role="listitem">
-Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>. <a href="https://tidyverse.tidyverse.org">https://tidyverse.tidyverse.org</a>.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->
@@ -954,13 +876,13 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./01xAsideMethods_and_generics.html" class="pagination-link" aria-label="Aside: Understanding Methods and Generics in R">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aside: Understanding Methods and Generics in R</span>
+      <a href="./03Point_Patterns.html" class="pagination-link" aria-label="Point Patterns">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Point Patterns</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./03xAsideDistanceMatrices.html" class="pagination-link" aria-label="Aside: Distance Matrices">
-        <span class="nav-page-text">Aside: Distance Matrices</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./04Intro2Autocorrelation.html" class="pagination-link" aria-label="Spatial Autocorrelation">
+        <span class="nav-page-text"><span class="chapter-title">Spatial Autocorrelation</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -969,4 +891,4 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/02MtBakerMap.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/04xCorrelationVersusRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
