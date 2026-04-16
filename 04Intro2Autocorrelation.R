@@ -85,39 +85,51 @@ meuse_sf <- st_as_sf(meuse.all, coords = c("x", "y")) %>%
 
 
 ## -----------------------------------------------------------------------------
+meuse_sf$log_lead <- log(meuse_sf$lead)
+
+
+## -----------------------------------------------------------------------------
 ggplot(data = meuse_sf) + 
   geom_sf(mapping = aes(fill=lead,size=lead),shape=21,alpha=0.6) +
   scale_fill_continuous(type = "viridis",name="ppm")
 
 
-## ----results='hide'-----------------------------------------------------------
+## -----------------------------------------------------------------------------
 tmap_mode('view')
 tm_shape(meuse_sf) +
-  tm_dots(col = "lead", palette = "viridis")
-
+  tm_bubbles(
+    size        = "lead",
+    fill        = "lead",
+    fill.scale  = tm_scale_intervals(values = "viridis"),
+    fill_alpha  = 0.7,
+    fill.legend = tm_legend(title = "Lead (ppm)"),
+    size.legend = tm_legend(title = "Lead (ppm)"),
+    id          = "lead"
+  ) +
+  tm_scalebar(position = c("left", "bottom"))
 
 
 ## -----------------------------------------------------------------------------
-leadVarCloud <- variogram(lead~1, locations = meuse_sf, cloud = TRUE)
+leadVarCloud <- variogram(log_lead~1, locations = meuse_sf, cloud = TRUE)
 plot(leadVarCloud,pch=20,cex=1.5,col="black",alpha=0.1,
      ylab=expression(Semivariance~(gamma)),
-     xlab="Distance (m)",main = "Lead concentrations (ppm)")
+     xlab="Distance (m)",main = "Log lead concentrations")
 
 
 ## -----------------------------------------------------------------------------
-leadVar <- variogram(lead~1, locations = meuse_sf, cloud = FALSE)
+leadVar <- variogram(log_lead~1, locations = meuse_sf, cloud = FALSE)
 plot(leadVar,pch=20,cex=1.5,col="black",
      ylab=expression(Semivariance~(gamma)),
-     xlab="Distance (m)", main = "Lead concentrations (ppm)")
+     xlab="Distance (m)", main = "Log lead concentrations")
 
 
 ## -----------------------------------------------------------------------------
-summary(lm(lead~1,data=meuse_sf))
+summary(lm(log_lead~1,data=meuse_sf))
 
 
 ## -----------------------------------------------------------------------------
-mean(meuse_sf$lead)
-sd(meuse_sf$lead)/sqrt(nrow(meuse_sf))
+mean(meuse_sf$log_lead)
+sd(meuse_sf$log_lead)/sqrt(nrow(meuse_sf))
 
 
 ## ----echo=FALSE,fig.width=9,fig.height=3--------------------------------------
@@ -153,65 +165,65 @@ bind_rows(chess, random, gradient) %>%
 
 ## ----warning=FALSE------------------------------------------------------------
 # distance matrix 
-d <- dist(st_coordinates(meuse_sf))
+D <- dist(st_coordinates(meuse_sf))
 # inverse distance matrix
-w <- as.matrix(1/d)
+W <- as.matrix(1/D)
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 
 
 ## ----warning=FALSE------------------------------------------------------------
 x <- as.vector(as.matrix(dist(st_coordinates(meuse_sf))))
-y <- as.vector(w)
+y <- as.vector(W)
 ggplot() + geom_line(aes(x=x[x>0],y=y[x>0])) +
   labs(x="Distance (m)",y="Inverse distance (aka W)") +
   lims(x=c(0,1500))
 
 
 ## ----warning=FALSE------------------------------------------------------------
-d <- as.matrix(dist(st_coordinates(meuse_sf)))
+D <- as.matrix(dist(st_coordinates(meuse_sf)))
 # make an empty weights matrix
-w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
-# set some values to 1 using a logical mask of d<100
-w[d<100] <- 1
+W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
+# set some values to 1 using a logical mask of D<100
+W[D<100] <- 1
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 
 
 ## ----warning=FALSE------------------------------------------------------------
 # make an empty weights matrix of the right dimensions
-w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
 # set some values to 1
-w[d>500 & d<=1000] <- 1
+W[D>500 & D<=1000] <- 1
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 
 
 ## ----warning=FALSE------------------------------------------------------------
-distanceInterval <- 200
-distanceVector <- seq(0,2000,by=distanceInterval)
+distanceInterval <- 100
+distanceVector <- seq(0,1500,by=distanceInterval)
 n <- length(distanceVector)
-d <- as.matrix(dist(st_coordinates(meuse_sf)))
+D <- as.matrix(dist(st_coordinates(meuse_sf)))
 # make an object to hold results
 res <- data.frame(midBin=rep(NA,n-1),I=rep(NA,n-1))
 for(i in 2:n){
-  w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+  W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
   # set some values to 1
-  w[d >= distanceVector[i-1] & d < distanceVector[i]] <- 1
+  W[D >= distanceVector[i-1] & D < distanceVector[i]] <- 1
   # convert a the weights matrix to a weights list object
   # so spdep is happy
-  wList <- mat2listw(w)
+  wList <- mat2listw(W)
   # calculate I
-  res$I[i-1] <- moran.test(meuse_sf$lead,wList,zero.policy=TRUE)$estimate[1]
+  res$I[i-1] <- moran.test(meuse_sf$log_lead,wList,zero.policy=TRUE)$estimate[1]
   # centered distance bin
   res$midBin[i-1] <- distanceVector[i] - distanceInterval/2
 }
@@ -223,16 +235,16 @@ ggplot(data=res, mapping = aes(x=midBin,y=I)) +
 
 
 ## -----------------------------------------------------------------------------
-w <- knn2nb(knearneigh(meuse_sf,k=8))
-moran.test(meuse_sf$lead,nb2listw(w))
+W <- knn2nb(knearneigh(meuse_sf,k=8))
+moran.test(meuse_sf$log_lead,nb2listw(W))
 
 
 ## ----warning=FALSE------------------------------------------------------------
 n <- 7
 res <- data.frame(k=2^(1:n),I=rep(NA,n))
 for(i in 1:n){
-  w <- knn2nb(knearneigh(meuse_sf,k=2^i))
-  res$I[i] <- moran.test(meuse_sf$lead,nb2listw(w))$estimate[1]
+  W <- knn2nb(knearneigh(meuse_sf,k=2^i))
+  res$I[i] <- moran.test(meuse_sf$log_lead,nb2listw(W))$estimate[1]
 }
 ggplot(data=res, mapping = aes(x=k,y=I)) + 
   geom_hline(yintercept = 0, linetype="dashed") +
@@ -243,7 +255,7 @@ ggplot(data=res, mapping = aes(x=k,y=I)) +
 ## -----------------------------------------------------------------------------
 meuseX <- st_coordinates(meuse_sf)[,1]
 meuseY <- st_coordinates(meuse_sf)[,2]
-meuseLead <- meuse_sf$lead
+meuseLead <- meuse_sf$log_lead
 
 
 ## -----------------------------------------------------------------------------
@@ -282,12 +294,12 @@ data.frame(n=leadI$n,
   scale_fill_manual(values = c("grey","darkgreen")) +
   scale_color_manual(values = c("grey","darkgreen")) +
   labs(x="Distance (m)",y="Moran's I",
-       title = "Autocorrelation of Lead",subtitle = "Crit value of p<0.01")
+       title = "Autocorrelation of log(Lead)",subtitle = "Crit value of p<0.01")
 
 
 ## -----------------------------------------------------------------------------
 # continuous
-leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$lead, 
+leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
                          resamp=100, xmax=1500, quiet=TRUE)
 plot(leadI)
 

@@ -13,7 +13,7 @@ lead in soil, snow depth, bird diversity — varies across space and at what sca
 variation operates.
 
 ## Reading
-Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand (2008) but we will get to that in the next module more deeply [@bivand2008geostatistics].
+Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand but we will get to that in the next module more deeply [@bivand2008geostatistics].
 
 ## Refresh
 Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [distance matrix aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [correlation versus regression aside](04xAsideCorrelationVersusRegression.html)
@@ -164,6 +164,12 @@ meuse_sf <- st_as_sf(meuse.all, coords = c("x", "y")) %>%
   st_set_crs(value = 28992)
 ```
 
+Before we go any further, let's log-transform lead and add it as a column. Lead concentrations in soil are right-skewed -- a handful of hotspot values near the river are much larger than the rest of the data. Both the variogram and Moran's I involve squared deviations from the mean, so those few extreme values end up dominating the result. You wind up describing the spatial arrangement of your outliers rather than the general structure in the data. Log-transforming stabilizes the variance and gives both methods a fairer look at the whole dataset. We'll use `log_lead` throughout.
+
+```{r}
+meuse_sf$log_lead <- log(meuse_sf$lead)
+```
+
 And make a plot of the lead concentration in the soils.
 
 ```{r}
@@ -176,11 +182,19 @@ ggplot(data = meuse_sf) +
 I made the plot below with the `tmap` library.  I'm just sticking this here to give you a view of the site. It's not hard but it's also not required. Some folks always want to go the extra mile -- so this is a chance for that if you want to.
 
 Anyways, here is the site:
-```{r,results='hide'}
+```{r}
 tmap_mode('view')
 tm_shape(meuse_sf) +
-  tm_dots(col = "lead", palette = "viridis")
-
+  tm_bubbles(
+    size        = "lead",
+    fill        = "lead",
+    fill.scale  = tm_scale_intervals(values = "viridis"),
+    fill_alpha  = 0.7,
+    fill.legend = tm_legend(title = "Lead (ppm)"),
+    size.legend = tm_legend(title = "Lead (ppm)"),
+    id          = "lead"
+  ) +
+  tm_scalebar(position = c("left", "bottom"))
 ```
 
 ## Spatial Autocorrelation
@@ -191,44 +205,44 @@ In this approach, we quantify spatial autocorrelation by examining the data set 
 
 Thus, if pairs of points that are close together in space also have a smaller squared difference they are spatially autocorrelated. Typically, as points become farther away from each other the squared difference increases. At some distance, the squared difference levels out and the data tend to be uncorrelated.
 
-Now we will make and plot the variogram. Think of the variogram as a measure of environmental distance with respect to Euclidean (geographic) distance.
+Now we will make and plot the variogram using `log_lead`. Think of the variogram as a measure of environmental distance with respect to Euclidean (geographic) distance.
 
 ```{r}
-leadVarCloud <- variogram(lead~1, locations = meuse_sf, cloud = TRUE)
+leadVarCloud <- variogram(log_lead~1, locations = meuse_sf, cloud = TRUE)
 plot(leadVarCloud,pch=20,cex=1.5,col="black",alpha=0.1,
      ylab=expression(Semivariance~(gamma)),
-     xlab="Distance (m)",main = "Lead concentrations (ppm)")
+     xlab="Distance (m)",main = "Log lead concentrations")
 ```
 
-On the x-axis of the plot is the distance between the locations, and on the y-axis is the difference of their lead values squared. That is, each dot in the variogram represents a pair of locations, not the individual locations on the map. This is a bit messy. Typically, we don't look at the cloud of points but rather get an average model value at a few distances and the `variogram` function is conservative in looking at distances within a safe range.
+On the x-axis of the plot is the distance between the locations, and on the y-axis is the difference of their log lead values squared. That is, each dot in the variogram represents a pair of locations, not the individual locations on the map. This is a bit messy. Typically, we don't look at the cloud of points but rather get an average model value at a few distances and the `variogram` function is conservative in looking at distances within a safe range.
 
 ```{r}
-leadVar <- variogram(lead~1, locations = meuse_sf, cloud = FALSE)
+leadVar <- variogram(log_lead~1, locations = meuse_sf, cloud = FALSE)
 plot(leadVar,pch=20,cex=1.5,col="black",
      ylab=expression(Semivariance~(gamma)),
-     xlab="Distance (m)", main = "Lead concentrations (ppm)")
+     xlab="Distance (m)", main = "Log lead concentrations")
 ```
 
-This is a lot cleaner. Note the change in the y-axis range. We got rid of an awful lot of noise by averaging the $\gamma$ values. Just by eyeballing this we would likely think that lead concentrations in this data set are autocorrelated out to a distance of about 750m because $\gamma$ is small at distances less than a 750m We will learn how to fit curves (models) to variograms later in class. The models let us estimate the value of $\gamma$ for any distance.
+This is a lot cleaner. Note the change in the y-axis range. We got rid of an awful lot of noise by averaging the $\gamma$ values. Just by eyeballing this we would likely think that log lead concentrations in this data set are autocorrelated out to a distance of about 750m because $\gamma$ is small at distances less than 750m. We will learn how to fit curves (models) to variograms later in class. The models let us estimate the value of $\gamma$ for any distance.
 
 
 #### What up with the `~1` construct?
-You might be wondering about the `lead~1` in the call to `variogram` above. Reasonable. Recall that the `~` notation is integral to R’s approach to statistical modeling, allowing you to specify what’s on the left-hand side of the model and what’s on the right. E.g., `lm(y~x)` specifies a linear model where `y` is as a linear function of `x`. The `~1` means intercept-only: no predictor variables, just a constant. So `lm(y~1)` predicts `y` from its mean and nothing else.
+You might be wondering about the `log_lead~1` in the call to `variogram` above. Reasonable. Recall that the `~` notation is integral to R's approach to statistical modeling, allowing you to specify what's on the left-hand side of the model and what's on the right. E.g., `lm(y~x)` specifies a linear model where `y` is as a linear function of `x`. The `~1` means intercept-only: no predictor variables, just a constant. So `lm(y~1)` predicts `y` from its mean and nothing else.
 
-Consider our example with lead above and look at the output for this linear model.
-
-```{r}
-summary(lm(lead~1,data=meuse_sf))
-```
-
-You can see it has only an intercept term (no slope). The `Estimate` for the intercept is mean of `meuse_sf$lead` and the `Std. Error` is its standard error. 
+Consider our example with log lead above and look at the output for this linear model.
 
 ```{r}
-mean(meuse_sf$lead)
-sd(meuse_sf$lead)/sqrt(nrow(meuse_sf))
+summary(lm(log_lead~1,data=meuse_sf))
 ```
 
-So, when we use variogram above as `variogram(lead~1, locations = meuse_sf)` we are asking for the autocorrelation of lead with no other predictor variables. Later in the class, we will look at ways of assessing spatial structure in the presence of predictors but for now we will leave it as an intercept-only model.
+You can see it has only an intercept term (no slope). The `Estimate` for the intercept is the mean of `meuse_sf$log_lead` and the `Std. Error` is its standard error. 
+
+```{r}
+mean(meuse_sf$log_lead)
+sd(meuse_sf$log_lead)/sqrt(nrow(meuse_sf))
+```
+
+So, when we use variogram above as `variogram(log_lead~1, locations = meuse_sf)` we are asking for the autocorrelation of log lead with no other predictor variables. Later in the class, we will look at ways of assessing spatial structure in the presence of predictors but for now we will leave it as an intercept-only model.
 
 
 ## Moran's I
@@ -269,7 +283,7 @@ Moran's I is defined as:
 
 $$I= \frac{N}{\sum_i \sum_j w_{ij}}~\frac{\sum_i \sum_j w_{ij}(Z_i-\bar{Z})(Z_j-\bar{Z})}{\sum_i(Z_i-\bar{Z})^2}$$
 
-where $N$ is the number of observations at $i$ and $j$, $Z$ is the variable being measured, and $w$ is a matrix of weights (e.g., the inverse of the distance between points).
+where $N$ is the number of observations at $i$ and $j$, $Z$ is the variable being measured, and $W$ is a matrix of weights (e.g., the inverse of the distance between points).
 
 ### Weights?
 
@@ -277,10 +291,10 @@ Reading this through I can hear those that are paying attention saying, "Wait, w
 
 Moran's I has the lovely property that its values can be transformed to Z-scores for hypothesis testing. Thus, Moran's Z-scores greater than 1.96 or smaller than −1.96 would indicate significant spatial autocorrelation at alpha of 0.05. This is handy.
 
-First though we have to figure out how to make R give us what we want. There are two packages that I use to do Moran's I. The first is `spdep` which is insanely powerful but has super-weird syntax and data structures until you get used to them. But it's really flexible in how you calculate and use the weights matrix. The second is `ncf` which is a little more intuitive but not as flexible. We'll use both. 
+First though we have to figure out how to make R give us what we want. There are two packages that I use to do Moran's I. The first is `spdep` which is powerful but has super-weird syntax and data structures until you get used to them. But it's really flexible in how you calculate and use the weights matrix. The second is `ncf` which is a little more intuitive but not as flexible. We'll use both. 
 
 ### Library `spdep`
-Let's use the `spdep` library and calculate Moran's I for a different variable from the the Meuse River data. The syntax for doing Moran's I with `spdep` is a little hard to get used to because of the object structure the library uses but I like it because the way $W$ is specified is explicit -- nothing happens behind the scenes.
+Let's use the `spdep` library and calculate Moran's I for a different variable from the the Meuse River data. The syntax for doing Moran's I with `spdep` is a little hard to get used to because of the object structure the library uses but I like it because the way $W$ is specified is explicit.
 
 Let's demonstrate Moran's I using logged lead values from the Meuse River data. And we will use a weight matrix ($W$) that is made of the inverse of the Euclidean distance between points. Inverse distance is only one way of creating spatial weights. Other common ways include looking only at a certain number of neighbors (K nearest neighbors) or looking only at neighbors within a fixed distance band. More on that below. 
 
@@ -288,21 +302,21 @@ OK, here is Moran's I for the logged values of lead using an inverse distance we
 
 ```{r, warning=FALSE}
 # distance matrix 
-d <- dist(st_coordinates(meuse_sf))
+D <- dist(st_coordinates(meuse_sf))
 # inverse distance matrix
-w <- as.matrix(1/d)
+W <- as.matrix(1/D)
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 ```
 
-The results from this indicate that the lead data are positively (but weakly) autocorrelated when we use $W$ as inverse distances. This means that measurements of lead that are close in space will be associated with each other. Note that this is looking across all the points because we are calculating a weights matrix that uses all the points. In reality, the value of Moran's I above 1000 m don't have a lot of influence because $W < 0.001$ when distances are greater than 1000m but all the elements of $W$ have some influence. You could draw this if you thought about it, but here is the relationship between distance and inverse distance:
+The results from this indicate that log lead values are positively autocorrelated when we use $W$ as inverse distances. This means that measurements of log lead that are close in space will be associated with each other. Note that this is looking across all the points because we are calculating a weights matrix that uses all the points. In reality, the value of Moran's I above 1000 m don't have a lot of influence because $W < 0.001$ when distances are greater than 1000m but all the elements of $W$ have some influence. You could draw this if you thought about it, but here is the relationship between distance and inverse distance:
 
 ```{r, warning=FALSE}
 x <- as.vector(as.matrix(dist(st_coordinates(meuse_sf))))
-y <- as.vector(w)
+y <- as.vector(W)
 ggplot() + geom_line(aes(x=x[x>0],y=y[x>0])) +
   labs(x="Distance (m)",y="Inverse distance (aka W)") +
   lims(x=c(0,1500))
@@ -311,54 +325,54 @@ ggplot() + geom_line(aes(x=x[x>0],y=y[x>0])) +
 If we want to we could calculate a weights matrix explicitly by looking at distance. E.g., here we will make $w_{ij}=1$ when $d_{ij}<100$ and $w_{ij}=0$ when $d_{ij}\geq100$ 
 
 ```{r, warning=FALSE}
-d <- as.matrix(dist(st_coordinates(meuse_sf)))
+D <- as.matrix(dist(st_coordinates(meuse_sf)))
 # make an empty weights matrix
-w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
-# set some values to 1 using a logical mask of d<100
-w[d<100] <- 1
+W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
+# set some values to 1 using a logical mask of D<100
+W[D<100] <- 1
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 ```
 
 Note that Moran's I is quite large when using only points within 100m of each other. Let's look at only points between 500  and 1000 m of each other.
 
 ```{r, warning=FALSE}
 # make an empty weights matrix of the right dimensions
-w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
 # set some values to 1
-w[d>500 & d<=1000] <- 1
+W[D>500 & D<=1000] <- 1
 # convert a the weights matrix to a weights list object
 # so spdep is happy
-wList <- mat2listw(w)
+wList <- mat2listw(W)
 # calculate I
-moran.test(meuse_sf$lead,wList)
+moran.test(meuse_sf$log_lead,wList)
 ```
 
 Now we can see that points far away from each other (between 500m and 1000m) are not correlated. So, by using $W$ cleverly, we can determine the distances where autocorrelation occurs and where it does not. 
 
-I like to look at Moran's I in a correlogram by distance -- kind of like we did with the variogram and in a way that is conceptually very similar to the Ripley's K function. We can do this as above by calculating Moran's I in different distance bands. That is, if we stratify the weights $W$ by distance we can plot Moran's I  as a function of distance. I'm going to do this by brute force in a loop -- it's ugly. What happens below is that I create a vector of distances from 0 to 2000 m in increments of 200 m. The the loop will step through that vector and create a weights matrix so that $W$ will equal one if points are within the specified distance and zero otherwise. Then I'll calculate Moran's I and save the result.
+I like to look at Moran's I in a correlogram by distance -- kind of like we did with the variogram and in a way that is conceptually very similar to the Ripley's K function. We can do this as above by calculating Moran's I in different distance bands. That is, if we stratify the weights $W$ by distance we can plot Moran's I  as a function of distance. I'm going to do this by brute force in a loop -- it's ugly. What happens below is that I create a vector of distances from 0 to 1500 m in increments of 100 m. The the loop will step through that vector and create a weights matrix so that $W$ will equal one if points are within the specified distance and zero otherwise. Then I'll calculate Moran's I and save the result.
 
-So here is a Moran's I a correlogram by distance 0 to 1500 m in 200 m bins: 
+So here is a Moran's I a correlogram by distance 0 to 1500 m in 100 m bins: 
 
 ```{r, warning=FALSE}
-distanceInterval <- 200
-distanceVector <- seq(0,2000,by=distanceInterval)
+distanceInterval <- 100
+distanceVector <- seq(0,1500,by=distanceInterval)
 n <- length(distanceVector)
-d <- as.matrix(dist(st_coordinates(meuse_sf)))
+D <- as.matrix(dist(st_coordinates(meuse_sf)))
 # make an object to hold results
 res <- data.frame(midBin=rep(NA,n-1),I=rep(NA,n-1))
 for(i in 2:n){
-  w <- matrix(0,ncol=ncol(d),nrow=nrow(d))
+  W <- matrix(0,ncol=ncol(D),nrow=nrow(D))
   # set some values to 1
-  w[d >= distanceVector[i-1] & d < distanceVector[i]] <- 1
+  W[D >= distanceVector[i-1] & D < distanceVector[i]] <- 1
   # convert a the weights matrix to a weights list object
   # so spdep is happy
-  wList <- mat2listw(w)
+  wList <- mat2listw(W)
   # calculate I
-  res$I[i-1] <- moran.test(meuse_sf$lead,wList,zero.policy=TRUE)$estimate[1]
+  res$I[i-1] <- moran.test(meuse_sf$log_lead,wList,zero.policy=TRUE)$estimate[1]
   # centered distance bin
   res$midBin[i-1] <- distanceVector[i] - distanceInterval/2
 }
@@ -371,27 +385,27 @@ ggplot(data=res, mapping = aes(x=midBin,y=I)) +
 
 Take a look at the loop. The indexing is pretty convoluted! But will let you see, hopefully, how we can make the $W$ matrix do our bidding by setting distances we specify to either zero or one and thus let us calculate Moran's I as a function of distance. 
 
-Looking at the figure, we see that the values of lead are autocorrelated for a few 100m and then fall off. Again, this is conceptually similar to both the Ripley's K figure and the variograms above. If we wanted to we could have saved the p-values and colored them by significance. But that would be even more cumbersome that it is already. Don't fret too much -- there are automated ways of going about this that we will see in the next section.
+Looking at the figure, we see that log lead values are autocorrelated for a few hundred meters and then fall off. Again, this is conceptually similar to both the Ripley's K figure and the variograms above. If we wanted to we could have saved the p-values and colored them by significance. But that would be even more cumbersome that it is already. Don't fret too much -- there are automated ways of going about this that we will see in the next section.
 
 We are working with point data here. And I typically work with either point data or raster data. But a lot of spatial analysis deals with polygons and it's pretty common in those cases to think about spatial structure in terms of neighboring polygons as opposed to thinking about distance. I'm not going to go into this much. Bivand spends a lot of time on it in the reading but I'll give a quick example.
 
 Often, and especially with areal data, we calculate the weights matrix using just the correlation between the $k$ closest neighbors and usually set $k=8$ (there is nothing magical about eight -- it is a loose kind of rule).  
 
 ```{r}
-w <- knn2nb(knearneigh(meuse_sf,k=8))
-moran.test(meuse_sf$lead,nb2listw(w))
+W <- knn2nb(knearneigh(meuse_sf,k=8))
+moran.test(meuse_sf$log_lead,nb2listw(W))
 ```
 
 I realize the code here is kind of opaque. There are three functions above that take some getting used to. E.g., `knearneigh` tells you the $k$ nearest neighbors for each point, `knn2nb` takes the $k$ nearest neighbors and turns it into a neighbor object `nb`, and then `nb2listw` takes an `nb` object and makes it useful to the `moran.test` function. Simple and not at all convoluted, right? (The very smart people that made this had good reasons for doing what they did!)
 
-But what do we see here? If use the eight nearest neighbors to calculate spatial autocorrelation the value of Moran's I jumps way up. Near is like near when it comes to lead. Kind of cool. If we looked at 16 neighbors we'd see Moran's I of 0.28 which is still pretty high. It we looked at 32 neighbors? Moran's I of 0.123. So, more neighbors, greater distances we get declining values. See where I'm going with this?
+But what do we see here? If we use the eight nearest neighbors to calculate spatial autocorrelation the value of Moran's I is quite high. Near is like near when it comes to log lead. Kind of cool. If we looked at 16 neighbors we'd see Moran's I declining, and with 32 neighbors it declines further. More neighbors, greater distances, declining values. See where I'm going with this?
 
 ```{r,warning=FALSE}
 n <- 7
 res <- data.frame(k=2^(1:n),I=rep(NA,n))
 for(i in 1:n){
-  w <- knn2nb(knearneigh(meuse_sf,k=2^i))
-  res$I[i] <- moran.test(meuse_sf$lead,nb2listw(w))$estimate[1]
+  W <- knn2nb(knearneigh(meuse_sf,k=2^i))
+  res$I[i] <- moran.test(meuse_sf$log_lead,nb2listw(W))$estimate[1]
 }
 ggplot(data=res, mapping = aes(x=k,y=I)) + 
   geom_hline(yintercept = 0, linetype="dashed") +
@@ -411,7 +425,7 @@ Let's grab the `x`, `y`, and `z` data from `meuse_sf` for convenience.
 ```{r}
 meuseX <- st_coordinates(meuse_sf)[,1]
 meuseY <- st_coordinates(meuse_sf)[,2]
-meuseLead <- meuse_sf$lead
+meuseLead <- meuse_sf$log_lead
 ```
 
 ### Discrete correlogram
@@ -475,7 +489,7 @@ data.frame(n=leadI$n,
   scale_fill_manual(values = c("grey","darkgreen")) +
   scale_color_manual(values = c("grey","darkgreen")) +
   labs(x="Distance (m)",y="Moran's I",
-       title = "Autocorrelation of Lead",subtitle = "Crit value of p<0.01")
+       title = "Autocorrelation of log(Lead)",subtitle = "Crit value of p<0.01")
 ```
 
 Remember! R will (usually) do what you want if you try.
@@ -486,7 +500,7 @@ The plot above is discrete. It is showing autocorrelation in distance categories
 
 ```{r}
 # continuous
-leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$lead, 
+leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
                          resamp=100, xmax=1500, quiet=TRUE)
 plot(leadI)
 ```
