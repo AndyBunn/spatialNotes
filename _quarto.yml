@@ -33,7 +33,10 @@ book:
   repo-url: https://github.com/AndyBunn/spatialNotes
   repo-actions: [edit, issue]
 
-bibliography: packages.bib
+bibliography:
+  - packages.bib
+  - other.bib
+
 reference-location: document
 
 format:

@@ -160,13 +160,17 @@ There are ways of parametrically estimating the intensity of a point pattern by 
 ## Ripley's K
 The kernel approach is pretty and mucking about with the bandwidth gives you an idea as to what distances are important in driving pattern. But it would be nice to quantify at what distances a point pattern conforms to, or deviates from, CSR. The reading describes at least three ways of quantifying whether a pattern fits CSR at a given distance. These include the $\hat{G}$ function (which measures the distance to the nearest event) and $\hat{F}$ function (which measures the distance from a point to the nearest event) but we are going to use the Cadillac of point pattern tools: Ripley's K. Ripley's K is a statistic for detecting deviations from spatial homogeneity. Its estimate is:
 
-$$\hat{K}(r)=\lambda^{-1} \sum_{i \neq j} I(d_{ij}<r)/n$$
+$$\hat{K}(r)=\frac{\lambda^{-1}}{n-1} \sum_{i \neq j} I(d_{ij}<r)$$
 
 where $d_{ij}$ is the distance between points $i$ and $j$, $n$ is the number of points, $r$ is a radius, $\lambda$ is the mean density of points, and $I$ is the indicator (aka characteristic) function that has a value of one if its operand is true and zero otherwise. The $K$ function measures the number of events found up to a given distance ($r$).
 
 Ripley's K describes the point processes at many distance scales. This is an attractive property of the statistic because many environmental point patterns can cluster at one distance and become random or uniform at another. 
 
-We can test $\hat{K}$ against CSR which has a value of $K(r)=\pi r^2$ for a homogeneous Poisson process. Furthermore, we can calculate an envelope of possible values of $K(r)$ in a Monte Carlo framework where the number of simulations specifies the significance level as $\alpha = 2/(1 + n)$ where $n$ is the number of simulations. If the observed function value lies outside the envelope we can reject the null hypothesis of CSR at the distance $r$.
+We can test $\hat{K}$ against CSR which has a value of $K(r)=\pi r^2$ for a homogeneous Poisson process. Furthermore, we can calculate an envelope of possible values of $K(r)$ in a Monte Carlo framework where the number of simulations specifies the significance level as $\alpha = 2/(1 + n)$ where $n$ is the number of simulations. If the observed function value lies outside the envelope we can reject the null hypothesis of CSR at the distance $r$. With the default of 99 simulations you have $\alpha = 2/(1+99) = 0.02$.
+
+A heads up though. That significance level is technically only valid if you pick a single value of $r$ before looking at the data and test only there. In practice nobody does that -- you look at the whole curve. When you do that you are implicitly running many tests at once (one per value of $r$), which is the same problem as running a bunch of t-tests without correcting for multiple comparisons. Your true $\alpha$ is higher than advertised. The fix is to use `global=TRUE` in the `envelope` call, which builds the envelope based on the maximum deviation of each simulated curve across all $r$ values rather than pointwise. This gives you a single honest test of the whole curve at $\alpha = 1/(1 + n)$ with the default `nrank=1`. For a deeper treatment see @baddeley2014tests who go after this problem directly.
+
+And even if you do use `global=TRUE` and get a clean test, keep in mind that a p-value only tells you whether the pattern is distinguishable from CSR -- not why. Two completely different processes can produce identical patterns, and a non-significant result doesn't mean the process is random, just that you couldn't detect structure with this data and this statistic. The goal is always to use pattern to think about process, not to collect p-values.
 
 The `envelope` function is chatty by default and prints out information on the simulations as it runs them. In the code chunk below I'll quiet it down by setting the argument `verbose=FALSE`. If you leave it as the default value of `TRUE`, the markdown doc gets messy.
 
@@ -384,6 +388,8 @@ cross_heb_pub <- envelope(heb_pub, "Lcross", verbose=FALSE)
 # or directly in envelope (note i and j arguments)
 cross_heb_pub <- envelope(sporophores, "Lcross", i="L pubescens", j = "Hebloma spp", verbose=FALSE)
 ```
+
+Change the number of simulations. Try setting `global=TRUE` and see how both of those things change your understanding of what "significance" means.
 
 Write that up succinctly but thoroughly and make sure you are presenting a document that has all the code and analysis needed. Make good use of headers. Usage, spelling, and capitalization are important. Pay attention to your writing in everything you do. There is no more important skill a scientist can have.
 
