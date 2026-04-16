@@ -7,13 +7,10 @@ knitr::purl("04Intro2Autocorrelation.qmd", output = "04Intro2Autocorrelation.R",
 ```
 
 ## Big Idea
-Space matters: Spatial pattern lets us understand process. Where point patterns ask whether 
-locations themselves are clustered or random, autocorrelation asks how a measured quantity — 
-lead in soil, snow depth, bird diversity — varies across space and at what scale that 
-variation operates.
+Space matters: Spatial pattern lets us understand process. Where point patterns ask whether locations themselves are clustered or random, autocorrelation asks how a measured quantity -- lead in soil, snow depth, bird diversity — varies across space and at what scale that variation operates.
 
 ## Reading
-Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand but we will get to that in the next module more deeply [@bivand2008geostatistics].
+Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand [@bivand2008geostatistics] and read through 8.4.2 Cutoﬀ, Lag Width, Direction Dependence).
 
 ## Refresh
 Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [distance matrix aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [correlation versus regression aside](04xAsideCorrelationVersusRegression.html)
@@ -867,20 +864,23 @@ max(dist(st_coordinates(birds_sf)))/3
 
 Given that, I'd limit interpretation of the correlograms to a thousand km.
 
-4. For the variogram, you can try different widths and cutoffs.
+4. For the variogram, you can try different widths and cutoffs. Look at section 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence) in @bivand2008geostatistics.
 
 ### Interpret
 What can you learn by comparing the approaches? Maybe more importantly what are we missing with this approach? Where does this understanding of pattern help us with process and where is it lacking?
 
+
+
 ### Directional Variograms
-We have been quantifying this spatial structure as being direction independent (isotropic). Read up on the concept of anisotropy in spatial autocorrelation. Where do you see that here? In many spatial data the direction of anisotropy relates to process. For example, pollution plumes move down head or down wind.
+We have been quantifying this spatial structure as being direction independent (isotropic). Read up on the concept of anisotropy in spatial autocorrelation. Where do you see that here? In many spatial data the direction of anisotropy relates to process. For example, pollution plumes move down head or down wind. Again, section 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence) in @bivand2008geostatistics has some good stuff. 
 
 Got the idea that direction can be important in determining spatial structure? Play with the `variogram` function and explore anisotropy by calculating directional variograms for the bird data (read help file for details) and try something like:
 ```{r eval=FALSE}
 birdVar <- variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
 ```
 
-Put on a biogeography hat and explain what might be happening here.
+Think about gradients! Put on a biogeography hat and explain what might be happening here.
+
 
 
 ```{r,echo=FALSE,eval=FALSE}
