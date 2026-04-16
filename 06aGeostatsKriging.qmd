@@ -6,11 +6,7 @@ set.seed(184)
 ```
 
 ## Reading
-We will finish Ch 8 in Bivand (2008). Sections 8.4 and 8.5 are the most important for this module. It's fairly dense after that. Review Fortin (2016) as well, especially 4.3 to 4.5
-
-Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
-
-Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
+We will finish Ch 8 in Bivand [@bivand2008geostatistics]. Sections 8.4 and 8.5 are the most important for this module. It's fairly dense after that. Review @fortin2016spatial as well, especially 4.3 to 4.5
 
 ## Big Idea
 We often want to estimate phenomena at locations where we do not have measurements. Geostatistics is the field that we use to make (hopefully) accurate and reliable models of spatial data. We will use these models for prediction. We can use both deterministic and probabilistic models and this module will focus on probabilistic methods. Kriging is a probabilistic method that finds spatial pattern and predicts unknown values based on that spatial pattern. Unlike IDW, kriging generates a measure of uncertainty allowing us to estimate confidence in the predictions.

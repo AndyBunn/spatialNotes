@@ -3,13 +3,9 @@
 In the big picture, identifying spatial patterns in data lets us understand process. In practical terms, standard ordinary least squares regression can be problematic with spatial data but there are other approaches that are useful.
 
 ## Reading
-Dormann et al. (2007) provide a review of several methods for accounting for spatial structure in species distribution data. The paper does a good job of explaining the big picture on why space is important in a regression context. Much of the paper uses matrix notation that you might not be familiar with and the mathematical details are not critical. In this module, we will focus on using generalized least squares (GLS). For this paper, I suggest reading the intro and then skimming the rest. Pay attention to the first part of section three on on spatial models based on GLS regression but don't sweat the details more than you want to.  
+@dormann2007methods provide a review of several methods for accounting for spatial structure in species distribution data. The paper does a good job of explaining the big picture on why space is important in a regression context. Much of the paper uses matrix notation that you might not be familiar with and the mathematical details are not critical. In this module, we will focus on using generalized least squares (GLS). For this paper, I suggest reading the intro and then skimming the rest. Pay attention to the first part of section three on on spatial models based on GLS regression but don't sweat the details more than you want to.  
 
-Keitt et al. (2002) is also worth a heavy skim. They don't use GLS in their approach but do show how spatial methods outperform standard methods in a few case studies. Focus on the implications rather than the methods in that paper. I worked with Tim Keitt when I was a masters student and my goodness, he is a smarty pants. It's worth reading anything he's written.
-
-Dormann, C F et al. (2007) Methods to account for spatial autocorrelation in the analysis of species distributional data: a review. Ecography 30: 609-628, doi: 10.1111/j.2007.0906-7590.05171.x.
-
-Keitt T H et al. (2002) Accounting for Spatial Pattern When Modeling Organism-Environment Interactions Ecography 25: 616-625.
+@keitt2002accounting is also worth a heavy skim. They don't use GLS in their approach but do show how spatial methods outperform standard methods in a few case studies. Focus on the implications rather than the methods in that paper. I worked with Tim Keitt when I was a masters student and my goodness, he is a smarty pants. It's worth reading anything he's written.
 
 ## Packages
 You'll want to install the packages below. We are going to fit a linear model using GLS as opposed to ordinary least squares and thus need `nlme`[@R-nlme] as well as some of our other spatial standards.

@@ -13,11 +13,7 @@ lead in soil, snow depth, bird diversity — varies across space and at what sca
 variation operates.
 
 ## Reading
-Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to Fortin et al. (2016) from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand (2008) but we will get to that in the next module more deeply.
-
-Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
-
-Fortin, M.J., Dale, M.R. and Ver Hoef, J.M. (2016). Spatial Analysis in Ecology. In Wiley StatsRef: Statistics Reference Online (eds N. Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri and J.L. Teugels). doi:10.1002/9781118445112.stat07766
+Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand (2008) but we will get to that in the next module more deeply [@bivand2008geostatistics].
 
 ## Refresh
 Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [distance matrix aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [correlation versus regression aside](04xAsideCorrelationVersusRegression.html)

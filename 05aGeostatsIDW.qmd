@@ -5,9 +5,7 @@ set.seed(184)
 ```
 
 ## Reading
-Start with Hijmans's [Interpolation](https://rspatial.org/analysis/4-interpolation.html#). The examples using inverse weights to interpolate the California precipitation data are excellent. We will finish Ch 8 in Bivand (2008) next module so you can tackle that as time and motivation allow.
-
-Bivand R (2008) Interpolation and Geostatistics. In: Applied Spatial Data Analysis with R. Use R!. Springer, New York, NY.
+Start with Hijmans's [Interpolation](https://rspatial.org/analysis/4-interpolation.html#). The examples using inverse weights to interpolate the California precipitation data are excellent. We will finish Ch 8 in Bivand next module so you can tackle that as time and motivation allow [@bivand2008geostatistics].
 
 ## Big Idea
 We often want to estimate phenomena at locations where we do not have measurements. Geostatistics is the field that we use to make (hopefully) accurate and reliable models of spatial data. We will use these models for prediction. We can use both deterministic and probabilistic models and this module will focus on deterministic methods.
