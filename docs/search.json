@@ -454,7 +454,7 @@
     "href": "04Intro2Autocorrelation.html#refresh",
     "title": "Spatial Autocorrelation",
     "section": "Refresh",
-    "text": "Refresh\nBefore diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the Distance Matrix aside first. Also, check out the rant about correlation and regression in the Correlation versus Regression aside",
+    "text": "Refresh\nBefore diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the distance matrix aside. Also, check out the rant about correlation and regression in the correlation versus regression aside",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spatial Autocorrelation</span>"
     ]
