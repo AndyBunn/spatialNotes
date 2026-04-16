@@ -1,4 +1,4 @@
-# Aside: Correlation and Regression Are Not the Same Thing {- .aside-chapter}
+# Aside: Correlation is not Regression {- .aside-chapter}
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)

@@ -149,7 +149,7 @@ pairs_df %>%
 
 In the close pairs panel, high values of $z_i$ go with high values of $z_j$. That's positive spatial autocorrelation. In the far pairs panel the scatter looks like a shotgun blast -- knowing $z_i$ tells you nothing about $z_j$.
 
-That scatter of $z_i$ vs $z_j$ is the conceptual core of everything we're doing in this module. Variograms and Moran's I are two more rigorous ways of quantifying what you can already see in those plots. One quick note on Moran's I specifically: it isn't exactly Pearson's $r$, but the intuition holds. It's a weighted version that accounts for the spatial arrangement of points rather than treating all pairs equally. More on that below.
+That scatter of $z_i$ vs $z_j$ is the conceptual core of everything we're doing in this module. Variograms and Moran's I are two more rigorous ways of quantifying what you can already see in those plots. They frame the question differently though: Moran's I measures *similarity* (do nearby pairs have similar values?), while the variogram measures *dissimilarity* (how different are nearby pairs, on average?). Same underlying question, opposite sign. One quick note on Moran's I specifically: it isn't exactly Pearson's $r$, but the intuition holds. It's a weighted version that accounts for the spatial arrangement of points rather than treating all pairs equally. More on that below.
 
 
 ## Meuse River 
@@ -191,7 +191,7 @@ tm_shape(meuse_sf) +
 ### Variograms
 Let's consider the simplest measure of spatial autocorrelation by calculating something called a semivariogram. We will use the `gstat` library to do so but could calculate this a few different ways -- there are several variogram functions in R.
 
-In this approach, we quantify spatial autocorrelation by examining the data set one pair of points at a time. The easiest way of getting a first blush of how autocorrelated spatial data are is by calculating and plotting a semivariogram. We do this by measuring the distance between two locations (recall Euclid!) and plotting the squared difference between the values of some variable ($z$) at that distance. We call this mass of points a semivariogram cloud. So we have $n(n-1)/2$ elements in a distance matrix and for two points $i$ and $j$ we calculate the distance via $d_{ij}=\sqrt{(x_j-x_i)^2 + (y_i-y_j)^2}$ where $x$ and $y$ are the coordinates of the points and we plot that distance against the squared difference of the variable ($z$) as $\gamma_{ij} = (z_i - z_j)^2$.
+In this approach, we quantify spatial autocorrelation by examining the data set one pair of points at a time. The easiest way of getting a first blush of how autocorrelated spatial data are is by calculating and plotting a semivariogram. We do this by measuring the distance between two locations (recall Euclid!) and plotting the squared difference between the values of some variable ($z$) at that distance. We call this mass of points a semivariogram cloud. So we have $n(n-1)/2$ elements in a distance matrix and for two points $i$ and $j$ we calculate the distance via $d_{ij}=\sqrt{(x_j-x_i)^2 + (y_i-y_j)^2}$ where $x$ and $y$ are the coordinates of the points and we plot that distance against the squared difference of the variable ($z$) as $(z_i - z_j)^2$. A note on notation: the actual semivariogram estimator is $\hat{\gamma}(h) = \frac{1}{2N(h)}\sum(z_i - z_j)^2$, where the factor of $\frac{1}{2}$ and the averaging over $N(h)$ pairs in a distance bin are what give us the binned variogram. The cloud skips that averaging and just plots the raw squared differences -- which is why the y-axis scale drops dramatically when you go from cloud to binned.
 
 Thus, if pairs of points that are close together in space also have a smaller squared difference they are spatially autocorrelated. Typically, as points become farther away from each other the squared difference increases. At some distance, the squared difference levels out and the data tend to be uncorrelated.
 
@@ -217,9 +217,7 @@ This is a lot cleaner. Note the change in the y-axis range. We got rid of an awf
 
 
 #### What up with the `~1` construct?
-You might be wondering about the `lead~1` in the call to `variogram` above. Reasonable. Recall that the `~` notation is integral to R's approach to statistical modeling, allowing you to specify what’s on the left-hand side of the model and what’s on the right. E.g., `lm(y~x)` specifies a linear model where `y` is as a linear function of `x`.   The `~1` notation indicates that we want an intercept-only model. This convention goes back to the S language, which predates R. The roots of this notation likely stem from the early development of statistical programming languages, aiming to make modeling more intuitive and accessible - more algebraic as opposed to matrix-based, perhaps. 
-
-The `~1` concept specifically refers to a formula that includes only the intercept term, without any predictor variables. It means that the model should include only the intercept (a constant term) and no other predictors. This is often referred to as an "intercept-only" model or a "null model." So `lm(y~1)` creates a linear model where `y` is predicted solely by the mean value of `y`, which corresponds to the intercept. It assumes that the best prediction for the response variable is simply its average (for continuous outcomes) or the overall probability (for binary outcomes). The use `~1` is not especially widely used but I do see it for comparisons of models where it is used as null model as a baseline to compare with more complex models that include predictors. 
+You might be wondering about the `lead~1` in the call to `variogram` above. Reasonable. Recall that the `~` notation is integral to R’s approach to statistical modeling, allowing you to specify what’s on the left-hand side of the model and what’s on the right. E.g., `lm(y~x)` specifies a linear model where `y` is as a linear function of `x`. The `~1` means intercept-only: no predictor variables, just a constant. So `lm(y~1)` predicts `y` from its mean and nothing else.
 
 Consider our example with lead above and look at the output for this linear model.
 
@@ -238,18 +236,37 @@ So, when we use variogram above as `variogram(lead~1, locations = meuse_sf)` we 
 
 
 ## Moran's I
-Variograms are nifty tools -- but it would be nice to work with a technique that gave us more familiar numbers. Fortunately, there are other methods of measuring spatial autocorrelation beyond the variogram. The text introduces the idea of measuring spatial autocorrelation and explains how it is trickier than temporal autocorrelation because it is multi-dimensional and multi-directional. The reading starts you out with measuring spatial autocorrelation using Geary's C. The statistic used more commonly is Moran's I which is close to the inverse of Geary's C (but is not identical).  Values of Moran's I greater than zero indicate positive spatial autocorrelation and values below zero indicate negative autocorrelation. Values range from minus one (perfect dispersion -- think chess board) to positive one (perfect correlation). A zero value indicates spatial randomness. 
+Variograms are nifty tools -- but it would be nice to work with a technique that gave us more familiar numbers. Fortunately, there are other methods of measuring spatial autocorrelation beyond the variogram. The text introduces the idea of measuring spatial autocorrelation and explains how it is trickier than temporal autocorrelation because it is multi-dimensional and multi-directional. The reading starts you out with measuring spatial autocorrelation using Geary's C. The statistic used more commonly is Moran's I which is close to the inverse of Geary's C (but is not identical).  Values of Moran's I greater than zero indicate positive spatial autocorrelation and values below zero indicate negative autocorrelation. Values range from minus one (perfect dispersion -- think chessboard) to values near one (strong clustering or gradients). A zero value indicates spatial randomness.
 
-```{r,echo=FALSE,fig.width=6,fig.height=6}
-foo <- matrix(NA,nrow=10,ncol=10)
-for(i in seq(1,10,by=2)){
-  foo[i,] <- rep(c(1,0),times=5)
-}
-for(i in seq(2,10,by=2)){
-  foo[i,] <- rep(c(0,1),times=5)
-}
-image(foo,col=c("black","white"),main="Moran's I = -1",asp=1,axes=FALSE)
-image(matrix(1,nrow=10,ncol=10),col="grey",main="Moran's I = 1",asp=1,axes=FALSE)
+```{r,echo=FALSE,fig.width=9,fig.height=3}
+n <- 20
+
+chess <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = ifelse((x + y) %% 2 == 0, 1, 0),
+         pattern = "Moran's I ≈ -1\nChessboard")
+
+set.seed(42)
+random <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = runif(n^2),
+         pattern = "Moran's I ≈ 0\nRandom noise")
+
+gradient <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = x / n,
+         pattern = "Moran's I ≈ 1\nGradient")
+
+bind_rows(chess, random, gradient) %>%
+  mutate(pattern = factor(pattern, levels = c(
+    "Moran's I ≈ -1\nChessboard",
+    "Moran's I ≈ 0\nRandom noise",
+    "Moran's I ≈ 1\nGradient"))) %>%
+  ggplot(aes(x = x, y = y, fill = z)) +
+  geom_raster() +
+  scale_fill_viridis_c() +
+  facet_wrap(~pattern) +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = "none",
+        strip.text = element_text(size = 11))
 ```
 
 Moran's I is defined as:
@@ -324,7 +341,7 @@ wList <- mat2listw(w)
 moran.test(meuse_sf$lead,wList)
 ```
 
-Now we can see that points far away from each other (between 500m and 100m) are not correlated. So, by using $W$ cleverly, we can determine the distances where autocorrelation occurs and where it does not. 
+Now we can see that points far away from each other (between 500m and 1000m) are not correlated. So, by using $W$ cleverly, we can determine the distances where autocorrelation occurs and where it does not. 
 
 I like to look at Moran's I in a correlogram by distance -- kind of like we did with the variogram and in a way that is conceptually very similar to the Ripley's K function. We can do this as above by calculating Moran's I in different distance bands. That is, if we stratify the weights $W$ by distance we can plot Moran's I  as a function of distance. I'm going to do this by brute force in a loop -- it's ugly. What happens below is that I create a vector of distances from 0 to 2000 m in increments of 200 m. The the loop will step through that vector and create a weights matrix so that $W$ will equal one if points are within the specified distance and zero otherwise. Then I'll calculate Moran's I and save the result.
 

@@ -1,3 +1,13 @@
+## Why Spatial Analysis
+
+Most environmental data are spatial data. Temperature varies across a landscape. Species are not distributed at random. Pollution doesn't stop at a watershed boundary. Soil properties, precipitation, wildfire risk, habitat quality: all of these vary in space, and that variation is not noise. It has structure. The goal of spatial analysis is to describe that structure, understand it, and use it.
+
+That last part matters. If you treat observations as independent when they're not, you will get the statistics wrong. Standard errors too small, p-values too optimistic, predictions that don't hold up. Spatial analysis gives you the tools to do it right.
+
+But getting the statistics right is only part of the point. Spatial pattern is information. Where something is happening, and where it isn't, tells you something about the processes driving it. Learning to read that structure makes you better at the fundamental job of environmental science: figuring out why things are the way they are.
+
+The goal of this course is to build a working toolkit for spatial analysis in environmental science. By the end, you'll know how to describe spatial patterns, test whether they're real, interpolate across space, and account for spatial dependence in regression models. These are not exotic methods. They are basic competency for anyone working with environmental data.
+
 # Welcome and Set Up
 
 These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
@@ -23,8 +33,8 @@ The notes move through the core ideas of spatial analysis in roughly this order:
 - **Mt Baker Map** -- A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
 - **Aside: Distance Matrices** -- A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it's worth understanding before you need it.
 - **Point Patterns** -- How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
-- **Aside: Correlation and Regression Are Not the Same Thing** -- These two ideas get conflated constantly. This aside untangles them before we lean on regression in later chapters.
 - **Intro to Autocorrelation** -- How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
+- **Aside: Correlation and Regression Are Not the Same Thing** -- These two ideas get conflated constantly. This aside untangles them as we start in on correlation anlaysis and before we lean on regression in later chapters.
 - **Geostats I: Inverse Distance Weighting** -- Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
 - **Geostats I: Thin-Plate Splines** -- A smooth, flexible interpolation method that minimizes curvature across the surface.
 - **Geostats II: Kriging** -- The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.

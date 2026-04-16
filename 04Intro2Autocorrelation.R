@@ -120,16 +120,35 @@ mean(meuse_sf$lead)
 sd(meuse_sf$lead)/sqrt(nrow(meuse_sf))
 
 
-## ----echo=FALSE,fig.width=6,fig.height=6--------------------------------------
-foo <- matrix(NA,nrow=10,ncol=10)
-for(i in seq(1,10,by=2)){
-  foo[i,] <- rep(c(1,0),times=5)
-}
-for(i in seq(2,10,by=2)){
-  foo[i,] <- rep(c(0,1),times=5)
-}
-image(foo,col=c("black","white"),main="Moran's I = -1",asp=1,axes=FALSE)
-image(matrix(1,nrow=10,ncol=10),col="grey",main="Moran's I = 1",asp=1,axes=FALSE)
+## ----echo=FALSE,fig.width=9,fig.height=3--------------------------------------
+n <- 20
+
+chess <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = ifelse((x + y) %% 2 == 0, 1, 0),
+         pattern = "Moran's I ≈ -1\nChessboard")
+
+set.seed(42)
+random <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = runif(n^2),
+         pattern = "Moran's I ≈ 0\nRandom noise")
+
+gradient <- expand.grid(x = 1:n, y = 1:n) %>%
+  mutate(z = x / n,
+         pattern = "Moran's I ≈ 1\nGradient")
+
+bind_rows(chess, random, gradient) %>%
+  mutate(pattern = factor(pattern, levels = c(
+    "Moran's I ≈ -1\nChessboard",
+    "Moran's I ≈ 0\nRandom noise",
+    "Moran's I ≈ 1\nGradient"))) %>%
+  ggplot(aes(x = x, y = y, fill = z)) +
+  geom_raster() +
+  scale_fill_viridis_c() +
+  facet_wrap(~pattern) +
+  coord_fixed() +
+  theme_void() +
+  theme(legend.position = "none",
+        strip.text = element_text(size = 11))
 
 
 ## ----warning=FALSE------------------------------------------------------------

@@ -8,7 +8,7 @@
 
 <meta name="description" content="Spatial analysis notes and exercises">
 
-<title>Welcome and Set Up – Spatial Analysis for Environmental Science</title>
+<title>Why Spatial Analysis – Spatial Analysis for Environmental Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -135,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00Welcome.html"><span class="chapter-title">Welcome and Set Up</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00Welcome.html"><span class="chapter-title">Why Spatial Analysis</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -158,7 +158,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Welcome and Set Up</span></a>
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Why Spatial Analysis</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -190,13 +190,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04xCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aside: Correlation and Regression Are Not the Same Thing</span></a>
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  <a href="./04xAsideCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Correlation is not Regression</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -251,12 +251,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#how-these-notes-are-laid-out" id="toc-how-these-notes-are-laid-out" class="nav-link active" data-scroll-target="#how-these-notes-are-laid-out">How These Notes Are Laid Out</a></li>
+  <li><a href="#welcome-and-set-up" id="toc-welcome-and-set-up" class="nav-link active" data-scroll-target="#welcome-and-set-up">Welcome and Set Up</a>
+  <ul class="collapse">
+  <li><a href="#how-these-notes-are-laid-out" id="toc-how-these-notes-are-laid-out" class="nav-link" data-scroll-target="#how-these-notes-are-laid-out">How These Notes Are Laid Out</a></li>
   <li><a href="#whats-in-these-notes" id="toc-whats-in-these-notes" class="nav-link" data-scroll-target="#whats-in-these-notes">What’s in These Notes</a></li>
   <li><a href="#go-do-great-things" id="toc-go-do-great-things" class="nav-link" data-scroll-target="#go-do-great-things">Go Do Great Things</a></li>
   <li><a href="#technical-setup" id="toc-technical-setup" class="nav-link" data-scroll-target="#technical-setup">Technical Setup</a>
   <ul class="collapse">
   <li><a href="#project-structure" id="toc-project-structure" class="nav-link" data-scroll-target="#project-structure">Project Structure</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/00Welcome.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -266,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Welcome and Set Up</span></h1>
+<h1 class="title"><span class="chapter-title">Why Spatial Analysis</span></h1>
 </div>
 
 
@@ -283,6 +286,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>Most environmental data are spatial data. Temperature varies across a landscape. Species are not distributed at random. Pollution doesn’t stop at a watershed boundary. Soil properties, precipitation, wildfire risk, habitat quality: all of these vary in space, and that variation is not noise. It has structure. The goal of spatial analysis is to describe that structure, understand it, and use it.</p>
+<p>That last part matters. If you treat observations as independent when they’re not, you will get the statistics wrong. Standard errors too small, p-values too optimistic, predictions that don’t hold up. Spatial analysis gives you the tools to do it right.</p>
+<p>But getting the statistics right is only part of the point. Spatial pattern is information. Where something is happening, and where it isn’t, tells you something about the processes driving it. Learning to read that structure makes you better at the fundamental job of environmental science: figuring out why things are the way they are.</p>
+<p>The goal of this course is to build a working toolkit for spatial analysis in environmental science. By the end, you’ll know how to describe spatial patterns, test whether they’re real, interpolate across space, and account for spatial dependence in regression models. These are not exotic methods. They are basic competency for anyone working with environmental data.</p>
+<section id="welcome-and-set-up" class="level1">
+<h1>Welcome and Set Up</h1>
 <p>These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.</p>
 <p>The notes are hands-on by design. You will write code, look at data, make maps, fit models, and interpret results. Each section builds on what came before. The math shows up when it needs to, but the emphasis throughout is on doing spatial analysis and understanding what you’re doing – not on deriving things for their own sake.</p>
 <p>I’ll point you to textbooks and papers along the way. Read them. They complement what we’re doing here and will matter when you’re working on your own data and I’m not around to ask.</p>
@@ -301,8 +310,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Mt Baker Map</strong> – A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.</li>
 <li><strong>Aside: Distance Matrices</strong> – A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it’s worth understanding before you need it.</li>
 <li><strong>Point Patterns</strong> – How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley’s K.</li>
-<li><strong>Aside: Correlation and Regression Are Not the Same Thing</strong> – These two ideas get conflated constantly. This aside untangles them before we lean on regression in later chapters.</li>
 <li><strong>Intro to Autocorrelation</strong> – How to measure and describe spatial structure in a continuous variable using variograms, Moran’s I, and correlograms.</li>
+<li><strong>Aside: Correlation and Regression Are Not the Same Thing</strong> – These two ideas get conflated constantly. This aside untangles them as we start in on correlation anlaysis and before we lean on regression in later chapters.</li>
 <li><strong>Geostats I: Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
 <li><strong>Geostats I: Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
 <li><strong>Geostats II: Kriging</strong> – The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.</li>
@@ -365,6 +374,7 @@ The datasets used in the examples are available in the <code>data/</code> folder
 └── spatial-course.Rproj</code></pre>
 
 
+</section>
 </section>
 </section>
 
