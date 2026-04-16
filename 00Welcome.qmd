@@ -8,23 +8,30 @@ I'll point you to textbooks and papers along the way. Read them. They complement
 
 These notes are a living document. They change based on what works, what doesn't, and what you ask about in class. If something is wrong or unclear, tell me.
 
+## How These Notes Are Laid Out
+
+Most of the chapters follow a natural progression -- each one builds on the last, and working through them in order is the right call. But scattered through the notes you'll find **Asides**: short detours that dig into something that doesn't quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters make more sense.
+
+You can skip the Asides and still follow the core material. But they're there because the questions they answer are real ones -- the kind that come up when you're working through a chapter and start wondering why something works the way it does. If that's how your brain works, the Asides are for you.
+
 ## What's in These Notes
 
 The notes move through the core ideas of spatial analysis in roughly this order:
 
-- **Introduction to Geospatial Concepts** *(Data Carpentry)* -- Before we can analyze spatial data, we need to be able to handle it. These workshops get you there. Think of it as building the workbench before we start making things.
-- **An Aside: Methods and Generics in R** -- A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why `plot()` and `summary()` behave differently depending on what you give them.
+- **Introduction: Getting Your Bearings** -- Before we can analyze spatial data, we need to be able to handle it. This chapter gets you oriented with the tools and vocabulary we'll use throughout.
+- **Aside: Methods and Generics in R** -- A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why `plot()` and `summary()` behave differently depending on what you give them.
 - **Mt Baker Map** -- A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
+- **Aside: Distance Matrices** -- A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it's worth understanding before you need it.
 - **Point Patterns** -- How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
+- **Aside: Correlation and Regression Are Not the Same Thing** -- These two ideas get conflated constantly. This aside untangles them before we lean on regression in later chapters.
 - **Intro to Autocorrelation** -- How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
 - **Geostats I: Inverse Distance Weighting** -- Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
 - **Geostats I: Thin-Plate Splines** -- A smooth, flexible interpolation method that minimizes curvature across the surface.
 - **Geostats II: Kriging** -- The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.
 - **Geostats II: Regression Kriging** -- Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.
+- **Aside: Kriging Variance By Hand** -- Cracks open the `gstat` black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.
+- **Aside: OLS via Algebra and Matrices** -- Derives the OLS solution algebraically and in matrix form, then implements both in R. Worth reading before the GLS chapter, where GLS turns out to be OLS with one extra matrix in the mix.
 - **Regression: GLS with Autocorrelated Residuals** -- What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
-
-
-Each chapter builds on the last, so working through them in order is recommended.
 
 ## Go Do Great Things
 

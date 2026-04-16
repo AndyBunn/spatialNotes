@@ -179,13 +179,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aside: Distance Matrices</span></a>
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Distance Matrices</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -216,13 +216,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -251,7 +251,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#whats-in-these-notes" id="toc-whats-in-these-notes" class="nav-link active" data-scroll-target="#whats-in-these-notes">What’s in These Notes</a></li>
+  <li><a href="#how-these-notes-are-laid-out" id="toc-how-these-notes-are-laid-out" class="nav-link active" data-scroll-target="#how-these-notes-are-laid-out">How These Notes Are Laid Out</a></li>
+  <li><a href="#whats-in-these-notes" id="toc-whats-in-these-notes" class="nav-link" data-scroll-target="#whats-in-these-notes">What’s in These Notes</a></li>
   <li><a href="#go-do-great-things" id="toc-go-do-great-things" class="nav-link" data-scroll-target="#go-do-great-things">Go Do Great Things</a></li>
   <li><a href="#technical-setup" id="toc-technical-setup" class="nav-link" data-scroll-target="#technical-setup">Technical Setup</a>
   <ul class="collapse">
@@ -286,22 +287,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The notes are hands-on by design. You will write code, look at data, make maps, fit models, and interpret results. Each section builds on what came before. The math shows up when it needs to, but the emphasis throughout is on doing spatial analysis and understanding what you’re doing – not on deriving things for their own sake.</p>
 <p>I’ll point you to textbooks and papers along the way. Read them. They complement what we’re doing here and will matter when you’re working on your own data and I’m not around to ask.</p>
 <p>These notes are a living document. They change based on what works, what doesn’t, and what you ask about in class. If something is wrong or unclear, tell me.</p>
+<section id="how-these-notes-are-laid-out" class="level2">
+<h2 class="anchored" data-anchor-id="how-these-notes-are-laid-out">How These Notes Are Laid Out</h2>
+<p>Most of the chapters follow a natural progression – each one builds on the last, and working through them in order is the right call. But scattered through the notes you’ll find <strong>Asides</strong>: short detours that dig into something that doesn’t quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters make more sense.</p>
+<p>You can skip the Asides and still follow the core material. But they’re there because the questions they answer are real ones – the kind that come up when you’re working through a chapter and start wondering why something works the way it does. If that’s how your brain works, the Asides are for you.</p>
+</section>
 <section id="whats-in-these-notes" class="level2">
 <h2 class="anchored" data-anchor-id="whats-in-these-notes">What’s in These Notes</h2>
 <p>The notes move through the core ideas of spatial analysis in roughly this order:</p>
 <ul>
-<li><strong>Introduction to Geospatial Concepts</strong> <em>(Data Carpentry)</em> – Before we can analyze spatial data, we need to be able to handle it. These workshops get you there. Think of it as building the workbench before we start making things.</li>
-<li><strong>An Aside: Methods and Generics in R</strong> – A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why <code>plot()</code> and <code>summary()</code> behave differently depending on what you give them.</li>
+<li><strong>Introduction: Getting Your Bearings</strong> – Before we can analyze spatial data, we need to be able to handle it. This chapter gets you oriented with the tools and vocabulary we’ll use throughout.</li>
+<li><strong>Aside: Methods and Generics in R</strong> – A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why <code>plot()</code> and <code>summary()</code> behave differently depending on what you give them.</li>
 <li><strong>Mt Baker Map</strong> – A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.</li>
+<li><strong>Aside: Distance Matrices</strong> – A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it’s worth understanding before you need it.</li>
 <li><strong>Point Patterns</strong> – How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley’s K.</li>
+<li><strong>Aside: Correlation and Regression Are Not the Same Thing</strong> – These two ideas get conflated constantly. This aside untangles them before we lean on regression in later chapters.</li>
 <li><strong>Intro to Autocorrelation</strong> – How to measure and describe spatial structure in a continuous variable using variograms, Moran’s I, and correlograms.</li>
 <li><strong>Geostats I: Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
 <li><strong>Geostats I: Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
 <li><strong>Geostats II: Kriging</strong> – The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.</li>
 <li><strong>Geostats II: Regression Kriging</strong> – Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.</li>
+<li><strong>Aside: Kriging Variance By Hand</strong> – Cracks open the <code>gstat</code> black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.</li>
+<li><strong>Aside: OLS via Algebra and Matrices</strong> – Derives the OLS solution algebraically and in matrix form, then implements both in R. Worth reading before the GLS chapter, where GLS turns out to be OLS with one extra matrix in the mix.</li>
 <li><strong>Regression: GLS with Autocorrelated Residuals</strong> – What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.</li>
 </ul>
-<p>Each chapter builds on the last, so working through them in order is recommended.</p>
 </section>
 <section id="go-do-great-things" class="level2">
 <h2 class="anchored" data-anchor-id="go-do-great-things">Go Do Great Things</h2>

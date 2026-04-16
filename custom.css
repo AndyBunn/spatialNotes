@@ -121,6 +121,39 @@ blockquote {
 }
 
 /* ------------------------------------------------------------
+   Aside chapters — sidebar TOC
+   Targets by filename ("Aside" in href)
+   ------------------------------------------------------------ */
+.sidebar-item a[href*="Aside"] {
+  font-style: italic;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  padding-left: 1.1em;
+}
+
+.sidebar-item a[href*="Aside"]::before {
+  content: "↳ ";
+  font-style: normal;
+  opacity: 0.6;
+}
+
+/* ------------------------------------------------------------
+   Aside chapters — chapter page
+   Targets .aside-chapter on the section wrapper
+   ------------------------------------------------------------ */
+.aside-chapter > h1:first-child::before {
+  content: "aside";
+  display: block;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4dd9a0;
+  opacity: 0.8;
+  margin-bottom: 0.3em;
+}
+
+/* ------------------------------------------------------------
    Horizontal rules — thin teal gradient, echoes cover
    ------------------------------------------------------------ */
 hr {

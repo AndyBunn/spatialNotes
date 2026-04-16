@@ -18,15 +18,15 @@ book:
     - 01GettingStarted.qmd
     - 01xAsideMethods_and_generics.qmd
     - 02MtBakerMap.qmd
-    - 03xAsideDistanceMatrices.qmd
     - 03Point_Patterns.qmd
+    - 03xAsideDistanceMatrices.qmd
     - 04xCorrelationVersusRegression.qmd
     - 04Intro2Autocorrelation.qmd
     - 05aGeostatsIDW.qmd
     - 05bGeostat2TPS.qmd
     - 06aGeostatsKriging.qmd
-    - 06bGeostatsRegressionKriging.qmd
     - 06xAsideGeostatsKrigingVariance.qmd
+    - 06bGeostatsRegressionKriging.qmd
     - 07RegressionGLS.qmd
     - 07xAsideOLS_Algebric_Matrix.qmd
     - 08PackagesUsed.qmd
