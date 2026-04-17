@@ -351,7 +351,7 @@ zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = T
 p10BumpsI <- data.frame(I = zI$correlation, 
                         d = zI$mean.of.class,
                         p = zI$p) %>%
-  filter(d <= 50) %>%
+  filter(I < 1 & d <= 50) %>%
   mutate(Significant = p < .01) %>%
   ggplot() +
   geom_hline(yintercept = 0,linetype="dashed") +
@@ -407,7 +407,7 @@ zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = T
 p5BumpsI <- data.frame(I = zI$correlation, 
                        d = zI$mean.of.class,
                        p = zI$p) %>%
-  filter(d <= 50) %>%
+  filter(I < 1 & d <= 50) %>%
   mutate(Significant = p < .01) %>%
   ggplot() +
   geom_hline(yintercept = 0,linetype="dashed") +
@@ -482,7 +482,7 @@ zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = T
 pRanBumpsI <- data.frame(I = zI$correlation, 
                          d = zI$mean.of.class,
                          p = zI$p) %>%
-  filter(d <= 50) %>%
+  filter(I < 1 & d <= 50) %>%
   mutate(Significant = p < .01) %>%
   ggplot() +
   geom_hline(yintercept = 0,linetype="dashed") +
@@ -533,7 +533,7 @@ zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = T
 pGradBumpsI <-data.frame(I = zI$correlation, 
                          d = zI$mean.of.class,
                          p = zI$p) %>%
-  filter(d <= 50) %>%
+  filter(I < 1 & d <= 50) %>%
   mutate(Significant = p < .01) %>%
   ggplot() +
   geom_hline(yintercept = 0,linetype="dashed") +
