@@ -10,7 +10,7 @@ knitr::purl("04Intro2Autocorrelation.qmd", output = "04Intro2Autocorrelation.R",
 Space matters: Spatial pattern lets us understand process. Where point patterns ask whether locations themselves are clustered or random, autocorrelation asks how a measured quantity -- lead in soil, snow depth, bird diversity — varies across space and at what scale that variation operates.
 
 ## Reading
-Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand [@bivand2008geostatistics] and read through 8.4.2 Cutoﬀ, Lag Width, Direction Dependence).
+Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand [@bivand2008geostatistics] and read through 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence).
 
 ## Refresh
 Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [distance matrix aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [correlation versus regression aside](04xAsideCorrelationVersusRegression.html)
@@ -286,7 +286,7 @@ where $N$ is the number of observations at $i$ and $j$, $Z$ is the variable bein
 
 Reading this through I can hear those that are paying attention saying, "Wait, what about this weights thing?" Good! We can use weights to give some elements more or less influence on a statistic than other elements in the same set. So for instance, elements that we want to have less influence can be multiplied by a scalar from zero to one. Unweighted elements can be multiplied by one and elements that we might want to give extra weight to can be multiplied by a number greater than one. We do this in in practice with the weights matrix $W$. We will see how this works below. 
 
-Moran's I has the lovely property that its values can be transformed to Z-scores for hypothesis testing. Thus, Moran's Z-scores greater than 1.96 or smaller than −1.96 would indicate significant spatial autocorrelation at alpha of 0.05. This is handy.
+Moran's I has the lovely property that its values can be transformed to Z-scores for hypothesis testing. Thus, Moran's Z-scores greater than 1.96 or smaller than −1.96 would indicate significant spatial autocorrelation at alpha of 0.05. This is handy. We can also test the significance of Moran's I by bootstraping.
 
 First though we have to figure out how to make R give us what we want. There are two packages that I use to do Moran's I. The first is `spdep` which is powerful but has super-weird syntax and data structures until you get used to them. But it's really flexible in how you calculate and use the weights matrix. The second is `ncf` which is a little more intuitive but not as flexible. We'll use both. 
 
@@ -435,7 +435,7 @@ plot(leadI,xlim=c(0,1500))
 abline(h=0,lty="dashed")
 ```
 
-Let's look at what is going on here. We are calculating $I=f(d)$ and using 100 m increments. We are also doing significance testing with 100 permutations of the data to test a null hypothesis of CSR. In the plot, the points are colored be whether or not autocorrelation is significantly different from zero in that distance class using a nominal (two-sided) 5%-level. This is a slightly fancier version of what we did in the loop above. And the syntax is much easier to follow.  
+Let's look at what is going on here. We are calculating $I=f(d)$ and using 100 m increments. We are also doing significance testing with 100 bootstrap replicates of the data to test a null hypothesis of CSR. In the plot, the points are colored be whether or not autocorrelation is significantly different from zero in that distance class using a nominal (two-sided) 5%-level. This is a slightly fancier version of what we did in the loop above. And the syntax is much easier to follow.  
 
 We still see the same result we did above -- positive autocorrelation out to distances of about 500 m, very slight negative autocorrelation around 1000 m, and CSR otherwise.
 
@@ -491,22 +491,8 @@ data.frame(n=leadI$n,
 
 Remember! R will (usually) do what you want if you try.
 
-### Continuous correlogram
-
-The plot above is discrete. It is showing autocorrelation in distance categories. We can also calculate a continuous function:
-
-```{r}
-# continuous
-leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
-                         resamp=100, xmax=1500, quiet=TRUE)
-plot(leadI)
-```
-
-
-This gives the same picture. You can read up on these functions to learn the subtleties. I'll unpack this in greater detail in the lecture. 
-
 ## Correlograms on simulated data
-What we did above was with field data, right? By now, you all know that I love making examples with simulated data. Below I'm going to show you four different simulated surfaces. Each is a 100 x 100 grid (10,000 cells) and each has a different pattern on it. The units don't really matter but I've labeled them as meters. The height of the surface can be whatever you like to imagine. Elevation, nitrogen, tree density, etc. Those units range from zero to a max of about one but there is a little added noise (random normal noise with a mean of zero and a standard deviation of 0.1) to make things just a tiny bit fuzzy. We will look at the data and then at the correlogram. It's illustrative, at least I think so. The code is pretty gnarly to generate these surfaces so I've hidden it. Happy to send it along if you'd like. Just holler.
+What we did above was with field data, right? By now, you all know that I love making examples with simulated data. Below I'm going to show you four different simulated surfaces. Each is a 100 x 100 grid (10,000 cells) and each has a different pattern on it. The units don't really matter but I've labeled them as meters. The height of the surface can be whatever you like to imagine. Elevation, nitrogen, tree density, etc. Those units range from zero to a max of about one but there is a little added noise (random normal noise with a mean of zero and a standard deviation of 0.1) to make things just a tiny bit fuzzy. We will look at the data and then at the correlogram. It's illustrative, at least I think so. The code is pretty gnarly to generate these surfaces so I've hidden it (of course all the code is on the GitHub repo if you want to see it).
 
 ```{r,echo=FALSE, message=FALSE}
 library(fields)
@@ -556,22 +542,27 @@ p10BumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-p10BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
+
+p10BumpsI <- data.frame(I = zI$correlation, 
+                        d = zI$mean.of.class,
+                        p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 ###################################################################
 #
-## Sine Wave 4
+## Sine Wave 5
 #
 ###################################################################
 
@@ -608,19 +599,22 @@ p5BumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-p5BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+p5BumpsI <- data.frame(I = zI$correlation, 
+                       d = zI$mean.of.class,
+                       p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 
 ###################################################################
@@ -679,19 +673,23 @@ pRanBumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-pRanBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
+
+pRanBumpsI <- data.frame(I = zI$correlation, 
+                         d = zI$mean.of.class,
+                         p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 
 ###################################################################
@@ -727,19 +725,22 @@ pGradBumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-pGradBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+pGradBumpsI <-data.frame(I = zI$correlation, 
+                         d = zI$mean.of.class,
+                         p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 ```
 
@@ -864,12 +865,10 @@ max(dist(st_coordinates(birds_sf)))/3
 
 Given that, I'd limit interpretation of the correlograms to a thousand km.
 
-4. For the variogram, you can try different widths and cutoffs. Look at section 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence) in @bivand2008geostatistics.
+4. For the variogram, you can try different widths and cutoffs.
 
 ### Interpret
 What can you learn by comparing the approaches? Maybe more importantly what are we missing with this approach? Where does this understanding of pattern help us with process and where is it lacking?
-
-
 
 ### Directional Variograms
 We have been quantifying this spatial structure as being direction independent (isotropic). Read up on the concept of anisotropy in spatial autocorrelation. Where do you see that here? In many spatial data the direction of anisotropy relates to process. For example, pollution plumes move down head or down wind. Again, section 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence) in @bivand2008geostatistics has some good stuff. 
@@ -886,7 +885,7 @@ Think about gradients! Put on a biogeography hat and explain what might be happe
 ```{r,echo=FALSE,eval=FALSE}
 birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
 foo <- correlog(x=birdsDF[,1],y=birdsDF[,2],
-                z =birds_sf$nSpecies,increment = 50,resamp = 100)
+                z =birds_sf$nSpecies,increment = 50,resamp = 200)
 plot(foo) # yucky!
 plot(foo,xlim=c(0,1e3))
 abline(h=0)
@@ -898,3 +897,16 @@ plot(birdVar,pch=20)
 birdVar<-variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
 plot(birdVar,pch=20)
 ```
+
+## Postscript: Continuous correlogram
+
+The correlograms above using `correlog::ncf` are discrete. They show autocorrelation in distance categories. We can also calculate Moran's I continuously using the function `correlog::spline.correlog`:
+
+```{r}
+# continuous
+leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
+                         resamp=100, xmax=1500, quiet=TRUE)
+plot(leadI)
+```
+
+You can read up on both these functions to learn the subtleties. I'll unpack this in greater detail in the lecture. 

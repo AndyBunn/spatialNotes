@@ -297,13 +297,6 @@ data.frame(n=leadI$n,
        title = "Autocorrelation of log(Lead)",subtitle = "Crit value of p<0.01")
 
 
-## -----------------------------------------------------------------------------
-# continuous
-leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
-                         resamp=100, xmax=1500, quiet=TRUE)
-plot(leadI)
-
-
 ## ----echo=FALSE, message=FALSE------------------------------------------------
 library(fields)
 library(plotly)
@@ -352,22 +345,27 @@ p10BumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-p10BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
+
+p10BumpsI <- data.frame(I = zI$correlation, 
+                        d = zI$mean.of.class,
+                        p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 ###################################################################
 #
-## Sine Wave 4
+## Sine Wave 5
 #
 ###################################################################
 
@@ -404,19 +402,22 @@ p5BumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-p5BumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+p5BumpsI <- data.frame(I = zI$correlation, 
+                       d = zI$mean.of.class,
+                       p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 
 ###################################################################
@@ -475,19 +476,23 @@ pRanBumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-pRanBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
+
+pRanBumpsI <- data.frame(I = zI$correlation, 
+                         d = zI$mean.of.class,
+                         p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 
 ###################################################################
@@ -523,19 +528,22 @@ pGradBumpsPersp <- plot_ly(z = fooMat) %>%
 
 samps2get <- sample(n^2,size = 500)
 bar <- foo[samps2get,]
-zI <- spline.correlog(x=bar$x, y=bar$y, z=bar$z, resamp=50, xmax=50,quiet = TRUE)
-#zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 2, resamp = 100)
+zI <- correlog(x=bar$x, y=bar$y, z=bar$z, increment = 1, resamp = 200, quiet = TRUE)
 
-#dimnames(zI$boot$boot.summary$predicted$y)
-z2plot <- data.frame(x=zI$real$predicted$x[1,],
-                     y=zI$real$predicted$y[1,],
-                     yLower = zI$boot$boot.summary$predicted$y[3,],
-                     yUpper = zI$boot$boot.summary$predicted$y[9,])
-pGradBumpsI <- ggplot(z2plot,aes(x=x,y=y,ymax=yUpper,ymin=yLower)) + 
-  geom_hline(yintercept = 0,col="grey20",linetype="dashed") + 
-  geom_ribbon(fill="grey") +
-  geom_line() + coord_cartesian(ylim=c(-1,1),xlim=c(0,50),expand = FALSE) + 
-  labs(x="Distance (m)", y="Moran's I") 
+pGradBumpsI <-data.frame(I = zI$correlation, 
+                         d = zI$mean.of.class,
+                         p = zI$p) %>%
+  filter(d <= 50) %>%
+  mutate(Significant = p < .01) %>%
+  ggplot() +
+  geom_hline(yintercept = 0,linetype="dashed") +
+  geom_path(aes(x = d, y = I,group = 1, color=Significant),size=1) + 
+  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
+  lims(x=c(0,50))+ #,y=c(-0.6,0.6)) +
+  scale_fill_manual(values = c("grey","darkgreen")) +
+  scale_color_manual(values = c("grey","darkgreen")) +
+  labs(x="Distance (m)",y="Moran's I",
+       caption = "Crit value of p<0.01")
 
 
 
@@ -610,7 +618,7 @@ max(dist(st_coordinates(birds_sf)))/3
 ## ----echo=FALSE,eval=FALSE----------------------------------------------------
 # birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
 # foo <- correlog(x=birdsDF[,1],y=birdsDF[,2],
-#                 z =birds_sf$nSpecies,increment = 50,resamp = 100)
+#                 z =birds_sf$nSpecies,increment = 50,resamp = 200)
 # plot(foo) # yucky!
 # plot(foo,xlim=c(0,1e3))
 # abline(h=0)
@@ -621,4 +629,11 @@ max(dist(st_coordinates(birds_sf)))/3
 # # look at NS vs EW
 # birdVar<-variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
 # plot(birdVar,pch=20)
+
+
+## -----------------------------------------------------------------------------
+# continuous
+leadI <- spline.correlog(x=meuseX, y=meuseY, z=meuse_sf$log_lead, 
+                         resamp=100, xmax=1500, quiet=TRUE)
+plot(leadI)
 
