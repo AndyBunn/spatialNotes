@@ -1,12 +1,12 @@
-# RStudio junk
+# RStudio
 .Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
 
-# bookdown build artifacts
-_book/
-_bookdown_files/
+# Quarto internals
+/.quarto/
+**/*.quarto_ipynb
 
 # knitr cache
 _cache/
@@ -23,7 +23,7 @@ _cache/
 todo.txt
 .DS_Store
 data.zip
+.positai
+
 # docs is kept for GitHub Pages
-/.quarto/
-**/*.quarto_ipynb
-_freeze/
+# _freeze is kept so Quarto can use cached outputs on GitHub

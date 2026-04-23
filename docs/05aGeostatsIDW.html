@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Deterministic Interpolation: Inverse Distance Weighting – Spatial Analysis for Environmental Science</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -60,7 +63,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -90,15 +92,14 @@ div.csl-indent {
 <link href="./04xAsideCorrelationVersusRegression.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a04a01d9790747593e0658c5ce91c85b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7f77c891be54f4a4e70d5699258b6bb7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -128,7 +129,7 @@ div.csl-indent {
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -167,8 +168,6 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Spatial Analysis for Environmental Science</span>
     </a>
@@ -184,7 +183,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html">Interpolation &amp; Geostatistics</a></li><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -194,97 +193,137 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
-      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Why Spatial Analysis</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Point Patterns &amp; Autocorrelation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Distance Matrices</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04xAsideCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Correlation is not Regression</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Interpolation &amp; Geostatistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+  <a href="./07xAsideOLS-Algebra-Matrix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
   </div>
 </li>
+      </ul>
+  </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">References</span></a>
@@ -306,17 +345,17 @@ window.Quarto = {
   <li><a href="#geostats" id="toc-geostats" class="nav-link" data-scroll-target="#geostats">Geostats</a></li>
   <li><a href="#theory" id="toc-theory" class="nav-link" data-scroll-target="#theory">Theory</a></li>
   <li><a href="#toy-example" id="toc-toy-example" class="nav-link" data-scroll-target="#toy-example">Toy example</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
   <li><a href="#idw" id="toc-idw" class="nav-link" data-scroll-target="#idw">IDW</a></li>
   </ul></li>
   <li><a href="#application" id="toc-application" class="nav-link" data-scroll-target="#application">Application</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#data-1" id="toc-data-1" class="nav-link" data-scroll-target="#data-1">Data</a></li>
   <li><a href="#idw-1" id="toc-idw-1" class="nav-link" data-scroll-target="#idw-1">IDW</a></li>
   </ul></li>
   <li><a href="#skill" id="toc-skill" class="nav-link" data-scroll-target="#skill">Skill</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#aside-rmse-null-model" id="toc-aside-rmse-null-model" class="nav-link" data-scroll-target="#aside-rmse-null-model">Aside: RMSE NULL Model</a></li>
   </ul></li>
   <li><a href="#how-can-we-improve-this-model" id="toc-how-can-we-improve-this-model" class="nav-link" data-scroll-target="#how-can-we-improve-this-model">How can we improve this model?</a></li>
@@ -327,7 +366,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html">Interpolation &amp; Geostatistics</a></li><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></h1>
 </div>
@@ -1057,9 +1096,9 @@ max value   :  6.444424 </code></pre>
 <p>One warning. There are a few stations on the coast that are classified as <code>NA</code> in the gridded surface you’ll make. This is because the gridded surface is 10x10 km and that coarse resolution means some of the edge cases (stations very close to the coast) get turned into “ocean” instead of “land”. This is a really common issue when moving from point to raster data. It won’t affect what you do until you try to assess skill. Then you’ll find that some (eight, I think) of the stations will show up as <code>NA</code> when you use <code>extract</code>. This will cause your <code>rsq</code> and <code>rmse</code> calculations to return <code>NA</code>. You can overcome this in a variety of ways (e.g., <code>cor(obs,preds,use="complete.obs")^2</code> and <code>sqrt(mean((preds - obs)^2,na.rm=TRUE))</code> or with a mask etc.). You’d have figured that out on your own I bet, but I’m just giving you a heads up.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-bivand2008geostatistics" class="csl-entry" role="listitem">
-Bivand, Roger. 2008. <span>“Interpolation and Geostatistics.”</span> In <em>Applied Spatial Data Analysis with <span>R</span></em>, edited by Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio, 191–235. Use <span>R</span>! New York, NY: Springer.
+Bivand, Roger. 2008. <span>“Interpolation and Geostatistics.”</span> In <em>Applied Spatial Data Analysis with <span>R</span></em>, edited by Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio. Use <span>R</span>! Springer.
 </div>
 <div id="ref-R-tidyterra" class="csl-entry" role="listitem">
 Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span> Objects: The <span class="nocase">tidyterra</span> Package.”</span> <em>Journal of Open Source Software</em> 8 (91): 5751. <a href="https://doi.org/10.21105/joss.05751">https://doi.org/10.21105/joss.05751</a>.

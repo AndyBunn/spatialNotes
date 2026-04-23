@@ -1,0 +1,125 @@
+# Aside: OLS via Algebra and Matrices {- .aside-chapter}
+
+## Why Are We Doing This?
+
+In the GLS chapter, we talk about how GLS and OLS are solving related but different problems. OLS minimizes the sum of squared errors. GLS minimizes those same distances but relative to the covariance matrix of the residuals which is how it accounts for autocorrelation. If you want to understand what GLS is actually doing differently, it helps to first get clear on what OLS is doing at all.
+
+So that's what this aside is for. We'll derive the OLS solution first using algebra, then using matrix notation, and then implement both in R using `mtcars`. The matrix version matters because GLS is basically OLS with an extra matrix in the mix. Once you see that, the connection between the two methods becomes a lot more concrete.
+
+You don't need to memorize any of this. But if you've ever wondered what `lm()` is actually solving, here it is.
+
+## The Algebraic Approach
+
+In simple linear regression, we model $y$ as a linear function of $x$:
+
+$$y_i = \beta_0 + \beta_1 X_i + \epsilon_i$$
+
+where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon_i$ is the error for observation $i$. The goal is to find the values of $\beta_0$ and $\beta_1$ that make our predictions as good as possible. "As good as possible" means minimizing the sum of squared errors (SSE):
+
+$$SSE = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
+
+where $\hat{y}_i = \beta_0 + \beta_1 X_i$ is what our model predicts. We take partial derivatives of SSE with respect to $\beta_0$ and $\beta_1$, set them to zero, and solve:
+
+$$\frac{\partial SSE}{\partial \beta_0} = -2 \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 X_i) = 0$$
+$$\frac{\partial SSE}{\partial \beta_1} = -2 \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 X_i) X_i = 0$$
+
+Solving these gives the OLS estimates:
+
+$$\hat{\beta}_1 = \frac{\sum_{i=1}^{n} (X_i - \bar{X})(y_i - \bar{y})}{\sum_{i=1}^{n} (X_i - \bar{X})^2}$$
+$$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{X}$$
+
+That's it. That's what `lm()` is doing under the hood for a simple regression. Let's verify it in R using `mpg` as a function of `wt` from `mtcars`.
+
+```{r}
+x <- mtcars$wt
+y <- mtcars$mpg
+
+beta1 <- sum((x - mean(x)) * (y - mean(y))) / sum((x - mean(x))^2)
+beta0 <- mean(y) - beta1 * mean(x)
+c(intercept = beta0, slope = beta1)
+```
+
+```{r}
+# Same thing with lm()
+coef(lm(mpg ~ wt, data = mtcars))
+```
+
+Good. They match.
+
+## The Matrix Approach
+
+The algebraic approach works fine for one predictor. But the moment you add a second predictor, the algebra gets tedious fast. The matrix approach handles any number of predictors cleanly.
+
+In matrix notation, the linear model is:
+
+$$\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$$
+
+where $\mathbf{y}$ is an $n \times 1$ vector of the response, $\mathbf{X}$ is an $n \times p$ matrix of predictors (with a column of ones prepended for the intercept), $\boldsymbol{\beta}$ is a $p \times 1$ vector of coefficients, and $\boldsymbol{\epsilon}$ is an $n \times 1$ vector of errors.
+
+Minimizing the SSE in matrix form:
+
+$$SSE = (\mathbf{y} - \mathbf{X} \boldsymbol{\beta})^T (\mathbf{y} - \mathbf{X} \boldsymbol{\beta})$$
+
+Taking the derivative with respect to $\boldsymbol{\beta}$ and setting it to zero gives the matrix normal equations, and solving for $\boldsymbol{\beta}$:
+
+$$\hat{\boldsymbol{\beta}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$$
+
+That formula is the OLS solution. Everything that comes after it in the R code below is just implementing that one equation.
+
+## Implementation in R
+
+Let's work through it with the same `mtcars` example. First, set up $\mathbf{X}$ and $\mathbf{y}$:
+
+```{r}
+X <- as.matrix(mtcars$wt)
+X <- cbind(1, X)   # prepend a column of ones for the intercept
+y <- as.matrix(mtcars$mpg)
+```
+
+Now apply the formula $\hat{\boldsymbol{\beta}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$ directly. In R, `t()` is the transpose, `%*%` is matrix multiplication, and `solve()` inverts a matrix.
+
+```{r}
+beta <- solve(t(X) %*% X) %*% t(X) %*% y
+beta
+```
+
+```{r}
+# And again, verify with lm()
+coef(lm(mpg ~ wt, data = mtcars))
+```
+
+Same numbers. The matrix formula and `lm()` are solving the same problem.
+
+## Why This Matters for GLS
+
+Here is the connection. The OLS estimator is:
+
+$$\hat{\boldsymbol{\beta}}_{OLS} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$$
+
+When errors are correlated, OLS is no longer the best estimator. GLS handles this by introducing $\boldsymbol{\Sigma}$, the covariance matrix of the errors, which encodes the correlation structure. Instead of minimizing the plain SSE, GLS minimizes:
+
+$$(\mathbf{y} - \mathbf{X} \boldsymbol{\beta})^T \boldsymbol{\Sigma}^{-1} (\mathbf{y} - \mathbf{X} \boldsymbol{\beta})$$
+
+Solving that for $\boldsymbol{\beta}$ gives the GLS estimator:
+
+$$\hat{\boldsymbol{\beta}}_{GLS} = (\mathbf{X}^T \boldsymbol{\Sigma}^{-1} \mathbf{X})^{-1} \mathbf{X}^T \boldsymbol{\Sigma}^{-1} \mathbf{y}$$
+
+Compare the two formulas. GLS is OLS with $\boldsymbol{\Sigma}^{-1}$ inserted in both places. That matrix does the re-weighting: observations that are strongly correlated with their neighbors get down-weighted, because they are carrying less new information than they would if they were independent. When $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ -- errors are independent and equal variance -- the $\boldsymbol{\Sigma}^{-1}$ terms cancel and the GLS estimator collapses exactly to OLS. OLS is a special case of GLS.
+
+We can verify this in R. If we plug in the identity matrix for $\boldsymbol{\Sigma}$, GLS should return the same answer as OLS:
+
+```{r}
+# OLS (from above)
+beta_ols <- solve(t(X) %*% X) %*% t(X) %*% y
+
+# GLS with Sigma = identity matrix -- should match OLS exactly
+Sigma <- diag(nrow(X))
+Sigma_inv <- solve(Sigma)
+beta_gls <- solve(t(X) %*% Sigma_inv %*% X) %*% t(X) %*% Sigma_inv %*% y
+
+cbind(OLS = beta_ols, GLS = beta_gls)
+```
+
+Same numbers.
+
+One practical note worth keeping in mind. In real spatial analysis we do not know $\boldsymbol{\Sigma}$ ahead of time -- we have to estimate its parameters (range, sill, nugget) from the data. That estimation uses restricted maximum likelihood (REML), which is what `gls()` is doing when you pass it a `corSpatial` object. The $\hat{\boldsymbol{\beta}}_{GLS}$ formula above still applies; it just uses an estimated $\hat{\boldsymbol{\Sigma}}$ in place of the true one.

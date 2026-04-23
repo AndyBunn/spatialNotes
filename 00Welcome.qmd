@@ -1,4 +1,4 @@
-## Why Spatial Analysis
+# Why Spatial Analysis
 
 Most environmental data are spatial data. Temperature varies across a landscape. Species are not distributed at random. Pollution doesn't stop at a property boundary. Soil characteristics, wildfire risk, habitat quality: all of these vary in space, and that variation is not noise. It has structure. The goal of spatial analysis is to describe that structure, understand it, and use it.
 
@@ -8,7 +8,7 @@ But getting the statistics right is only part of the point. Spatial pattern is i
 
 The goal of this course is to build a working toolkit for spatial analysis in environmental science. By the end, you'll know how to describe spatial patterns, test whether they're real, interpolate across space, and account for spatial dependence in regression models. These are not exotic methods. They are basic competency for anyone working with environmental data.
 
-# Welcome and Set Up
+## Welcome and Set Up
 
 These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
 
@@ -26,22 +26,33 @@ You can skip the Asides and still follow the core material. But they're there be
 
 ## What's in These Notes
 
-The notes move through the core ideas of spatial analysis in roughly this order:
+The notes are organized into four parts. Each builds on the one before it.
 
-- **Introduction: Getting Your Bearings** -- Before we can analyze spatial data, we need to be able to handle it. This chapter gets you oriented with the tools and vocabulary we'll use throughout.
-- **Aside: Methods and Generics in R** -- A quick look under the hood at how R uses generic functions. Knowing this will help you make sense of why `plot()` and `summary()` behave differently depending on what you give them.
+**Foundations** gets you set up and oriented. Before any analysis can happen, you need to be comfortable handling spatial data in R -- the data structures, the vocabulary, and the tools. The Mt. Baker chapter is where you get your hands on real raster and vector data for the first time.
+
+- **Introduction: Getting Your Bearings** -- The tools and vocabulary we'll use throughout. Start here.
+    - *Aside: Methods and Generics in R* -- A look under the hood at how R uses generic functions. Helps explain why `plot()` and `summary()` behave differently depending on what you give them.
 - **Mt Baker Map** -- A practical introduction to raster and vector spatial data in R, using elevation and infrastructure data from a local ski area.
-- **Aside: Distance Matrices** -- A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it's worth understanding before you need it.
+
+**Point Patterns & Autocorrelation** is where the analysis starts. We ask the most basic spatial question -- are things randomly distributed, or is there structure? -- and then move on to measuring spatial dependence in continuous variables.
+
 - **Point Patterns** -- How to quantify whether points in space are randomly distributed, clustered, or repulsed, using kernel density estimation and Ripley's K.
-- **Intro to Autocorrelation** -- How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
-- **Aside: Correlation and Regression Are Not the Same Thing** -- These two ideas get conflated constantly. This aside untangles them as we start in on correlation anlaysis and before we lean on regression in later chapters.
+  - *Aside: Distance Matrices* -- A detour into how distances between points are computed and stored. This comes up enough in spatial analysis that it's worth understanding before you need it.
+- **Spatial Autocorrelation** -- How to measure and describe spatial structure in a continuous variable using variograms, Moran's I, and correlograms.
+  - *Aside: Correlation and Regression Are Not the Same Thing* -- These two ideas get conflated constantly. This aside untangles them before we lean on regression in later chapters.
+
+**Interpolation & Geostatistics** is about prediction. We have measurements at some locations and want to estimate values at others. We start with deterministic methods and work up to kriging, which is the probabilistic workhorse of geostatistics.
+
 - **Geostats I: Inverse Distance Weighting** -- Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
 - **Geostats I: Thin-Plate Splines** -- A smooth, flexible interpolation method that minimizes curvature across the surface.
-- **Geostats II: Kriging** -- The probabilistic workhorse of geostatistics. Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.
+- **Geostats II: Kriging** -- Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.
+  - *Aside: Kriging Variance By Hand* -- Cracks open the `gstat` black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.
 - **Geostats II: Regression Kriging** -- Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.
-- **Aside: Kriging Variance By Hand** -- Cracks open the `gstat` black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.
-- **Aside: OLS via Algebra and Matrices** -- Derives the OLS solution algebraically and in matrix form, then implements both in R. Worth reading before the GLS chapter, where GLS turns out to be OLS with one extra matrix in the mix.
+
+**Regression** closes the loop. When your regression residuals have spatial structure, OLS isn't the right tool.
+
 - **Regression: GLS with Autocorrelated Residuals** -- What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
+  - *Aside: OLS via Algebra and Matrices* -- Derives the OLS solution algebraically and in matrix form, then implements both in R. Background that makes the GLS chapter make more sense.
 
 ## Go Do Great Things
 

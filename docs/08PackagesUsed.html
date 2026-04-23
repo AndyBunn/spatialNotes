@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>References – Spatial Analysis for Environmental Science</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -50,18 +53,17 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./07xAsideOLS_Algebric_Matrix.html" rel="prev">
+<link href="./07xAsideOLS-Algebra-Matrix.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a04a01d9790747593e0658c5ce91c85b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7f77c891be54f4a4e70d5699258b6bb7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -101,8 +103,6 @@ div.csl-indent {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Spatial Analysis for Environmental Science</span>
     </a>
@@ -128,97 +128,137 @@ div.csl-indent {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
-      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover Page</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Why Spatial Analysis</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Point Patterns &amp; Autocorrelation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Distance Matrices</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04xAsideCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Correlation is not Regression</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Interpolation &amp; Geostatistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07xAsideOLS_Algebric_Matrix.html" class="sidebar-item-text sidebar-link">
+  <a href="./07xAsideOLS-Algebra-Matrix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
   </div>
 </li>
+      </ul>
+  </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">References</span></a>
@@ -254,7 +294,7 @@ div.csl-indent {
 </header>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-agerer2001exploration" class="csl-entry" role="listitem">
 Agerer, Reinhard. 2001. <span>“Exploration Types of
 Ectomycorrhizae.”</span> <em>Mycorrhiza</em> 11: 107–14. <a href="https://doi.org/10.1007/s005720100108">https://doi.org/10.1007/s005720100108</a>.
@@ -273,17 +313,17 @@ Spatial Point Pattern Analysis, Model-Fitting, Simulation, Tests</em>.
 <div id="ref-bivand2008geostatistics" class="csl-entry" role="listitem">
 Bivand, Roger. 2008a. <span>“Interpolation and Geostatistics.”</span> In
 <em>Applied Spatial Data Analysis with <span>R</span></em>, edited by
-Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio, 191–235. Use
-<span>R</span>! New York, NY: Springer.
+Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio. Use
+<span>R</span>! Springer.
 </div>
 <div id="ref-bivand2008pointpattern" class="csl-entry" role="listitem">
-———. 2008b. <span>“Spatial Point Pattern Analysis.”</span> In
+Bivand, Roger. 2008b. <span>“Spatial Point Pattern Analysis.”</span> In
 <em>Applied Spatial Data Analysis with <span>R</span></em>, edited by
-Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio, 155–90. Use
-<span>R</span>! New York, NY: Springer.
+Roger Bivand, Edzer J. Pebesma, and Virgilio Gómez-Rubio. Use
+<span>R</span>! Springer.
 </div>
 <div id="ref-R-spdep" class="csl-entry" role="listitem">
-———. 2026. <em>Spdep: Spatial Dependence: Weighting Schemes,
+Bivand, Roger. 2026. <em>Spdep: Spatial Dependence: Weighting Schemes,
 Statistics</em>. <a href="https://github.com/r-spatial/spdep/">https://github.com/r-spatial/spdep/</a>.
 </div>
 <div id="ref-R-ncf" class="csl-entry" role="listitem">
@@ -294,9 +334,10 @@ Campitelli, Elio. 2025. <em>Ggnewscale: Multiple Fill and Colour Scales
 in Ggplot2</em>. <a href="https://eliocamp.github.io/ggnewscale/">https://eliocamp.github.io/ggnewscale/</a>.
 </div>
 <div id="ref-dormann2007methods" class="csl-entry" role="listitem">
-Dormann, Carsten F. et al. 2007. <span>“Methods to Account for Spatial
-Autocorrelation in the Analysis of Species Distributional Data: A
-Review.”</span> <em>Ecography</em> 30: 609–28. <a href="https://doi.org/10.1111/j.2007.0906-7590.05171.x">https://doi.org/10.1111/j.2007.0906-7590.05171.x</a>.
+<span class="nocase">Dormann, Carsten F. et al.</span> 2007.
+<span>“Methods to Account for Spatial Autocorrelation in the Analysis of
+Species Distributional Data: A Review.”</span> <em>Ecography</em> 30:
+609–28. <a href="https://doi.org/10.1111/j.2007.0906-7590.05171.x">https://doi.org/10.1111/j.2007.0906-7590.05171.x</a>.
 </div>
 <div id="ref-ford1980spatial" class="csl-entry" role="listitem">
 Ford, E. D., P. A. Mason, and J. Pelham. 1980. <span>“Spatial Patterns
@@ -309,7 +350,7 @@ Fortin, Marie-Josèe, Mark R. T. Dale, and Jay M. Ver Hoef. 2016.
 <span>“Spatial Analysis in Ecology.”</span> In <em>Wiley
 <span>StatsRef</span>: Statistics Reference Online</em>, edited by N.
 Balakrishnan, T. Colton, B. Everitt, W. Piegorsch, F. Ruggeri, and J. L.
-Teugels. Chichester, UK: John Wiley &amp; Sons. <a href="https://doi.org/10.1002/9781118445112.stat07766">https://doi.org/10.1002/9781118445112.stat07766</a>.
+Teugels. John Wiley &amp; Sons. <a href="https://doi.org/10.1002/9781118445112.stat07766">https://doi.org/10.1002/9781118445112.stat07766</a>.
 </div>
 <div id="ref-R-tidyterra" class="csl-entry" role="listitem">
 Hernangómez, Diego. 2023. <span>“Using the <span class="nocase">tidyverse</span> with <span class="nocase">terra</span>
@@ -320,9 +361,9 @@ Objects: The <span class="nocase">tidyterra</span> Package.”</span>
 Hijmans, Robert J. 2026. <em>Terra: Spatial Data Analysis</em>. <a href="https://rspatial.org/">https://rspatial.org/</a>.
 </div>
 <div id="ref-keitt2002accounting" class="csl-entry" role="listitem">
-Keitt, Timothy H. et al. 2002. <span>“Accounting for Spatial Pattern
-When Modeling Organism–Environment Interactions.”</span>
-<em>Ecography</em> 25: 616–25.
+<span class="nocase">Keitt, Timothy H. et al.</span> 2002.
+<span>“Accounting for Spatial Pattern When Modeling Organism–Environment
+Interactions.”</span> <em>Ecography</em> 25: 616–25.
 </div>
 <div id="ref-R-sf" class="csl-entry" role="listitem">
 Pebesma, Edzer. 2026. <em>Sf: Simple Features for r</em>. <a href="https://r-spatial.github.io/sf/">https://r-spatial.github.io/sf/</a>.
@@ -750,7 +791,7 @@ Tidyverse</em>. <a href="https://tidyverse.tidyverse.org">https://tidyverse.tidy
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./07xAsideOLS_Algebric_Matrix.html" class="pagination-link" aria-label="Aside: OLS via Algebra and Matrices">
+      <a href="./07xAsideOLS-Algebra-Matrix.html" class="pagination-link" aria-label="Aside: OLS via Algebra and Matrices">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aside: OLS via Algebra and Matrices</span>
       </a>          
   </div>

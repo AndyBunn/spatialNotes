@@ -121,6 +121,27 @@ blockquote {
 }
 
 /* ------------------------------------------------------------
+   Sidebar part headers — uppercase teal, visually distinct
+   from chapter links
+   ------------------------------------------------------------ */
+.sidebar-item-section .sidebar-section-item,
+.sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  font-size: 0.78rem;
+  color: #1a8a62 !important;
+  margin-top: 0.6rem;
+}
+
+/* Hide page breadcrumbs */
+.quarto-page-breadcrumbs,
+nav[aria-label="breadcrumb"],
+.breadcrumb {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------
    Aside chapters — sidebar TOC
    Targets by filename ("Aside" in href)
    ------------------------------------------------------------ */
