@@ -345,7 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The notes are organized into four parts. Each builds on the one before it.</p>
 <p><strong>Foundations</strong> gets you set up and oriented. Before any analysis can happen, you need to be comfortable handling spatial data in R – the data structures, the vocabulary, and the tools. The Mt. Baker chapter is where you get your hands on real raster and vector data for the first time.</p>
 <ul>
-<li><strong>Introduction: Getting Your Bearings</strong> – The tools and vocabulary we’ll use throughout. Start here.
+<li><strong>Getting Your Bearings</strong> – The tools and vocabulary we’ll use throughout. Start here.
 <ul>
 <li><em>Aside: Methods and Generics in R</em> – A look under the hood at how R uses generic functions. Helps explain why <code>plot()</code> and <code>summary()</code> behave differently depending on what you give them.</li>
 </ul></li>
@@ -364,17 +364,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p><strong>Interpolation &amp; Geostatistics</strong> is about prediction. We have measurements at some locations and want to estimate values at others. We start with deterministic methods and work up to kriging, which is the probabilistic workhorse of geostatistics.</p>
 <ul>
-<li><strong>Geostats I: Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
-<li><strong>Geostats I: Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
-<li><strong>Geostats II: Kriging</strong> – Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.
+<li><strong>Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
+<li><strong>Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
+<li><strong>Kriging</strong> – Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.
 <ul>
 <li><em>Aside: Kriging Variance By Hand</em> – Cracks open the <code>gstat</code> black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.</li>
 </ul></li>
-<li><strong>Geostats II: Regression Kriging</strong> – Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.</li>
+<li><strong>Regression Kriging</strong> – Kriging with external predictors folded in. Useful when you have covariates that explain part of the spatial pattern.</li>
 </ul>
 <p><strong>Regression</strong> closes the loop. When your regression residuals have spatial structure, OLS isn’t the right tool.</p>
 <ul>
-<li><strong>Regression: GLS with Autocorrelated Residuals</strong> – What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
+<li><strong>GLS with Autocorrelated Residuals</strong> – What to do when your regression residuals have spatial structure. Spoiler: you use GLS, and it works.
 <ul>
 <li><em>Aside: OLS via Algebra and Matrices</em> – Derives the OLS solution algebraically and in matrix form, then implements both in R. Background that makes the GLS chapter make more sense.</li>
 </ul></li>
