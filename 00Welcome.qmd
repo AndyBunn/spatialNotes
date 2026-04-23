@@ -8,7 +8,7 @@ But getting the statistics right is only part of the point. Spatial pattern is i
 
 The goal of this course is to build a working toolkit for spatial analysis in environmental science. By the end, you'll know how to describe spatial patterns, test whether they're real, interpolate across space, and account for spatial dependence in regression models. These are not exotic methods. They are basic competency for anyone working with environmental data.
 
-## Welcome and Set Up
+## This Is Not a Textbook
 
 These are the course notes and not a textbook. They are more like a field guide written by someone who has gotten lost in these woods before and wants to help you find your way through.
 
