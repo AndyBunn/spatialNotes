@@ -2,6 +2,8 @@
 set.seed(1984)
 knitr::purl("04Intro2Autocorrelation.qmd", output = "04Intro2Autocorrelation.R", documentation = 1)
 
+
+
 ## ----message=FALSE------------------------------------------------------------
 library(sf)
 library(tidyverse)
@@ -9,46 +11,6 @@ library(tmap)
 library(gstat)
 library(ncf)
 library(spdep)
-library(tmap)
-birds_sf <- readRDS("data/birdRichnessMexico.rds")
-tmap_mode("view")
-tm_shape(birds_sf) + 
-  tm_symbols(col="nSpecies", alpha = 0.7)
-
-
-## -----------------------------------------------------------------------------
-birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
-
-
-## -----------------------------------------------------------------------------
-max(dist(st_coordinates(birds_sf)))/3
-
-hist(birds_sf$nSpecies) # fine
-
-birdVar <- variogram(nSpecies~1, data = birds_sf)
-plot(birdVar)
-birdVar <- variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
-plot(birdVar)
-birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
-zI <- correlog(x=birdsDF[,1],y=birdsDF[,2],
-               z =birdsDF$nSpecies,increment = 50,resamp = 1000)
-plot(foo) # yucky!
-plot(foo,xlim=c(0,1e3))
-abline(h=0)
-pBirdsI <-data.frame(I = zI$correlation, 
-                     d = zI$mean.of.class,
-                     p = zI$p) %>%
-  filter(d <= 1000) %>%
-  mutate(Significant = p < .01) %>%
-  ggplot() +
-  geom_hline(yintercept = 0,linetype="dashed") +
-  geom_path(aes(x = d, y = I,group = 1, color=Significant),linewidth=1) + 
-  geom_point(aes(x = d, y = I, fill=Significant),size=3,pch=21) +
-  scale_fill_manual(values = c("grey","darkgreen")) +
-  scale_color_manual(values = c("grey","darkgreen")) +
-  labs(x="Distance (km)",y="Moran's I",
-       caption = "Crit value of p<0.001")
-pBirdsI
 
 
 ## -----------------------------------------------------------------------------
@@ -634,6 +596,40 @@ pGradBumpsI
 
 
 ## ----message=FALSE------------------------------------------------------------
+library(tmap)
+birds_sf <- readRDS("data/birdRichnessMexico.rds")
+tmap_mode("view")
+tm_shape(birds_sf) + 
+  tm_symbols(col="nSpecies", alpha = 0.7)
+
+
+## -----------------------------------------------------------------------------
+birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
+
+
+## -----------------------------------------------------------------------------
+max(dist(st_coordinates(birds_sf)))/3
+
+
+## ----eval=FALSE---------------------------------------------------------------
+# birdVar <- variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
+
+
+## ----echo=FALSE,eval=FALSE----------------------------------------------------
+# birdsDF <- data.frame(st_coordinates(birds_sf),nSpecies=birds_sf$nSpecies)
+# foo <- correlog(x=birdsDF[,1],y=birdsDF[,2],
+#                 z =birds_sf$nSpecies,increment = 50,resamp = 200)
+# plot(foo) # yucky!
+# plot(foo,xlim=c(0,1e3))
+# abline(h=0)
+# # classic gradient!
+# 
+# birdVar<-variogram(nSpecies~1, data = birds_sf)
+# plot(birdVar,pch=20)
+# # look at NS vs EW
+# birdVar<-variogram(nSpecies~1, data = birds_sf, alpha=c(0,90))
+# plot(birdVar,pch=20)
+
 
 ## -----------------------------------------------------------------------------
 # continuous

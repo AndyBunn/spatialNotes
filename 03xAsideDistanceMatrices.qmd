@@ -58,7 +58,7 @@ Look carefully at what that prints. It's a triangular table -- only the lower ha
 class(D)
 ```
 
-It's not a matrix -- it's a `dist` object. If you've read the [aside on methods and generics](01xAsideMethods_and_generics.html), you know that class determines how R behaves when you call functions on an object. Here, `print(D)` is actually calling `print.dist()` under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The `dist` class is a compact, special-purpose way of storing pairwise distances -- not a general-purpose matrix.
+It's not a matrix -- it's a `dist` object. If you've read the [Understanding Methods and Generics in R aside](01xAsideMethodsAndGenerics.html), you know that class determines how R behaves when you call functions on an object. Here, `print(D)` is actually calling `print.dist()` under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The `dist` class is a compact, special-purpose way of storing pairwise distances -- not a general-purpose matrix.
 
 Here's why that compactness makes sense. With $n$ points, the full distance matrix would be $n \times n$ -- that's 36 numbers for our 6-point dataset. But a lot of those numbers are redundant. Two things are always true:
 

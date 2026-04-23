@@ -16,7 +16,7 @@ We can quantify the pattern of points themselves or in the presence of an explan
 Read chapter 7 in Bivand's book up to section 7.5 [@bivand2008pointpattern]. Also start reading through @fortin2016spatial as a great overall short chapter on spatial analysis. Don't worry about some of the details in there yet. We will revisit as we go along.
 
 ## Distance Refresh
-Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside first](03xAsideDistanceMatrices.html).
+Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrix aside](03xAsideDistanceMatrices.html).
 
 ## Packages
 We will use `spatstat`[@R-spatstat] for point pattern analysis and I've thrown in some tidyverse[@R-tidyverse] syntax as well. 
@@ -86,7 +86,7 @@ plot(bei)
 
 Note that the units on these data are not the same. The `japanesepines` data are measured where one unit equals 5.7 meters, `redwood` is unitless (re-scaled at some point to an xy grid ranging from 0,1), `bei` is actually in meters in a 1000x500m bounding box. This doesn't really matter when we interpret each data set on its own, but we should keep it in mind when comparing numbers down below.
 
-Note also that I'm using the `plot` function to show the point data. E.g., `plot(japanesepines)`. Because `japanesepines` is class `ppp`, the generic function `plot.ppp` is being used with the authors of `spatstat` having made the visualization choices for you. If you are a die hard `ggplot` enthusiast you can figure out how to make your own plot using `ggplot`. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the `japanesepines` object which is a `list`. I'm not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.
+Note also that I'm using the `plot` function to show the point data. E.g., `plot(japanesepines)`. Because `japanesepines` is class `ppp`, the generic function `plot.ppp` is being used with the authors of `spatstat` having made the visualization choices for you. Look back at the [Understanding Methods and Generics in R aside](01xAsideMethodsAndGenerics.html). If you are a die hard `ggplot` enthusiast you can figure out how to make your own plot using `ggplot`. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the `japanesepines` object which is a `list`. I'm not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.
 
 ```{r}
 tibble(x=japanesepines$x * japanesepines$window$units$multiplier, 

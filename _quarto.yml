@@ -18,7 +18,7 @@ book:
       chapters:
         - 00Welcome.qmd
         - 01GettingStarted.qmd
-        - 01xAsideMethods_and_generics.qmd
+        - 01xAsideMethodsAndGenerics.qmd
         - 02MtBakerMap.qmd
     - part: "Point Patterns & Autocorrelation"
       chapters:

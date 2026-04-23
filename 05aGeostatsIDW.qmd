@@ -160,6 +160,8 @@ p1 + geom_point(aes(x=2,y=4,size=zhat_s0))
 
 You can see how we interpolated (estimated) one point using inverse distance weighting. And you could imagine then how we'd do that for any point we could imagine.
 
+If you need a refresher in `dist()`, work through the [Distance Matrices aside](03xAsideDistanceMatrices.html).
+
 ## Application
 ### Data
 Now that we've done a toy example, let's give this a shot with the lead data from the Meuse River. Because the lead data are pretty skewed, we will log transform it. First we'll load, then log the lead column, make it into a `sf` object and then plot.

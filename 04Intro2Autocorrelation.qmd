@@ -13,7 +13,7 @@ Space matters: Spatial pattern lets us understand process. Where point patterns 
 Start with the Intro section of Hijmans's [Spatial autocorrelation](https://www.rspatial.org/raster/analysis/3-spauto.html). Move onto the Moran's I section as you work through this page. Also, go back to @fortin2016spatial from last module paying particular attention to Spatial Autocorrelation Coefficients section. You can start Ch 8 in Bivand [@bivand2008geostatistics] and read through 8.4.2 (Cutoﬀ, Lag Width, Direction Dependence).
 
 ## Refresh
-Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [distance matrix aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [correlation versus regression aside](04xAsideCorrelationVersusRegression.html)
+Before diving in, make sure you're comfortable with distance matrices. If you need a refresher, work through the [Distance Matrices aside](03xAsideDistanceMatrices.html). Also, check out the rant about correlation and regression in the [Correlation is not Regression aside](04xAsideCorrelationVersusRegression.html)
 
 ## Packages
 The packages we are going to use are below. 

@@ -221,7 +221,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+  <a href="./01xAsideMethodsAndGenerics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
   </div>
 </li>
@@ -399,7 +399,7 @@ window.Quarto = {
 </section>
 <section id="distance-refresh" class="level2">
 <h2 class="anchored" data-anchor-id="distance-refresh">Distance Refresh</h2>
-<p>Before diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the <a href="03xAsideDistanceMatrices.html">Distance Matrix aside first</a>.</p>
+<p>Before diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the <a href="03xAsideDistanceMatrices.html">Distance Matrix aside</a>.</p>
 </section>
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
@@ -546,7 +546,7 @@ Unit of length: 1 metre</code></pre>
 </div>
 </div>
 <p>Note that the units on these data are not the same. The <code>japanesepines</code> data are measured where one unit equals 5.7 meters, <code>redwood</code> is unitless (re-scaled at some point to an xy grid ranging from 0,1), <code>bei</code> is actually in meters in a 1000x500m bounding box. This doesn’t really matter when we interpret each data set on its own, but we should keep it in mind when comparing numbers down below.</p>
-<p>Note also that I’m using the <code>plot</code> function to show the point data. E.g., <code>plot(japanesepines)</code>. Because <code>japanesepines</code> is class <code>ppp</code>, the generic function <code>plot.ppp</code> is being used with the authors of <code>spatstat</code> having made the visualization choices for you. If you are a die hard <code>ggplot</code> enthusiast you can figure out how to make your own plot using <code>ggplot</code>. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the <code>japanesepines</code> object which is a <code>list</code>. I’m not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.</p>
+<p>Note also that I’m using the <code>plot</code> function to show the point data. E.g., <code>plot(japanesepines)</code>. Because <code>japanesepines</code> is class <code>ppp</code>, the generic function <code>plot.ppp</code> is being used with the authors of <code>spatstat</code> having made the visualization choices for you. Look back at the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a>. If you are a die hard <code>ggplot</code> enthusiast you can figure out how to make your own plot using <code>ggplot</code>. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the <code>japanesepines</code> object which is a <code>list</code>. I’m not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>

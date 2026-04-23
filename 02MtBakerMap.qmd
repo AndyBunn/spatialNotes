@@ -28,7 +28,7 @@ The people in this class have tremendously varying levels of experience working 
 ## Introduction
 Because some of you are GIS experts and some of you have only done a tiny bit of GIS, we a tough dynamic in class. This is because a lot of working with spatial data is in the mechanics of displaying and handling data from different sources as well as the whole idea of projecting data from a roundish planet onto a plane. We will focus as much as we can on the big picture of how spatial patterns let us make inference about environmental processes. But we need to be able to do some basic GIS work in R. This assignment builds on what you've done in the Data Carpentry workshops and has you make a map using data you haven't seen before.
 
-I've been working on a cool spatial analysis project up at the Mt Baker ski hill. I won't go into it now, but it is a project to improve geolocation for skiers and riders using very inexpensive RFID equipment. We will look at some of those data later in class but let's start with just making a map of some of the features at the ski hill. Many of you are familiar with the area from recreating. 
+Many of you are familiar with the  Mt Baker ski hill from recreating. Let's look at making a map of some of the features at the ski hill.  Mountains are fun. 
 
 ## The Data
 

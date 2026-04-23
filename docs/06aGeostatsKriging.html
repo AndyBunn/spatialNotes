@@ -221,7 +221,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+  <a href="./01xAsideMethodsAndGenerics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
   </div>
 </li>
@@ -814,7 +814,7 @@ max value   :     0.6503917 </code></pre>
 </section>
 <section id="uncertainty" class="level2">
 <h2 class="anchored" data-anchor-id="uncertainty">Uncertainty</h2>
-<p>The various variogram models we looked at above (i.e., spherical and exponential) and ones we didn’t (e.g., Gaussian and Mattern) are more than just pretty lines that we use to get a continuous model of <span class="math inline">\(\hat{\gamma}\)</span> as a function of distance. They have some of the same <a href="https://en.wikipedia.org/wiki/Variogram#Properties">properties</a> that statistical distributions have in regards to probability theory. In particular, variograms are empirical estimates of the covariance of Gaussian processes. As the model variogram gives the mean of the squared differences between values based on their location, the uncertainty in the variogram at a given distance is the average covariance between “pairs of pairs” used to calculate the variogram. This covariance follows a Gaussian process and thus allows each estimate (prediction) to have an associated error distribution which <code>gstat</code> reports as the variance. The underlying theory is well beyond what we cover here but a geostats book like Diggle’s <a href="https://books.google.com/books/about/Model_based_Geostatistics.html?id=qCqOm39OuFUC">“Model-based Geostatistics”</a> will drag you through it. Bivand’s chapter has more on this of course and I’ll link to a walk through of calculating the uncertainty on a separate page.</p>
+<p>The various variogram models we looked at above (i.e., spherical and exponential) and ones we didn’t (e.g., Gaussian and Mattern) are more than just pretty lines that we use to get a continuous model of <span class="math inline">\(\hat{\gamma}\)</span> as a function of distance. They have some of the same <a href="https://en.wikipedia.org/wiki/Variogram#Properties">properties</a> that statistical distributions have in regards to probability theory. In particular, variograms are empirical estimates of the covariance of Gaussian processes. As the model variogram gives the mean of the squared differences between values based on their location, the uncertainty in the variogram at a given distance is the average covariance between “pairs of pairs” used to calculate the variogram. This covariance follows a Gaussian process and thus allows each estimate (prediction) to have an associated error distribution which <code>gstat</code> reports as the variance. The underlying theory is well beyond what we cover here but a geostats book like Diggle’s <a href="https://books.google.com/books/about/Model_based_Geostatistics.html?id=qCqOm39OuFUC">“Model-based Geostatistics”</a> will drag you through it. Bivand’s chapter has more on this of course. I walk through it in the <a href="06xAsideGeostatsKrigingVariance.html">Kriging Variance By Hand aside</a>.</p>
 </section>
 <section id="other-variogram-models" class="level2">
 <h2 class="anchored" data-anchor-id="other-variogram-models">Other Variogram Models</h2>

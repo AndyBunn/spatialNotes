@@ -202,7 +202,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01xAsideMethods_and_generics.html" class="sidebar-item-text sidebar-link">
+  <a href="./01xAsideMethodsAndGenerics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
   </div>
 </li>
@@ -424,7 +424,7 @@ window.Quarto = {
 <pre><code>[1] "dist"</code></pre>
 </div>
 </div>
-<p>It’s not a matrix – it’s a <code>dist</code> object. If you’ve read the <a href="01xAsideMethods_and_generics.html">aside on methods and generics</a>, you know that class determines how R behaves when you call functions on an object. Here, <code>print(D)</code> is actually calling <code>print.dist()</code> under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The <code>dist</code> class is a compact, special-purpose way of storing pairwise distances – not a general-purpose matrix.</p>
+<p>It’s not a matrix – it’s a <code>dist</code> object. If you’ve read the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a>, you know that class determines how R behaves when you call functions on an object. Here, <code>print(D)</code> is actually calling <code>print.dist()</code> under the hood, which is why you get that tidy triangular display instead of a raw dump of numbers. The <code>dist</code> class is a compact, special-purpose way of storing pairwise distances – not a general-purpose matrix.</p>
 <p>Here’s why that compactness makes sense. With <span class="math inline">\(n\)</span> points, the full distance matrix would be <span class="math inline">\(n \times n\)</span> – that’s 36 numbers for our 6-point dataset. But a lot of those numbers are redundant. Two things are always true:</p>
 <ol type="1">
 <li>The distance from point <span class="math inline">\(i\)</span> to itself is zero: <span class="math inline">\(d_{ii} = 0\)</span>. Every diagonal element is zero, so we don’t need to store them.</li>

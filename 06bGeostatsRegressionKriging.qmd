@@ -53,7 +53,7 @@ lm1 <- lm(y~x1 + x2,data = originalDat)
 summary(lm1)
 ```
 
-OK. We have one definitely helpful predictor, and one borderline predictor. Now let's say we want to extend that model to predict a new data set. The object `lm1` is class `lm` and most every model class has a `predict` function, or a `newdata` argument to the original function, that allows you feed it new data. So let's imagine we have a new data set with  `x1` and `x2` but no `y`. 
+OK. We have one definitely helpful predictor, and one borderline predictor. Now let's say we want to extend that model to predict a new data set. The object `lm1` is class `lm` and most every model class has a `predict` function, or a `newdata` argument to the original function, that allows you feed it new data. Review the [Understanding Methods and Generics in R aside](01xAsideMethodsAndGenerics.html) if that is unclear. So let's imagine we have a new data set with  `x1` and `x2` but no `y`. 
 
 ```{r}
 newDat <- data.frame(x1=rnorm(n),x2=rnorm(n))
