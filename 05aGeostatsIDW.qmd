@@ -26,9 +26,9 @@ library(tidyterra)
 
 
 ## Geostats
-The term "geostatistics" is big and vague and like the term "statistics" covers both descriptive and inferential approaches. The, somewhat tautological, difference is the prefix "geo." In geostatistics we use the spatial structure in the data to aid our understanding -- whether that is descriptive and inferential. The key is that we use space.
+The term "geostatistics" is big and vague -- like "statistics" it covers both descriptive and inferential approaches. The difference, somewhat tautologically, is the "geo": we use the spatial structure in the data to aid our understanding.
 
-So far in class, we've been mostly describing spatial patterns and sometimes using those patterns to make inference about processes. But we haven't done much predicting. That's where we are going to focus now. For instance, as most of you have experienced for yourselves, collecting data is expensive and time consuming. Often we collect samples of something and hope to make larger inferences about some phenomenon based on a sample (e.g., [we use the sample mean to infer the population mean](https://www.khanacademy.org/math/statistics-probability/sampling-distributions-library/sample-means/v/statistics-sample-vs-population-mean)). In geostatistics, we analyze and often predict some variable associated with spatial phenomena. Because we know how to measure spatial structure (e.g., autocorrelation) we can use that information on pattern to better understand some process. And practically, if we have  samples at known locations we can use geostatistical techniques to produce predictions and related measures of uncertainty of the predictions for unsampled locations.
+So far we've been mostly describing spatial patterns and sometimes using those patterns to make inferences about processes. Now we're going to predict. Collecting data is expensive and time consuming, so we often sample and then hope to say something about unsampled locations. In geostatistics, because we know how to measure spatial structure (autocorrelation, remember?), we can use that structure to produce predictions for locations we never visited. And with probabilistic methods, we get uncertainty estimates on those predictions too. We'll come back to that last part in the later chapters.
 
 ## Theory
 We are going to tackle the broader theory and application of geostatistics (which did indeed develop from the desire to get more gold out of the ground in South Africa) but we are going to start with a conceptual application that predates geostatistics as a discipline. We have already introduced the idea of inverse distance weights (IDW) with our matrix $W$ from the Moran's I calculation where $w_{ij}=d_{ij}^{-1}$.
@@ -211,7 +211,7 @@ meuse_grid_sf
 ### IDW
 So the idea here is that we will model a value for lead at each of the locations in `meuse_grid_sf`. Rather than do this by hand as we did above, we will use the very powerful `gstat` library.
 
-We can use the coordinates in `meuse_grid_sf` as the locations to predict using IDW. We don't care about the data in `meuse_grid_sf` like soil type or distance to river. We just want the locations so we can predict lead using IDW. E.g., with a with a power of 2. To do this, we will use `gstat` function which creates an object that holds all the information necessary for prediction. Here we tell `gstat` that we want an IDW model with a weight of 2 using the `idp` parameter. The formula `logLead~1` means that we are only coordinates as predictors.
+We can use the coordinates in `meuse_grid_sf` as the locations to predict using IDW. We don't care about the data in `meuse_grid_sf` like soil type or distance to river. We just want the locations. To do this, we will use the `gstat` function which creates an object that holds all the information necessary for prediction. Here we tell `gstat` that we want an IDW model with a power of 2 using the `idp` parameter. The formula `logLead~1` tells `gstat` there are no covariates, just an intercept. The spatial weighting by distance is what makes this IDW -- that's handled by `idp`, not by the formula. This distinction will matter when we add covariates in regression kriging.
 
 ```{r}
 idw_p2_model <- gstat(formula=logLead~1, 
@@ -221,7 +221,7 @@ logLeadIDW_p2_sf <- predict(idw_p2_model,meuse_grid_sf)
 logLeadIDW_p2_sf
 ```
 
-Now, we are going to look at the interpolated data and assess if it's a "good" interpolation in a bit. But first, let's look at the `logLeadIDW_p2_sf` object we made. This is a `sf` object returned by `predict`. The interpolated lead levels are accessed via `logLeadIDW_p2_sf$var1.pred` (we will turn a blind eye to the `logLeadIDW_p2_sf$var1.var` column of NA values for *now*). All the `gstat` functions we are going to use follow this convention so the good news is that you only have to get used to it once.
+Now, we are going to look at the interpolated data and assess if it's a "good" interpolation in a bit. But first, let's look at the `logLeadIDW_p2_sf` object we made. This is a `sf` object returned by `predict`. The interpolated lead levels are accessed via `logLeadIDW_p2_sf$var1.pred` (we will turn a blind eye to the `logLeadIDW_p2_sf$var1.var` column of NA values for *now* -- those NAs are there because IDW is deterministic; there's no probability model underneath it and therefore no variance to estimate. When we get to kriging, that column will actually mean something). All the `gstat` functions we are going to use follow this convention so the good news is that you only have to get used to it once.
 
 But first, the `gstat` `predict` function returned a `sf` point object. We want it to be a `SpatRaster`. You'd think there would be an elegant way to convert an evenly spaced point object into a `SpatRaster` object but there isn't at the moment so we will brute force it. This is a little irksome but whatever. I'll write a little function to do this just because we'll have to do it a few times. If you haven't done this, writing functions is a good tool to have at your disposal.
 
@@ -262,6 +262,8 @@ ggplot() +
 
 Are those bumps and craters real? Or an artifact? Would the surface be better if we changed the value of $p$? What does "better" even mean? Would we know "better" if we saw it?
 
+Those craters are artifacts of IDW, not real structure in the data. Here's why they happen: in areas where sample points are sparse, IDW has very little to work with. Any location in a gap between widely-spaced points ends up being pulled hard toward the one or two nearest observations, creating bullseye patterns around each isolated point. The center of the Meuse study area is sampled more thinly than the edges near the river, which is why that's where the craters are worst. No interpolation method handles sparse data well, but IDW is particularly vulnerable to this because its weighting scheme has no concept of the broader spatial structure of the data -- it just sees distance. Keep this in mind as we look at skill.
+
 ## Skill
 Now that we are making predictions we need to assess how good they are. The [Model Skill and Cross Validation aside](05xAsideModelSkill.html) covers all of this in detail and is worth reading before going further. The short version is: we'll use R$^2$, RMSE, and the observed-vs-predicted plot throughout the interpolation chapters, and we always care more about out-of-sample skill than in-sample fit. Here's the in-sample picture first, just to show why:
 
@@ -281,7 +283,7 @@ ggplot() +
        title="Lead log(ppm)")
 ```
 
-The model does an excellent job of predicting the observed values with 99% variance explained and a low RMSE. But as you are likely already aware, this is kind of a lame comparison because the IDW model knew about all those points when it made the predictions. Typically when assessing skill we withhold some portion of the data and then use that to test the model. When we test the model using the withheld data we are calculating the out-of-sample error by giving the model a chance to predict some data is hasn't seen before. E.g., let's withhold 25% of the data (38 points), do the interpolation, and then look at how well the model predicted the withheld points.
+The model does an excellent job of predicting the observed values with 99% variance explained and a low RMSE. It's 99% rather than 100% because we're extracting predictions from a raster grid, not from the exact observation coordinates -- there's a little rounding from the discretization. IDW is actually exact at data locations in theory (the weight to itself would be infinite, overwhelming everything else). Which is precisely why this in-sample comparison is kind of a lame test. The model knew about all those points when it made the predictions. Typically when assessing skill we withhold some portion of the data and then use that to test the model. When we test the model using the withheld data we are calculating the out-of-sample error by giving the model a chance to predict some data it hasn't seen before. E.g., let's withhold 25% of the data (38 points), do the interpolation, and then look at how well the model predicted the withheld points.
 
 ```{r}
 n <- nrow(meuse_sf)
@@ -341,7 +343,7 @@ For a full treatment of the null model and how to interpret these skill scores, 
 
 So we have to ask, "How can we improve this model in a responsible way?"
 
-Improving a model's skill (without overfitting it) is an art. In this case, IDW is a pretty blunt tool. In fact it is completely **deterministic**. I.e., there is no probability theory underlying the method. We will get into probabilistic interpolation with a technique called kriging in the next module.
+Improving a model's skill (without overfitting it) is an art. In this case, IDW is a pretty blunt tool. In fact it is completely **deterministic**. I.e., there is no probability theory underlying the method, which limits how much we can do.
 
 What can we do right now? We could start trying to "tune" the model using parameters we can adjust. The power function is the easiest to mess with but we could also specify a minimum or maximum number of points used for the interpolation (arguments `nmax` and `nmin`) or a maximum distance that can influence the interpolation (`maxdist`).
 
@@ -389,7 +391,13 @@ The R$^2$ is higher and the RMSE is lower. It's a better fit but not much better
 1 - (rmse / rmseNULL)
 ```
 
-That's a better model all around but ultimately there isn't a lot we can do to improve the fits in the middle of this particular study site using IDW. The data in that area are very sparse and thus form the craters that we see. No method does a great job with sparse data as compared to thick data but IDW is is especially susceptible to errors associated with widely spaced points. And because it is a deterministic method we don't get an error estimate associated with any particular prediction like we will when we turn to kriging in the next module.
+That's a better model all around but not by much. Tuning $p$ only gets you so far with IDW -- the method just isn't well-suited to that sparse center of the study area, and no value of $p$ is going to fix thin data.
+
+## Wrapping Up IDW
+
+IDW is a reasonable starting point for spatial interpolation. It's fast, intuitive, and has no assumptions beyond Tobler's first law. But it has  limits. It's purely deterministic, so you get a surface but no uncertainty estimate. It's sensitive to the choice of $p$ but there's no principled way to pick it -- you're essentially just tuning by eye and cross-validation. And it has no way to account for spatial structure beyond distance: it can't know that lead decreases consistently with distance from the river, for instance. It just sees nearby points and weights them.
+
+After a quick detour into thin-plate splines we'll tackle these problems. Kriging uses the variogram to model the spatial structure explicitly and, crucially, returns a variance estimate alongside the prediction. That `var1.var` column that was full of NAs? Kriging fills it in. After that, regression kriging incorporates covariates like distance to river directly into the model -- and that's where the formula `logLead~1` vs. `logLead~dist` distinction will make sense.
 
 ```{r, eval=FALSE, echo=FALSE}
 #Optimizing p 3.058529
