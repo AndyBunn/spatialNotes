@@ -20,9 +20,10 @@ These notes are a living document. They change based on what works, what doesn't
 
 ## How These Notes Are Laid Out
 
-Most of the chapters follow a natural progression -- each one builds on the last, and working through them in order is the right call. But scattered through the notes you'll find **Asides**: short detours that dig into something that doesn't quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters make more sense.
+Most of the chapters follow a natural progression, each one builds on 
+the last. But scattered through the notes you'll find **Asides**: detours that dig into something that doesn't quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters flow better.
 
-You can skip the Asides and still follow the core material. But they're there because the questions they answer are real ones -- the kind that come up when you're working through a chapter and start wondering why something works the way it does. If that's how your brain works, the Asides are for you.
+The Asides are linked from the chapters that depend on them, and  skipping one will likely leave you confused when that chapter  references it. They are separate from the main chapters not because  they are less important, but because pulling them out keeps the main  flow readable. When you hit a link to an Aside, it's worth following it.
 
 ## What's in These Notes
 
@@ -44,6 +45,8 @@ The notes are organized into four parts. Each builds on the one before it.
 **Interpolation & Geostatistics** is about prediction. We have measurements at some locations and want to estimate values at others. We start with deterministic methods and work up to kriging, which is the probabilistic workhorse of geostatistics.
 
 - **Inverse Distance Weighting** -- Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
+  - **Aside: Model Skill and Cross Validation** -- A model that fits your data well is not necessarily a model that predicts well. This aside covers how to tell the difference, and how to measure it, before we start building interpolation models that depend on getting this right.
+
 - **Thin-Plate Splines** -- A smooth, flexible interpolation method that minimizes curvature across the surface.
 - **Kriging** -- Kriging uses the spatial structure of the data to predict unknown values and -- unlike IDW -- gives you a real measure of uncertainty.
   - *Aside: Kriging Variance By Hand* -- Cracks open the `gstat` black box. We calculate kriging weights and prediction variance using matrix algebra on a toy dataset and check our work against the package.

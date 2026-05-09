@@ -1,7 +1,9 @@
 # Deterministic Interpolation: Inverse Distance Weighting
 
-```{r,echo=FALSE}
+```{r,echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 set.seed(184)
+knitr::purl("05aGeostatsIDW.qmd", output = "05aGeostatsIDW.R", documentation = 1)
+
 ```
 
 ## Reading
@@ -261,9 +263,7 @@ ggplot() +
 Are those bumps and craters real? Or an artifact? Would the surface be better if we changed the value of $p$? What does "better" even mean? Would we know "better" if we saw it?
 
 ## Skill
-Until now in class we've mostly been describing patterns seen in samples. Now we are doing actual prediction (hence the "geostatistics" term). And with prediction comes the need to assess the skill of the predictions. Skill is a catchall term that refers to any measure of the accuracy of prediction relative to the observations. The most common ways to assess skill are to look at the R$^2$ of the observed vs predicted data as well as the root mean squared errors (RMSE). 
-
-E.g., in the above:
+Now that we are making predictions we need to assess how good they are. The [Model Skill and Cross Validation aside](05xAsideModelSkill.html) covers all of this in detail and is worth reading before going further. The short version is: we'll use R$^2$, RMSE, and the observed-vs-predicted plot throughout the interpolation chapters, and we always care more about out-of-sample skill than in-sample fit. Here's the in-sample picture first, just to show why:
 
 ```{r}
 obs <- meuse_sf$logLead
@@ -325,50 +325,40 @@ ggplot() +
        title="Lead log(ppm)")
 ```
 
-Oooof. Looking at that plot and the code we see now that the skill of the model is greatly decreased with R$^2$ = `r rsq` and RMSE = `r rmse`. We can also see that the predicted values are less than the observed values for these points.
+Oooof. Looking at that plot and the code we see now that the skill of the model is greatly decreased with R$^2$ = `r round(rsq,3)` and RMSE = `r round(rmse,3)`. We can also see that the predicted values are less than the observed values for these points.
 
-What we just did above is bear minimum that you need to do with any kind of statistical prediction. How well the model fits the observed data is not nearly as informative as how well it fits withheld data. Note that there is nothing special about 25% for withheld data! It's an example I'm using here but most of you will be hip to the idea that have much cleverer schemes for looking at out-of-sample error like cross validation.
+### Null Model
 
-### Aside: RMSE NULL Model
-When using RMSE it's good to know if you are doing better than a random expectation. We can establish a very simple NULL model for RMSE by using the mean value of lead as the NULL predictions.
-
-Here is the RMSE of the NULL case where everything is predicted as the mean:
+How does that RMSE look against the simplest possible baseline, predicting the training mean everywhere?
 
 ```{r}
-obs <- meuse_sf$logLead
-preds <- mean(meuse_sf$logLead)
-
-rmseNULL <- sqrt(mean((preds - obs)^2))
+rmseNULL <- sqrt(mean((mean(meuseTrain$logLead) - obs)^2))
 rmseNULL
-```
-
-Our `rmse` is quite a bit better than the `rmseNULL`. Which is good! We can hopefully do better than the mean as a predicted surface. One way that people use RMSE is to calculate a relative performance as:
-
-```{r}
 1 - (rmse / rmseNULL)
 ```
 
-This is conceptually similar to using R$^2$. There is a thread about this [here](https://stats.stackexchange.com/questions/218418/comparing-rmse-to-model) for the curious. And more in the reading. To make that relative performance into a test you'd need to set it in a permutation framework. That is probably overkill here but something to be aware of.
+For a full treatment of the null model and how to interpret these skill scores, see the [Model Skill and Cross Validation aside](05xAsideModelSkill.html).
 
-## How can we improve this model?
+So we have to ask, "How can we improve this model in a responsible way?"
+
 Improving a model's skill (without overfitting it) is an art. In this case, IDW is a pretty blunt tool. In fact it is completely **deterministic**. I.e., there is no probability theory underlying the method. We will get into probabilistic interpolation with a technique called kriging in the next module.
 
 What can we do right now? We could start trying to "tune" the model using parameters we can adjust. The power function is the easiest to mess with but we could also specify a minimum or maximum number of points used for the interpolation (arguments `nmax` and `nmin`) or a maximum distance that can influence the interpolation (`maxdist`).
 
-For example, here is the same data as above with $p=2.5$ instead of $p=2$.
+For example, here is the same data as above with $p=3$ instead of $p=2$.
 
 ```{r}
-idw_p2.5_model <- gstat(formula=logLead~1, 
+idw_p3_model <- gstat(formula=logLead~1, 
                         locations = meuseTrain,
-                        set=list(idp = 2.5))
+                        set=list(idp = 3))
 
-logLeadIDW_p2.5_sf <- predict(idw_p2.5_model,meuse_grid_sf)
+logLeadIDW_p3_sf <- predict(idw_p3_model,meuse_grid_sf)
 
-logLeadIDW_p2.5_rast <- sf_2_rast(logLeadIDW_p2.5_sf)
+logLeadIDW_p3_rast <- sf_2_rast(logLeadIDW_p3_sf)
 
 # and plot
 ggplot() +
-  geom_spatraster(data=logLeadIDW_p2.5_rast, mapping = aes(fill=var1.pred),alpha=0.8) +
+  geom_spatraster(data=logLeadIDW_p3_rast, mapping = aes(fill=var1.pred),alpha=0.8) +
   scale_fill_continuous(type = "viridis",name="log(ppm)",na.value = "transparent") + 
   labs(title="Lead concentrations") +
   theme_minimal()
@@ -379,7 +369,7 @@ How does this surface differ? Here is the skill on the withheld data:
 ```{r}
 # note use of meuseTest here
 obs <- meuseTest$logLead
-preds <- extract(logLeadIDW_p2.5_rast, meuseTest) %>% pull(var1.pred)
+preds <- extract(logLeadIDW_p3_rast, meuseTest) %>% pull(var1.pred)
 rsq <- cor(obs,preds)^2
 rmse <- sqrt(mean((preds - obs)^2))
 rsq
@@ -393,9 +383,13 @@ ggplot() +
        title="Lead log(ppm)")
 ```
 
-The R$^2$ is higher and the RMSE is lower. It's a better fit but not much better. And the interpolated surface still looks funny. 
+The R$^2$ is higher and the RMSE is lower. It's a better fit but not much better. Against the same null, the skill score for $p=3$ is:
 
-Ultimately there isn't a lot we can do to improve the fits in the middle of this particular study site using IDW. The data in that area are very sparse and thus form the craters that we see. No method does a great job with sparse data as compared to thick data but IDW is is especially susceptible to errors associated with widely spaced points. And because it is a deterministic method we don't get an error estimate associated with any particular prediction like we will when we turn to kriging in the next module.
+```{r}
+1 - (rmse / rmseNULL)
+```
+
+That's a better model all around but ultimately there isn't a lot we can do to improve the fits in the middle of this particular study site using IDW. The data in that area are very sparse and thus form the craters that we see. No method does a great job with sparse data as compared to thick data but IDW is is especially susceptible to errors associated with widely spaced points. And because it is a deterministic method we don't get an error estimate associated with any particular prediction like we will when we turn to kriging in the next module.
 
 ```{r, eval=FALSE, echo=FALSE}
 #Optimizing p 3.058529
@@ -435,7 +429,7 @@ prcpCA %>% ggplot() +
   scale_size(guide="none")
 ```
 
-Use IDW to create a surface of total annual precipitation in California. Tune and assess skill as you see fit. Interpret and explain your surface and anything you notice in particular about it. 
+Use IDW to create a surface of total annual precipitation in California. Tune and assess skill as you see fit. Interpret and explain your surface and anything you notice in particular about it. A skill assessment of some kind is important so see the [Model Skill and Cross Validation aside](05xAsideModelSkill.html).
 
 One warning. There are a few stations on the coast that are classified as `NA` in the gridded surface you'll make. This is because the gridded surface is 10x10 km and that coarse resolution means some of the edge cases (stations very close to the coast) get turned into "ocean" instead of "land". This is a really common issue when moving from point to raster data. It won't affect what you do until you try to assess skill. Then you'll find that some (eight, I think) of the stations will show up as `NA` when you use `extract`. This will cause your `rsq` and `rmse` calculations to return `NA`. You can overcome this in a variety of ways (e.g., `cor(obs,preds,use="complete.obs")^2` and `sqrt(mean((preds - obs)^2,na.rm=TRUE))` or with a mask etc.). You'd have figured that out on your own I bet, but I'm just giving you a heads up.
 

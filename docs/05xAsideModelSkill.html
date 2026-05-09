@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Spatial analysis notes and exercises">
+
+<title>Aside: Model Skill and Cross Validation – Spatial Analysis for Environmental Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./05bGeostat2TPS.html" rel="next">
+<link href="./05aGeostatsIDW.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7f77c891be54f4a4e70d5699258b6bb7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Spatial Analysis for Environmental Science</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+    <a href="https://github.com/AndyBunn/spatialNotes" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html">Interpolation &amp; Geostatistics</a></li><li class="breadcrumb-item"><a href="./05xAsideModelSkill.html">Aside: Model Skill and Cross Validation</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cover</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00Welcome.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Why Spatial Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction: Getting Your Bearings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01xAsideMethodsAndGenerics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Understanding Methods and Generics in R</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02MtBakerMap.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mt Baker Map</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Point Patterns &amp; Autocorrelation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03Point_Patterns.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Point Patterns</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03xAsideDistanceMatrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Distance Matrices</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04Intro2Autocorrelation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Spatial Autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04xAsideCorrelationVersusRegression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Correlation is not Regression</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Interpolation &amp; Geostatistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05aGeostatsIDW.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05xAsideModelSkill.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Aside: Model Skill and Cross Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06aGeostatsKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Kriging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06xAsideGeostatsKrigingVariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Kriging Variance By Hand</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06bGeostatsRegressionKriging.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Interpolation: Regression Kriging</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07RegressionGLS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regression: GLS with Autocorrelated Residuals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07xAsideOLS-Algebra-Matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: OLS via Algebra and Matrices</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08PackagesUsed.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why This Matters</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#measuring-skill" id="toc-measuring-skill" class="nav-link" data-scroll-target="#measuring-skill">Measuring Skill</a>
+  <ul>
+  <li><a href="#the-observed-vs-predicted-plot" id="toc-the-observed-vs-predicted-plot" class="nav-link" data-scroll-target="#the-observed-vs-predicted-plot">The Observed-vs-Predicted Plot</a></li>
+  <li><a href="#r2" id="toc-r2" class="nav-link" data-scroll-target="#r2"><span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#rmse-and-mae" id="toc-rmse-and-mae" class="nav-link" data-scroll-target="#rmse-and-mae">RMSE and MAE</a></li>
+  </ul></li>
+  <li><a href="#the-problem-with-in-sample-statistics" id="toc-the-problem-with-in-sample-statistics" class="nav-link" data-scroll-target="#the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</a></li>
+  <li><a href="#traintest-holdout" id="toc-traintest-holdout" class="nav-link" data-scroll-target="#traintest-holdout">Train/Test Holdout</a></li>
+  <li><a href="#the-null-model" id="toc-the-null-model" class="nav-link" data-scroll-target="#the-null-model">The Null Model</a></li>
+  <li><a href="#k-fold-cross-validation" id="toc-k-fold-cross-validation" class="nav-link" data-scroll-target="#k-fold-cross-validation">K-Fold Cross Validation</a></li>
+  <li><a href="#the-spatial-problem" id="toc-the-spatial-problem" class="nav-link" data-scroll-target="#the-spatial-problem">The Spatial Problem</a></li>
+  <li><a href="#a-note-on-interpolation" id="toc-a-note-on-interpolation" class="nav-link" data-scroll-target="#a-note-on-interpolation">A Note on Interpolation</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/05xAsideModelSkill.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05aGeostatsIDW.html">Interpolation &amp; Geostatistics</a></li><li class="breadcrumb-item"><a href="./05xAsideModelSkill.html">Aside: Model Skill and Cross Validation</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Aside: Model Skill and Cross Validation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="why-this-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters">Why This Matters</h2>
+<p>Fitting a model and evaluating a model are not the same thing. When you fit a model on a dataset and then evaluate it on that same dataset, you are not measuring how well the model predicts. You are measuring how well it memorizes.</p>
+<p>A model can have a high <span class="math inline">\(R^2\)</span>, low residuals, and an impressive-looking summary table, and still be nearly useless for prediction. This happens when the model has learned the noise in your data along with the signal, a problem called <strong>overfitting</strong>. Overfit models describe your observed data well but generalize poorly to new data. The inverse is also a problem: a model that is too simple to capture the real structure in the data, called <strong>underfitting</strong>, will perform badly both in-sample and out-of-sample, though in a more obvious way.</p>
+<p><strong>Model skill</strong> is a term used to describe a model’s ability to make accurate predictions on data it was not trained on. The metrics we’ll develop here, <span class="math inline">\(R^2\)</span>, RMSE, and MAE, are just numbers. What matters is whether they are computed on data the model was trained on (in-sample) or on data the model has never seen (out-of-sample). The second kind is model skill. This chapter is about how to measure it.</p>
+</section>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PNWColors)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>We’ll also mention the <code>caret</code> package <span class="citation" data-cites="R-caret">(<a href="08PackagesUsed.html#ref-R-caret" role="doc-biblioref">Kuhn and Max 2008</a>)</span> toward the end of this chapter. It is the standard workhorse for cross validation in R, but it has its own syntax that takes some getting used to. For now we will build things by hand so the mechanics are visible.</p>
+</section>
+<section id="measuring-skill" class="level2">
+<h2 class="anchored" data-anchor-id="measuring-skill">Measuring Skill</h2>
+<section id="the-observed-vs-predicted-plot" class="level3">
+<h3 class="anchored" data-anchor-id="the-observed-vs-predicted-plot">The Observed-vs-Predicted Plot</h3>
+<p>Before we get to numbers, let’s talk about a plot. The most informative single diagnostic for model skill is a scatter plot with observed values on the x-axis and predicted values on the y-axis. A perfect model puts every point exactly on the 1:1 line, that is, the line with slope 1 and intercept 0. Points above the line mean the model is overpredicting. Points below mean it is underpredicting. How tightly the cloud clusters around the 1:1 line tells you about the overall accuracy of the predictions.</p>
+<p><img src="assets/obs_vs_pred_explainer.svg" class="img-fluid"></p>
+<p>Get in the habit of always making this plot. The summary statistics below are useful but they can mislead you in ways this plot makes immediately obvious. A model with a strong systematic bias, where it consistently predicts twice the true value for instance, can produce a respectable-looking <span class="math inline">\(R^2\)</span> depending on how you compute it. The observed-vs-predicted plot reveals that kind of problem at a glance. We will see many examples of it in the interpolation chapters.</p>
+</section>
+<section id="r2" class="level3">
+<h3 class="anchored" data-anchor-id="r2"><span class="math inline">\(R^2\)</span></h3>
+<p>You already know <span class="math inline">\(R^2\)</span> from linear regression, where it is defined as:</p>
+<p><span class="math display">\[R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\sum_{i=1}^n (y_i - \bar{y})^2}\]</span></p>
+<p>where <span class="math inline">\(y_i\)</span> is the observed value, <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and <span class="math inline">\(\bar{y}\)</span> is the mean of the observed values. An <span class="math inline">\(R^2\)</span> of 1 means the model explains all of the variance in <span class="math inline">\(y\)</span>. An <span class="math inline">\(R^2\)</span> of 0 means the model does no better than predicting <span class="math inline">\(\bar{y}\)</span> for every observation. This is the version reported in <code>summary(lm(...))</code>.</p>
+<p>When we evaluate skill on withheld data, we will typically compute <span class="math inline">\(R^2\)</span> as the squared Pearson correlation between observed and predicted values:</p>
+<p><span class="math display">\[R^2 = \left[\text{cor}(y, \hat{y})\right]^2\]</span></p>
+<p>This is equivalent to the formula above for in-sample linear model predictions, but not in general. The correlation-based version is always between 0 and 1, because squaring a correlation removes the sign. The formula-based version applied to test data can actually go negative if your model’s predictions are worse than just using the mean everywhere. That is not a math error, it means the model is that bad. In this course we will use the correlation-based version:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="fu">cor</span>(obs, preds)<span class="sc">^</span><span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>and pair it with the observed-vs-predicted plot so that systematic biases do not hide behind a number that looks acceptable.</p>
+</section>
+<section id="rmse-and-mae" class="level3">
+<h3 class="anchored" data-anchor-id="rmse-and-mae">RMSE and MAE</h3>
+<p>Both RMSE and MAE measure the average prediction error in the same units as <span class="math inline">\(y\)</span>, and lower is better for both. They measure slightly different things though, and the difference is worth understanding.</p>
+<p><span class="math display">\[RMSE = \sqrt{\frac{\sum_{i=1}^n (\hat{y}_i - y_i)^2}{n}} \qquad\qquad MAE = \frac{\sum_{i=1}^n |\hat{y}_i - y_i|}{n}\]</span></p>
+<p>RMSE squares each error before averaging, then takes the square root to return to the original units. MAE takes the absolute value of each error and averages those directly. The consequence is that RMSE penalizes large errors disproportionately. A prediction that’s off by 10 contributes 100 to the RMSE sum. A prediction that’s off by 1 contributes 1. So the big error has 100 times the influence, not 10 times. Under MAE, a prediction off by 10 contributes 10 and one off by 1 contributes 1, so the big error is only 10 times as influential.</p>
+<p>In practice this means RMSE is more sensitive to outliers than MAE. If your model makes mostly small errors but occasionally produces a very wrong prediction, RMSE will show that more dramatically than MAE will. There is a useful side effect here: if RMSE is substantially larger than MAE on the same predictions, that is a signal your error distribution has a long tail, meaning a few predictions are quite a lot worse than the rest. When RMSE and MAE are close to each other your errors are more uniformly distributed. RMSE is always greater than or equal to MAE for the same set of predictions. They are equal only when every error is exactly the same size, which never happens in practice.</p>
+<p>Statisticians argue about which to use with some dedication. I’m happy to let them <a href="https://stats.stackexchange.com/questions/48267/mean-absolute-error-or-root-mean-squared-error">fight about it</a>. I prefer MAE because it’s simpler to interpret. RMSE is more standard in many subfields, including geostatistics, so you should be comfortable computing and interpreting both.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((preds <span class="sc">-</span> obs)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mae  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(preds <span class="sc">-</span> obs))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="the-problem-with-in-sample-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</h2>
+<p>Let’s make the overfitting problem concrete. We will simulate some data where we know the true relationship, hold out a chunk of it as a test set, and then fit polynomial models of increasing complexity. For each model we’ll track in-sample and out-of-sample <span class="math inline">\(R^2\)</span> as flexibility grows.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/dat_skill.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>We have 50 observations with one predictor <span class="math inline">\(x\)</span> and response <span class="math inline">\(y\)</span>. The true relationship is <span class="math inline">\(y = 30 + 2x^3 - 5x + \varepsilon\)</span> but we do not know that when fitting.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">2.5</span>, <span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s hold out 30% as a test set, then on the training data fit polynomial models of degree 1 through 12. For each one we’ll compute in-sample <span class="math inline">\(R^2\)</span> on the training data and out-of-sample <span class="math inline">\(R^2\)</span> on the test data.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test_ov_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dat), <span class="at">size=</span><span class="fu">round</span>(<span class="fu">nrow</span>(dat) <span class="sc">*</span> <span class="fl">0.30</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>train_ov    <span class="ot">&lt;-</span> dat[<span class="sc">-</span>test_ov_idx, ]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>test_ov     <span class="ot">&lt;-</span> dat[test_ov_idx,  ]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>degrees <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>rsq_in  <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(degrees))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>rsq_out <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(degrees))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(d <span class="cf">in</span> degrees){</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  fit_d      <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, d), <span class="at">data=</span>train_ov)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  rsq_in[d]  <span class="ot">&lt;-</span> <span class="fu">cor</span>(train_ov<span class="sc">$</span>y, <span class="fu">predict</span>(fit_d))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  rsq_out[d] <span class="ot">&lt;-</span> <span class="fu">cor</span>(test_ov<span class="sc">$</span>y,  <span class="fu">predict</span>(fit_d, <span class="at">newdata=</span>test_ov))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>bv <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree =</span> <span class="fu">rep</span>(degrees, <span class="dv">2</span>),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">rsq    =</span> <span class="fu">c</span>(rsq_in, rsq_out),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">set    =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Training"</span>, <span class="st">"Test"</span>), <span class="at">each=</span><span class="fu">length</span>(degrees))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bv, <span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>rsq, <span class="at">color=</span>set)) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="fl">1.1</span>) <span class="sc">+</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span>degrees) <span class="sc">+</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(anem7[<span class="dv">7</span>], anem7[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Polynomial degree"</span>, <span class="at">y=</span><span class="fu">bquote</span>(R<span class="sc">^</span><span class="dv">2</span>), <span class="at">color=</span><span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Training <span class="math inline">\(R^2\)</span> climbs as we add flexibility because more parameters always reduce in-sample residuals. Out-of-sample <span class="math inline">\(R^2\)</span> peaks somewhere around the true cubic relationship and then starts to fall off as the model begins chasing noise rather than signal. The two curves tell completely different stories about model quality. If you only looked at the training curve you would conclude the most complex model wins every time.</p>
+<p>That gap between the training and test curves is overfitting. And the lesson is not to pick the model that maximizes in-sample <span class="math inline">\(R^2\)</span>. It is to pick the one that does well on data it has not seen.</p>
+</section>
+<section id="traintest-holdout" class="level2">
+<h2 class="anchored" data-anchor-id="traintest-holdout">Train/Test Holdout</h2>
+<p>What we just did is the simplest form of skill assessment: split the data into a <strong>training</strong> set and a <strong>test</strong> set, fit on the training data only, and evaluate on the test data. The test set acts as a stand-in for data the model has never seen.</p>
+<p>There is no universal rule for the split ratio. The historical advice was 2/3 training and 1/3 testing. You’ll also see 70/30 and 80/20. With small datasets, giving up a third of your data for testing means you’re training on less than you’d like. With large datasets it matters less.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>test_idx            <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dat), <span class="at">size=</span><span class="fu">round</span>(<span class="fu">nrow</span>(dat) <span class="sc">*</span> <span class="fl">0.25</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>split           <span class="ot">&lt;-</span> <span class="st">"train"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>split[test_idx] <span class="ot">&lt;-</span> <span class="st">"test"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">color=</span>split)) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(anem7[<span class="dv">1</span>], anem7[<span class="dv">7</span>])) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train     <span class="ot">&lt;-</span> dat[dat<span class="sc">$</span>split <span class="sc">==</span> <span class="st">"train"</span>, ]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>test      <span class="ot">&lt;-</span> dat[dat<span class="sc">$</span>split <span class="sc">==</span> <span class="st">"test"</span>,  ]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fit       <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">3</span>), <span class="at">data=</span>train)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>yhat <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit, <span class="at">newdata=</span>test)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>rsq  <span class="ot">&lt;-</span> <span class="fu">cor</span>(test<span class="sc">$</span>y, test<span class="sc">$</span>yhat)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((test<span class="sc">$</span>yhat <span class="sc">-</span> test<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>mae  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(test<span class="sc">$</span>yhat <span class="sc">-</span> test<span class="sc">$</span>y))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(rsq,rmse,mae)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.7613532 17.4185486 14.0396363</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(test, <span class="fu">aes</span>(<span class="at">x=</span>y, <span class="at">y=</span>yhat)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span>anem7[<span class="dv">7</span>]) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">xlim=</span><span class="fu">range</span>(test<span class="sc">$</span>y, test<span class="sc">$</span>yhat),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim=</span><span class="fu">range</span>(test<span class="sc">$</span>y, test<span class="sc">$</span>yhat)) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Observed"</span>, <span class="at">y=</span><span class="st">"Predicted"</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For the cubic model we get an out-of-sample <span class="math inline">\(R^2\)</span> = 0.761, RMSE = 17.42, and MAE = 14.04, all computed on data the model never saw during fitting.</p>
+<p>There is still a problem though. We ran one split and those numbers depend entirely on which observations happened to land in the test set. Run it again with a different seed and you’ll get different numbers. From a single split, we can’t say much about how stable those estimates are.</p>
+</section>
+<section id="the-null-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-null-model">The Null Model</h2>
+<p>Now that we have RMSE and MAE on the test data, we have numbers. But what do they mean? Knowing RMSE = 17.42 doesn’t tell you much on its own. Good or bad depends entirely on the scale and variability of whatever you’re predicting. This is where the null model comes in.</p>
+<p>The null model is the simplest prediction you could possibly make: ignore all your predictor information and predict <span class="math inline">\(\bar{y}\)</span> for every observation. No spatial structure, no covariates, nothing. Just the mean. The null RMSE is:</p>
+<p><span class="math display">\[RMSE_{null} = \sqrt{\frac{\sum_{i=1}^n (\bar{y} - y_i)^2}{n}}\]</span></p>
+<p>If you look at that carefully it is essentially the standard deviation of <span class="math inline">\(y\)</span> (with <span class="math inline">\(n\)</span> in the denominator rather than <span class="math inline">\(n-1\)</span>). Any model worth using should beat this. If it can’t outperform a model that ignores all the predictor information, it isn’t providing anything useful.</p>
+<p>From the null model you can compute a relative skill score:</p>
+<p><span class="math display">\[\text{skill} = 1 - \frac{RMSE}{RMSE_{null}}\]</span></p>
+<p>A skill of 0 means your model does no better than predicting the mean everywhere. A skill of 1 is a perfect model. Negative values are possible if your predictions are somehow worse than the null, which is a sign something has gone seriously wrong. This measure shows up in climate and atmospheric science under names like the Nash-Sutcliffe efficiency or the reduction of variance. It also maps directly onto the formula-based <span class="math inline">\(R^2\)</span> from linear regression: <span class="math inline">\(R^2 = 0\)</span> means your model does no better than the mean, which is exactly what the null model represents. The connection is not a coincidence.</p>
+<p>The same logic applies to MAE: compute the null MAE using <span class="math inline">\(\bar{y}\)</span> as the prediction everywhere and compare your model’s MAE against it.</p>
+<p>One thing to be careful about: the null model should be built from the training data and applied to the test data, just like any other model. Use the mean of the training observations, not the mean of the test set or the full dataset. Using test data to define your baseline is the same kind of leakage as using it to fit your model.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rmseNull <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((<span class="fu">mean</span>(train<span class="sc">$</span>y) <span class="sc">-</span> test<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>maeNull  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(<span class="fu">mean</span>(train<span class="sc">$</span>y) <span class="sc">-</span> test<span class="sc">$</span>y))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>rmseNull</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 35.57114</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (rmse <span class="sc">/</span> rmseNull)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.510318</code></pre>
+</div>
+</div>
+<p>Our RMSE of 17.42 against a null of 35.57 gives a skill score of 0.51. The model is doing good work relative to the null. The null model idea extends further than just picking a reference statistic. It forces you to ask: what is the simplest model that could plausibly describe this system, and can I beat it? In spatial prediction the null is usually the global training mean. In some applications you might use something more informative as the baseline, a spatial trend surface or a long-term climatological average for instance, and evaluate skill relative to that. The key is always having a sensible reference point so your metrics mean something beyond their raw value.</p>
+<p>Students trained on hypothesis testing often want to know whether a skill score like 0.51 is “significant.” The honest answer is that the question doesn’t quite translate. A skill score of 0.51 means your model accounts for about half the variation that the null model misses, which is meaningful, but whether it is good depends entirely on the problem. Predicting next-week precipitation across a mountain range with a skill of 0.51 might be impressive given the chaos of atmospheric dynamics. Getting a skill of 0.51 predicting the boiling point of water as a function of elevation would be embarrassing. You can in principle run a permutation test, shuffle your <span class="math inline">\(y\)</span> values, recompute skill scores many times, and ask where your observed score falls in that null distribution, but this is rarely done in practice and doesn’t really answer the question practitioners care about. The more useful questions are: does the model perform well enough for the intended purpose, and can I build something that does better? A skill score is a number on a scale with a known floor (0 = no better than the mean) and a known ceiling (1 = perfect). Interpret it relative to those anchors, relative to what competing models achieve, and relative to the costs of being wrong in your application. That is more informative than a p-value would be.</p>
+</section>
+<section id="k-fold-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="k-fold-cross-validation">K-Fold Cross Validation</h2>
+<p>K-fold cross validation solves the single-split problem by repeating the train/test evaluation systematically across the whole dataset. The idea is to divide the data into <span class="math inline">\(k\)</span> roughly equal groups called <strong>folds</strong>. For each fold in turn, hold it out as the test set and train the model on the remaining <span class="math inline">\(k-1\)</span> folds. Evaluate skill on the held-out fold. Repeat for all <span class="math inline">\(k\)</span> folds and take the mean.</p>
+<p>With <span class="math inline">\(k=10\)</span> you use 90% of the data for training in each iteration and 10% for testing, and every observation gets to be in the test set exactly once. The mean skill across folds is a much more stable estimate than any single train/test split.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>k    <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">&lt;-</span> dat[<span class="fu">sample</span>(<span class="fu">nrow</span>(dat)), <span class="fu">c</span>(<span class="st">"x"</span>,<span class="st">"y"</span>)]  <span class="co"># shuffle, drop the split column</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>dat2<span class="sc">$</span>fold <span class="ot">&lt;-</span> <span class="fu">cut</span>(<span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(dat2)), <span class="at">breaks=</span>k, <span class="at">labels=</span><span class="cn">FALSE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">fold=</span><span class="dv">1</span><span class="sc">:</span>k, <span class="at">rsq=</span><span class="cn">NA</span>, <span class="at">rmse=</span><span class="cn">NA</span>, <span class="at">mae=</span><span class="cn">NA</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>k){</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  train_i <span class="ot">&lt;-</span> dat2[dat2<span class="sc">$</span>fold <span class="sc">!=</span> i, ]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  test_i  <span class="ot">&lt;-</span> dat2[dat2<span class="sc">$</span>fold <span class="sc">==</span> i, ]</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  fit_i  <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">3</span>), <span class="at">data=</span>train_i)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  yhat_i <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_i, <span class="at">newdata=</span>test_i)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  results<span class="sc">$</span>rsq[i]  <span class="ot">&lt;-</span> <span class="fu">cor</span>(test_i<span class="sc">$</span>y, yhat_i)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  results<span class="sc">$</span>rmse[i] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((yhat_i <span class="sc">-</span> test_i<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  results<span class="sc">$</span>mae[i]  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(yhat_i <span class="sc">-</span> test_i<span class="sc">$</span>y))</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   fold       rsq      rmse       mae
+1     1 0.8342053 18.524702 16.935303
+2     2 0.2294272 31.488994 26.772964
+3     3 0.8273552 23.054503 20.303684
+4     4 0.9653766 22.754110 19.649423
+5     5 0.4083284 17.407225 15.131325
+6     6 0.9869665  6.938529  5.552353
+7     7 0.9286120  9.042132  7.710173
+8     8 0.9177811 14.356237 12.595974
+9     9 0.8818709 11.560206 11.067564
+10   10 0.8402237 24.660736 22.204466</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(results[, <span class="fu">c</span>(<span class="st">"rsq"</span>,<span class="st">"rmse"</span>,<span class="st">"mae"</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       rsq       rmse        mae 
+ 0.7820147 17.9787374 15.7923229 </code></pre>
+</div>
+</div>
+<p>Now we have a distribution of skill estimates, not just one number. Let’s look at it.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>results <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">c</span>(rsq, rmse, mae),</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to=</span><span class="st">"metric"</span>, <span class="at">values_to=</span><span class="st">"value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value)) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">6</span>, <span class="at">fill=</span>anem7[<span class="dv">5</span>], <span class="at">color=</span>anem7[<span class="dv">7</span>]) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>metric, <span class="at">scales=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The spread across folds is the variability in predictive performance conditional on this dataset and this model. A tight distribution means the mean is a reliable estimate. A wide one tells you a single split could easily have given you something misleading. The cross-validated mean is the number to report, not the in-sample <span class="math inline">\(R^2\)</span> from <code>summary(lm(...))</code>.</p>
+<p>One natural question is whether <span class="math inline">\(k=10\)</span> is the right choice. With larger <span class="math inline">\(k\)</span> you train on more data each time, which can help with small datasets. The extreme is <strong>leave-one-out cross validation</strong> (LOOCV), where <span class="math inline">\(k=n\)</span> and each test set has exactly one observation. LOOCV has low bias but can be computationally expensive and tends to produce noisy skill estimates. For most purposes <span class="math inline">\(k=5\)</span> or <span class="math inline">\(k=10\)</span> is a reasonable default.</p>
+<p>A brief note on <strong>repeated k-fold</strong>: with small datasets, the k-fold estimates themselves can vary from run to run because the fold assignments are random. Repeated k-fold runs the whole procedure multiple times with different random assignments and averages across all of them, giving you an interval estimate rather than a point estimate. The <code>caret</code> package handles this with <code>trainControl(method="repeatedcv", number=10, repeats=10)</code>. If you take the machine learning module you will work through that in detail. The structure is identical to what we built above, just automated and repeated.</p>
+</section>
+<section id="the-spatial-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-spatial-problem">The Spatial Problem</h2>
+<p>Everything above assumes that randomly splitting your data into training and test sets gives you a legitimate evaluation. With spatial data, that assumption runs into trouble.</p>
+<p>Spatial autocorrelation means observations close together tend to have similar values. If you hold out a random 25% of your spatial data as a test set, most of those withheld points will have autocorrelated neighbors sitting in the training set. The model has access to spatially correlated information near every test point, which makes predicting those points easier than predicting locations in truly new areas. Your skill metrics end up looking better than they should.</p>
+<p>Let’s look at what a random holdout actually looks like on the Meuse floodplain dataset we’ll use in the interpolation chapters.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse.all)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>meuse_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(meuse.all, <span class="at">coords=</span><span class="fu">c</span>(<span class="st">"x"</span>,<span class="st">"y"</span>), <span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>test_m_idx                 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(meuse_sf), <span class="at">size=</span><span class="fu">round</span>(<span class="fu">nrow</span>(meuse_sf) <span class="sc">*</span> <span class="fl">0.25</span>))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>meuse_sf<span class="sc">$</span>split             <span class="ot">&lt;-</span> <span class="st">"train"</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>meuse_sf<span class="sc">$</span>split[test_m_idx] <span class="ot">&lt;-</span> <span class="st">"test"</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(meuse_sf) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">color=</span>split, <span class="at">shape=</span>split), <span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(anem7[<span class="dv">1</span>], anem7[<span class="dv">7</span>])) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Random 75/25 holdout"</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle=</span><span class="st">"Test points scattered among training points"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Look at where the test points land. Nearly every one of them is surrounded by training points. When you predict lead concentration at a withheld location that has three or four neighbors in the training set within 50 meters, you are not testing how well the model predicts in unknown space. You are testing it on locations well surrounded by known ones, which is a much easier task.</p>
+<p>The more principled alternative is to hold out spatially contiguous <strong>blocks</strong> rather than randomly scattered points. If you hold out an entire region, the model has to extrapolate into that region rather than interpolate between nearby training points. This is called <strong>spatial block cross validation</strong> and the <code>blockCV</code> and <code>spatialsample</code> packages implement it. We won’t go into the details here, but it is the right approach if you need predictions to generalize to new areas beyond your sampling domain.</p>
+<p>For the interpolation methods in this course, IDW and kriging, the standard approach is <strong>leave-one-out cross validation</strong> (LOOCV). Remove one observation, predict it from all the remaining observations, and repeat for every point. The <code>gstat</code> function <code>krige.cv()</code> implements this directly and we’ll use it in the kriging chapter. LOOCV is better than a single random split because every observation gets to be a test point, but it does not fully solve the spatial dependence problem. The left-out point still has autocorrelated neighbors in the training data. In geostatistics it is the accepted standard, and it is what we will use here, with that caveat in mind.</p>
+</section>
+<section id="a-note-on-interpolation" class="level2">
+<h2 class="anchored" data-anchor-id="a-note-on-interpolation">A Note on Interpolation</h2>
+<p>In the interpolation chapters that follow, starting with inverse distance weighting, you will build spatial prediction models and assess their skill. The workflow is: fit the model on a training set, predict to withheld locations, compute <span class="math inline">\(R^2\)</span>, RMSE, and MAE on those withheld predictions, and examine the observed-vs-predicted plot. That is exactly what this chapter has been building toward.</p>
+<p>When the skill metrics drop once you switch from in-sample to out-of-sample evaluation, that is not a mistake or a sign something went wrong. That is model skill, measured carefully.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-R-caret" class="csl-entry" role="listitem">
+Kuhn, and Max. 2008. <span>“Building Predictive Models in r Using the Caret Package.”</span> <em>Journal of Statistical Software</em> 28 (5): 1–26. <a href="https://doi.org/10.18637/jss.v028.i05">https://doi.org/10.18637/jss.v028.i05</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./05aGeostatsIDW.html" class="pagination-link" aria-label="Deterministic Interpolation: Inverse Distance Weighting">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Deterministic Interpolation: Inverse Distance Weighting</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./05bGeostat2TPS.html" class="pagination-link" aria-label="Deterministic Interpolation: Thin-Plate Splines">
+        <span class="nav-page-text"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/05xAsideModelSkill.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

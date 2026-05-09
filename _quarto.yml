@@ -29,6 +29,7 @@ book:
     - part: "Interpolation & Geostatistics"
       chapters:
         - 05aGeostatsIDW.qmd
+        - 05xAsideModelSkill.qmd
         - 05bGeostat2TPS.qmd
         - 06aGeostatsKriging.qmd
         - 06xAsideGeostatsKrigingVariance.qmd

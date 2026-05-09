@@ -233,6 +233,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./05xAsideModelSkill.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Model Skill and Cross Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
   </div>
 </li>
@@ -337,8 +343,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="how-these-notes-are-laid-out" class="level2">
 <h2 class="anchored" data-anchor-id="how-these-notes-are-laid-out">How These Notes Are Laid Out</h2>
-<p>Most of the chapters follow a natural progression – each one builds on the last, and working through them in order is the right call. But scattered through the notes you’ll find <strong>Asides</strong>: short detours that dig into something that doesn’t quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters make more sense.</p>
-<p>You can skip the Asides and still follow the core material. But they’re there because the questions they answer are real ones – the kind that come up when you’re working through a chapter and start wondering why something works the way it does. If that’s how your brain works, the Asides are for you.</p>
+<p>Most of the chapters follow a natural progression, each one builds on the last. But scattered through the notes you’ll find <strong>Asides</strong>: detours that dig into something that doesn’t quite fit the main flow. An Aside might work through the math behind a method, explain how R handles something under the hood, or fill in background that makes the surrounding chapters flow better.</p>
+<p>The Asides are linked from the chapters that depend on them, and skipping one will likely leave you confused when that chapter references it. They are separate from the main chapters not because they are less important, but because pulling them out keeps the main flow readable. When you hit a link to an Aside, it’s worth following it.</p>
 </section>
 <section id="whats-in-these-notes" class="level2">
 <h2 class="anchored" data-anchor-id="whats-in-these-notes">What’s in These Notes</h2>
@@ -364,7 +370,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p><strong>Interpolation &amp; Geostatistics</strong> is about prediction. We have measurements at some locations and want to estimate values at others. We start with deterministic methods and work up to kriging, which is the probabilistic workhorse of geostatistics.</p>
 <ul>
-<li><strong>Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.</li>
+<li><strong>Inverse Distance Weighting</strong> – Predicting values at unsampled locations using a deterministic, distance-weighted approach. Simple, intuitive, and a good place to start.
+<ul>
+<li><strong>Aside: Model Skill and Cross Validation</strong> – A model that fits your data well is not necessarily a model that predicts well. This aside covers how to tell the difference, and how to measure it, before we start building interpolation models that depend on getting this right.</li>
+</ul></li>
 <li><strong>Thin-Plate Splines</strong> – A smooth, flexible interpolation method that minimizes curvature across the surface.</li>
 <li><strong>Kriging</strong> – Kriging uses the spatial structure of the data to predict unknown values and – unlike IDW – gives you a real measure of uncertainty.
 <ul>

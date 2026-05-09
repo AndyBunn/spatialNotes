@@ -88,7 +88,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./05bGeostat2TPS.html" rel="next">
+<link href="./05xAsideModelSkill.html" rel="next">
 <link href="./04xAsideCorrelationVersusRegression.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -281,6 +281,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./05xAsideModelSkill.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aside: Model Skill and Cross Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./05bGeostat2TPS.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></a>
   </div>
 </li>
@@ -356,9 +362,8 @@ window.Quarto = {
   </ul></li>
   <li><a href="#skill" id="toc-skill" class="nav-link" data-scroll-target="#skill">Skill</a>
   <ul>
-  <li><a href="#aside-rmse-null-model" id="toc-aside-rmse-null-model" class="nav-link" data-scroll-target="#aside-rmse-null-model">Aside: RMSE NULL Model</a></li>
+  <li><a href="#null-model" id="toc-null-model" class="nav-link" data-scroll-target="#null-model">Null Model</a></li>
   </ul></li>
-  <li><a href="#how-can-we-improve-this-model" id="toc-how-can-we-improve-this-model" class="nav-link" data-scroll-target="#how-can-we-improve-this-model">How can we improve this model?</a></li>
   <li><a href="#your-work" id="toc-your-work" class="nav-link" data-scroll-target="#your-work">Your Work</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/AndyBunn/spatialNotes/edit/main/05aGeostatsIDW.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/AndyBunn/spatialNotes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -832,8 +837,7 @@ max value   :  6.444424 </code></pre>
 </section>
 <section id="skill" class="level2">
 <h2 class="anchored" data-anchor-id="skill">Skill</h2>
-<p>Until now in class we’ve mostly been describing patterns seen in samples. Now we are doing actual prediction (hence the “geostatistics” term). And with prediction comes the need to assess the skill of the predictions. Skill is a catchall term that refers to any measure of the accuracy of prediction relative to the observations. The most common ways to assess skill are to look at the R<span class="math inline">\(^2\)</span> of the observed vs predicted data as well as the root mean squared errors (RMSE).</p>
-<p>E.g., in the above:</p>
+<p>Now that we are making predictions we need to assess how good they are. The <a href="05xAsideModelSkill.html">Model Skill and Cross Validation aside</a> covers all of this in detail and is worth reading before going further. The short version is: we’ll use R<span class="math inline">\(^2\)</span>, RMSE, and the observed-vs-predicted plot throughout the interpolation chapters, and we always care more about out-of-sample skill than in-sample fit. Here’s the in-sample picture first, just to show why:</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -947,62 +951,51 @@ max value   :  6.444424 </code></pre>
 </div>
 </div>
 </div>
-<p>Oooof. Looking at that plot and the code we see now that the skill of the model is greatly decreased with R<span class="math inline">\(^2\)</span> = 0.4448072 and RMSE = 0.5127379. We can also see that the predicted values are less than the observed values for these points.</p>
-<p>What we just did above is bear minimum that you need to do with any kind of statistical prediction. How well the model fits the observed data is not nearly as informative as how well it fits withheld data. Note that there is nothing special about 25% for withheld data! It’s an example I’m using here but most of you will be hip to the idea that have much cleverer schemes for looking at out-of-sample error like cross validation.</p>
-<section id="aside-rmse-null-model" class="level3">
-<h3 class="anchored" data-anchor-id="aside-rmse-null-model">Aside: RMSE NULL Model</h3>
-<p>When using RMSE it’s good to know if you are doing better than a random expectation. We can establish a very simple NULL model for RMSE by using the mean value of lead as the NULL predictions.</p>
-<p>Here is the RMSE of the NULL case where everything is predicted as the mean:</p>
+<p>Oooof. Looking at that plot and the code we see now that the skill of the model is greatly decreased with R<span class="math inline">\(^2\)</span> = 0.445 and RMSE = 0.513. We can also see that the predicted values are less than the observed values for these points.</p>
+<section id="null-model" class="level3">
+<h3 class="anchored" data-anchor-id="null-model">Null Model</h3>
+<p>How does that RMSE look against the simplest possible baseline, predicting the training mean everywhere?</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> meuse_sf<span class="sc">$</span>logLead</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">mean</span>(meuse_sf<span class="sc">$</span>logLead)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>rmseNULL <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((preds <span class="sc">-</span> obs)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>rmseNULL</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>rmseNULL <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((<span class="fu">mean</span>(meuseTrain<span class="sc">$</span>logLead) <span class="sc">-</span> obs)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>rmseNULL</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.6703433</code></pre>
+<pre><code>[1] 0.6540551</code></pre>
 </div>
-</div>
-<p>Our <code>rmse</code> is quite a bit better than the <code>rmseNULL</code>. Which is good! We can hopefully do better than the mean as a predicted surface. One way that people use RMSE is to calculate a relative performance as:</p>
-<div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (rmse <span class="sc">/</span> rmseNULL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.2351115</code></pre>
+<pre><code>[1] 0.2160632</code></pre>
 </div>
 </div>
-<p>This is conceptually similar to using R<span class="math inline">\(^2\)</span>. There is a thread about this <a href="https://stats.stackexchange.com/questions/218418/comparing-rmse-to-model">here</a> for the curious. And more in the reading. To make that relative performance into a test you’d need to set it in a permutation framework. That is probably overkill here but something to be aware of.</p>
-</section>
-</section>
-<section id="how-can-we-improve-this-model" class="level2">
-<h2 class="anchored" data-anchor-id="how-can-we-improve-this-model">How can we improve this model?</h2>
+<p>For a full treatment of the null model and how to interpret these skill scores, see the <a href="05xAsideModelSkill.html">Model Skill and Cross Validation aside</a>.</p>
+<p>So we have to ask, “How can we improve this model in a responsible way?”</p>
 <p>Improving a model’s skill (without overfitting it) is an art. In this case, IDW is a pretty blunt tool. In fact it is completely <strong>deterministic</strong>. I.e., there is no probability theory underlying the method. We will get into probabilistic interpolation with a technique called kriging in the next module.</p>
 <p>What can we do right now? We could start trying to “tune” the model using parameters we can adjust. The power function is the easiest to mess with but we could also specify a minimum or maximum number of points used for the interpolation (arguments <code>nmax</code> and <code>nmin</code>) or a maximum distance that can influence the interpolation (<code>maxdist</code>).</p>
-<p>For example, here is the same data as above with <span class="math inline">\(p=2.5\)</span> instead of <span class="math inline">\(p=2\)</span>.</p>
+<p>For example, here is the same data as above with <span class="math inline">\(p=3\)</span> instead of <span class="math inline">\(p=2\)</span>.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>idw_p2<span class="fl">.5</span>_model <span class="ot">&lt;-</span> <span class="fu">gstat</span>(<span class="at">formula=</span>logLead<span class="sc">~</span><span class="dv">1</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>idw_p3_model <span class="ot">&lt;-</span> <span class="fu">gstat</span>(<span class="at">formula=</span>logLead<span class="sc">~</span><span class="dv">1</span>, </span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">locations =</span> meuseTrain,</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">set=</span><span class="fu">list</span>(<span class="at">idp =</span> <span class="fl">2.5</span>))</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">set=</span><span class="fu">list</span>(<span class="at">idp =</span> <span class="dv">3</span>))</span>
 <span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>logLeadIDW_p2<span class="fl">.5</span>_sf <span class="ot">&lt;-</span> <span class="fu">predict</span>(idw_p2<span class="fl">.5</span>_model,meuse_grid_sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>logLeadIDW_p3_sf <span class="ot">&lt;-</span> <span class="fu">predict</span>(idw_p3_model,meuse_grid_sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[inverse distance weighted interpolation]</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>logLeadIDW_p2<span class="fl">.5</span>_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(logLeadIDW_p2<span class="fl">.5</span>_sf)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>logLeadIDW_p3_rast <span class="ot">&lt;-</span> <span class="fu">sf_2_rast</span>(logLeadIDW_p3_sf)</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co"># and plot</span></span>
 <span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data=</span>logLeadIDW_p2<span class="fl">.5</span>_rast, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>var1.pred),<span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data=</span>logLeadIDW_p3_rast, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill=</span>var1.pred),<span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span></span>
 <span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">type =</span> <span class="st">"viridis"</span>,<span class="at">name=</span><span class="st">"log(ppm)"</span>,<span class="at">na.value =</span> <span class="st">"transparent"</span>) <span class="sc">+</span> </span>
 <span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Lead concentrations"</span>) <span class="sc">+</span></span>
 <span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1010,7 +1003,7 @@ max value   :  6.444424 </code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05aGeostatsIDW_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05aGeostatsIDW_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1021,20 +1014,20 @@ max value   :  6.444424 </code></pre>
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note use of meuseTest here</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> meuseTest<span class="sc">$</span>logLead</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">extract</span>(logLeadIDW_p2<span class="fl">.5</span>_rast, meuseTest) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(var1.pred)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">extract</span>(logLeadIDW_p3_rast, meuseTest) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(var1.pred)</span>
 <span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="fu">cor</span>(obs,preds)<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((preds <span class="sc">-</span> obs)<span class="sc">^</span><span class="dv">2</span>))</span>
 <span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>rsq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4386529</code></pre>
+<pre><code>[1] 0.4196382</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>rmse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4940241</code></pre>
+<pre><code>[1] 0.4935361</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1049,13 +1042,23 @@ max value   :  6.444424 </code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05aGeostatsIDW_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05aGeostatsIDW_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The R<span class="math inline">\(^2\)</span> is higher and the RMSE is lower. It’s a better fit but not much better. And the interpolated surface still looks funny.</p>
-<p>Ultimately there isn’t a lot we can do to improve the fits in the middle of this particular study site using IDW. The data in that area are very sparse and thus form the craters that we see. No method does a great job with sparse data as compared to thick data but IDW is is especially susceptible to errors associated with widely spaced points. And because it is a deterministic method we don’t get an error estimate associated with any particular prediction like we will when we turn to kriging in the next module.</p>
+<p>The R<span class="math inline">\(^2\)</span> is higher and the RMSE is lower. It’s a better fit but not much better. Against the same null, the skill score for <span class="math inline">\(p=3\)</span> is:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (rmse <span class="sc">/</span> rmseNULL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2454213</code></pre>
+</div>
+</div>
+<p>That’s a better model all around but ultimately there isn’t a lot we can do to improve the fits in the middle of this particular study site using IDW. The data in that area are very sparse and thus form the craters that we see. No method does a great job with sparse data as compared to thick data but IDW is is especially susceptible to errors associated with widely spaced points. And because it is a deterministic method we don’t get an error estimate associated with any particular prediction like we will when we turn to kriging in the next module.</p>
+</section>
 </section>
 <section id="your-work" class="level2">
 <h2 class="anchored" data-anchor-id="your-work">Your Work</h2>
@@ -1068,22 +1071,22 @@ max value   :  6.444424 </code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># precip point data</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/prcpCA.rds"</span>)</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="co"># empty grid to interpolate into</span></span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>gridCA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/gridCA.rds"</span>)</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="co"># make as sf</span></span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="ot">&lt;-</span> prcpCA <span class="sc">%&gt;%</span> <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"X"</span>, <span class="st">"Y"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="at">value =</span> <span class="dv">3310</span>)</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="co"># simple map -- see postscript below for a fancy map</span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>ANNUAL,<span class="at">size=</span>ANNUAL),<span class="at">color=</span><span class="st">"white"</span>,</span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">shape=</span><span class="dv">21</span>,<span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span> </span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">type =</span> <span class="st">"viridis"</span>,<span class="at">name=</span><span class="st">"mm"</span>) <span class="sc">+</span> </span>
-<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Total Annual Precipitation"</span>) <span class="sc">+</span></span>
-<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size</span>(<span class="at">guide=</span><span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># precip point data</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/prcpCA.rds"</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="co"># empty grid to interpolate into</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>gridCA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/gridCA.rds"</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co"># make as sf</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="ot">&lt;-</span> prcpCA <span class="sc">%&gt;%</span> <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"X"</span>, <span class="st">"Y"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="at">value =</span> <span class="dv">3310</span>)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="co"># simple map -- see postscript below for a fancy map</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>prcpCA <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>ANNUAL,<span class="at">size=</span>ANNUAL),<span class="at">color=</span><span class="st">"white"</span>,</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">shape=</span><span class="dv">21</span>,<span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span> </span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">type =</span> <span class="st">"viridis"</span>,<span class="at">name=</span><span class="st">"mm"</span>) <span class="sc">+</span> </span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Total Annual Precipitation"</span>) <span class="sc">+</span></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size</span>(<span class="at">guide=</span><span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1093,7 +1096,7 @@ max value   :  6.444424 </code></pre>
 </div>
 </div>
 </div>
-<p>Use IDW to create a surface of total annual precipitation in California. Tune and assess skill as you see fit. Interpret and explain your surface and anything you notice in particular about it.</p>
+<p>Use IDW to create a surface of total annual precipitation in California. Tune and assess skill as you see fit. Interpret and explain your surface and anything you notice in particular about it. A skill assessment of some kind is important so see the <a href="05xAsideModelSkill.html">Model Skill and Cross Validation aside</a>.</p>
 <p>One warning. There are a few stations on the coast that are classified as <code>NA</code> in the gridded surface you’ll make. This is because the gridded surface is 10x10 km and that coarse resolution means some of the edge cases (stations very close to the coast) get turned into “ocean” instead of “land”. This is a really common issue when moving from point to raster data. It won’t affect what you do until you try to assess skill. Then you’ll find that some (eight, I think) of the stations will show up as <code>NA</code> when you use <code>extract</code>. This will cause your <code>rsq</code> and <code>rmse</code> calculations to return <code>NA</code>. You can overcome this in a variety of ways (e.g., <code>cor(obs,preds,use="complete.obs")^2</code> and <code>sqrt(mean((preds - obs)^2,na.rm=TRUE))</code> or with a mask etc.). You’d have figured that out on your own I bet, but I’m just giving you a heads up.</p>
 
 
@@ -1527,8 +1530,8 @@ Wickham, Hadley. 2023. <em>Tidyverse: Easily Install and Load the Tidyverse</em>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05bGeostat2TPS.html" class="pagination-link" aria-label="Deterministic Interpolation: Thin-Plate Splines">
-        <span class="nav-page-text"><span class="chapter-title">Deterministic Interpolation: Thin-Plate Splines</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./05xAsideModelSkill.html" class="pagination-link" aria-label="Aside: Model Skill and Cross Validation">
+        <span class="nav-page-text">Aside: Model Skill and Cross Validation</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
