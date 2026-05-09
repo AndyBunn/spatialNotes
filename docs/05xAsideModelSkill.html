@@ -354,6 +354,7 @@ window.Quarto = {
   <li><a href="#rmse-and-mae" id="toc-rmse-and-mae" class="nav-link" data-scroll-target="#rmse-and-mae">RMSE and MAE</a></li>
   </ul></li>
   <li><a href="#the-problem-with-in-sample-statistics" id="toc-the-problem-with-in-sample-statistics" class="nav-link" data-scroll-target="#the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</a></li>
+  <li><a href="#the-problem-with-in-sample-statistics-1" id="toc-the-problem-with-in-sample-statistics-1" class="nav-link" data-scroll-target="#the-problem-with-in-sample-statistics-1">The Problem with In-Sample Statistics</a></li>
   <li><a href="#traintest-holdout" id="toc-traintest-holdout" class="nav-link" data-scroll-target="#traintest-holdout">Train/Test Holdout</a></li>
   <li><a href="#the-null-model" id="toc-the-null-model" class="nav-link" data-scroll-target="#the-null-model">The Null Model</a></li>
   <li><a href="#k-fold-cross-validation" id="toc-k-fold-cross-validation" class="nav-link" data-scroll-target="#k-fold-cross-validation">K-Fold Cross Validation</a></li>
@@ -435,14 +436,21 @@ window.Quarto = {
 </section>
 <section id="the-problem-with-in-sample-statistics" class="level2">
 <h2 class="anchored" data-anchor-id="the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</h2>
+</section>
+<section id="the-problem-with-in-sample-statistics-1" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-with-in-sample-statistics-1">The Problem with In-Sample Statistics</h2>
 <p>Let’s make the overfitting problem concrete. We will simulate some data where we know the true relationship, hold out a chunk of it as a test set, and then fit polynomial models of increasing complexity. For each model we’ll track in-sample and out-of-sample <span class="math inline">\(R^2\)</span> as flexibility grows.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/dat_skill.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>n   <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x   <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="at">min=</span><span class="sc">-</span><span class="dv">4</span>, <span class="at">max=</span><span class="dv">4</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="dv">15</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>y   <span class="ot">&lt;-</span> <span class="dv">30</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="dv">5</span><span class="sc">*</span>x <span class="sc">+</span> eps</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>We have 50 observations with one predictor <span class="math inline">\(x\)</span> and response <span class="math inline">\(y\)</span>. The true relationship is <span class="math inline">\(y = 30 + 2x^3 - 5x + \varepsilon\)</span> but we do not know that when fitting.</p>
+<p>We have 50 observations with one predictor <span class="math inline">\(x\)</span> and response <span class="math inline">\(y\)</span>. The true relationship is <span class="math inline">\(y = 30 + 2x^3 - 5x + \varepsilon\)</span> but we don’t know that when fitting.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -453,20 +461,20 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Let’s hold out 30% as a test set, then on the training data fit polynomial models of degree 1 through 12. For each one we’ll compute in-sample <span class="math inline">\(R^2\)</span> on the training data and out-of-sample <span class="math inline">\(R^2\)</span> on the test data.</p>
+<p>Let’s hold out 1/3 of the points as a test set, then on the training data fit polynomial models of degree 1 through 10. For each one we’ll compute in-sample <span class="math inline">\(R^2\)</span> on the training data and out-of-sample <span class="math inline">\(R^2\)</span> on the test data.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test_ov_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dat), <span class="at">size=</span><span class="fu">round</span>(<span class="fu">nrow</span>(dat) <span class="sc">*</span> <span class="fl">0.30</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test_ov_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dat), <span class="at">size=</span><span class="fu">round</span>(<span class="fu">nrow</span>(dat) <span class="sc">*</span> <span class="fl">0.33</span>))</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>train_ov    <span class="ot">&lt;-</span> dat[<span class="sc">-</span>test_ov_idx, ]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>test_ov     <span class="ot">&lt;-</span> dat[test_ov_idx,  ]</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>degrees <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>degrees <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>rsq_in  <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(degrees))</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>rsq_out <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(degrees))</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -493,7 +501,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -520,7 +528,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -538,10 +546,11 @@ window.Quarto = {
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((test<span class="sc">$</span>yhat <span class="sc">-</span> test<span class="sc">$</span>y)<span class="sc">^</span><span class="dv">2</span>))</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>mae  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(test<span class="sc">$</span>yhat <span class="sc">-</span> test<span class="sc">$</span>y))</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(rsq,rmse,mae)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">"rsq"</span><span class="ot">=</span>rsq,<span class="st">"rmse"</span><span class="ot">=</span>rmse,<span class="st">"mae"</span><span class="ot">=</span>mae)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]  0.7613532 17.4185486 14.0396363</code></pre>
+<pre><code>       rsq       rmse        mae 
+ 0.7743884 18.4645495 15.9155417 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -558,17 +567,17 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>For the cubic model we get an out-of-sample <span class="math inline">\(R^2\)</span> = 0.761, RMSE = 17.42, and MAE = 14.04, all computed on data the model never saw during fitting.</p>
+<p>For the cubic model we get an out-of-sample <span class="math inline">\(R^2\)</span> = 0.774, RMSE = 18.46, and MAE = 15.92, all computed on data the model never saw during fitting.</p>
 <p>There is still a problem though. We ran one split and those numbers depend entirely on which observations happened to land in the test set. Run it again with a different seed and you’ll get different numbers. From a single split, we can’t say much about how stable those estimates are.</p>
 </section>
 <section id="the-null-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-null-model">The Null Model</h2>
-<p>Now that we have RMSE and MAE on the test data, we have numbers. But what do they mean? Knowing RMSE = 17.42 doesn’t tell you much on its own. Good or bad depends entirely on the scale and variability of whatever you’re predicting. This is where the null model comes in.</p>
+<p>Now that we have RMSE and MAE on the test data, we have numbers. But what do they mean? Knowing RMSE = 18.46 doesn’t tell you much on its own. Good or bad depends entirely on the scale and variability of whatever you’re predicting. This is where the null model comes in.</p>
 <p>The null model is the simplest prediction you could possibly make: ignore all your predictor information and predict <span class="math inline">\(\bar{y}\)</span> for every observation. No spatial structure, no covariates, nothing. Just the mean. The null RMSE is:</p>
 <p><span class="math display">\[RMSE_{null} = \sqrt{\frac{\sum_{i=1}^n (\bar{y} - y_i)^2}{n}}\]</span></p>
 <p>If you look at that carefully it is essentially the standard deviation of <span class="math inline">\(y\)</span> (with <span class="math inline">\(n\)</span> in the denominator rather than <span class="math inline">\(n-1\)</span>). Any model worth using should beat this. If it can’t outperform a model that ignores all the predictor information, it isn’t providing anything useful.</p>
@@ -586,18 +595,18 @@ window.Quarto = {
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>rmseNull</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 35.57114</code></pre>
+<pre><code>[1] 35.61831</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (rmse <span class="sc">/</span> rmseNull)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.510318</code></pre>
+<pre><code>[1] 0.4815995</code></pre>
 </div>
 </div>
-<p>Our RMSE of 17.42 against a null of 35.57 gives a skill score of 0.51. The model is doing good work relative to the null. The null model idea extends further than just picking a reference statistic. It forces you to ask: what is the simplest model that could plausibly describe this system, and can I beat it? In spatial prediction the null is usually the global training mean. In some applications you might use something more informative as the baseline, a spatial trend surface or a long-term climatological average for instance, and evaluate skill relative to that. The key is always having a sensible reference point so your metrics mean something beyond their raw value.</p>
-<p>Students trained on hypothesis testing often want to know whether a skill score like 0.51 is “significant.” The honest answer is that the question doesn’t quite translate. A skill score of 0.51 means your model accounts for about half the variation that the null model misses, which is meaningful, but whether it is good depends entirely on the problem. Predicting next-week precipitation across a mountain range with a skill of 0.51 might be impressive given the chaos of atmospheric dynamics. Getting a skill of 0.51 predicting the boiling point of water as a function of elevation would be embarrassing. You can in principle run a permutation test, shuffle your <span class="math inline">\(y\)</span> values, recompute skill scores many times, and ask where your observed score falls in that null distribution, but this is rarely done in practice and doesn’t really answer the question practitioners care about. The more useful questions are: does the model perform well enough for the intended purpose, and can I build something that does better? A skill score is a number on a scale with a known floor (0 = no better than the mean) and a known ceiling (1 = perfect). Interpret it relative to those anchors, relative to what competing models achieve, and relative to the costs of being wrong in your application. That is more informative than a p-value would be.</p>
+<p>Our RMSE of 18.46 against a null of 35.62 gives a skill score of 0.482. The model is doing good work relative to the null. The null model idea extends further than just picking a reference statistic. It forces you to ask: what is the simplest model that could plausibly describe this system, and can I beat it? In spatial prediction the null is usually the global training mean. In some applications you might use something more informative as the baseline, a spatial trend surface or a long-term climatological average for instance, and evaluate skill relative to that. The key is always having a sensible reference point so your metrics mean something beyond their raw value.</p>
+<p>Students trained on hypothesis testing often want to know whether a skill score like 0.482 is “significant.” The honest answer is that the question doesn’t quite translate. A skill score of 0.482 means your model accounts for about half the variation that the null model misses, which is meaningful, but whether it is good depends entirely on the problem. Predicting next-week precipitation across a mountain range with a skill of 0.482 might be impressive given the chaos of atmospheric dynamics. Getting a skill of 0.482 predicting the boiling point of water as a function of elevation would be embarrassing. You can in principle run a permutation test, shuffle your <span class="math inline">\(y\)</span> values, recompute skill scores many times, and ask where your observed score falls in that null distribution, but this is rarely done in practice and doesn’t really answer the question practitioners care about. The more useful questions are: does the model perform well enough for the intended purpose, and can I build something that does better? A skill score is a number on a scale with a known floor (0 = no better than the mean) and a known ceiling (1 = perfect). Interpret it relative to those anchors, relative to what competing models achieve, and relative to the costs of being wrong in your application. That is more informative than a p-value would be.</p>
 </section>
 <section id="k-fold-cross-validation" class="level2">
 <h2 class="anchored" data-anchor-id="k-fold-cross-validation">K-Fold Cross Validation</h2>
@@ -628,16 +637,16 @@ window.Quarto = {
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   fold       rsq      rmse       mae
-1     1 0.8342053 18.524702 16.935303
-2     2 0.2294272 31.488994 26.772964
-3     3 0.8273552 23.054503 20.303684
-4     4 0.9653766 22.754110 19.649423
-5     5 0.4083284 17.407225 15.131325
-6     6 0.9869665  6.938529  5.552353
-7     7 0.9286120  9.042132  7.710173
-8     8 0.9177811 14.356237 12.595974
-9     9 0.8818709 11.560206 11.067564
-10   10 0.8402237 24.660736 22.204466</code></pre>
+1     1 0.6697391 31.205463 26.271553
+2     2 0.6312187 25.888901 25.514003
+3     3 0.8968459 18.622306 16.051803
+4     4 0.7908491 11.177872  9.913586
+5     5 0.9685776  8.791114  7.672512
+6     6 0.8933646 15.514098 12.626145
+7     7 0.9875131 20.305955 16.570864
+8     8 0.8619807 21.306515 17.484505
+9     9 0.9589183  9.369868  8.023131
+10   10 0.9783504 21.696532 19.564208</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -647,7 +656,7 @@ window.Quarto = {
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>       rsq       rmse        mae 
- 0.7820147 17.9787374 15.7923229 </code></pre>
+ 0.8637358 18.3878624 15.9692311 </code></pre>
 </div>
 </div>
 <p>Now we have a distribution of skill estimates, not just one number. Let’s look at it.</p>
@@ -666,7 +675,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -700,7 +709,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="05xAsideModelSkill_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
