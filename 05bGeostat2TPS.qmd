@@ -1,18 +1,28 @@
 # Deterministic Interpolation: Thin-Plate Splines
 
-
-```{r,echo=FALSE}
+```{r,echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 set.seed(184)
-
+knitr::purl("05bGeostat2TPS.qmd", output = "05bGeostat2TPS.R", documentation = 1)
 ```
 
+
 ## Reading
-In the Hijmans's [Interpolation](https://rspatial.org/analysis/4-interpolation.html#) section he covers thin-plate splines using an example but doesn't discuss the theory at all. Bivand also waves at it in Ch 8. However, ESRI has a descent reading on [radial basis functions](https://pro.arcgis.com/en/pro-app/help/analysis/geostatistical-analyst/how-radial-basis-functions-work.htm) that is worth checking out. 
+
+In Hijmans's [Interpolation](https://rspatial.org/analysis/4-interpolation.html) he covers thin-plate splines using an example but doesn't discuss the theory at all. Bivand also waves at it in Ch 8. ESRI has a decent reading on [radial basis functions](https://pro.arcgis.com/en/pro-app/help/analysis/geostatistical-analyst/how-radial-basis-functions-work.htm) that is worth a look.
+
+## Big Idea
+
+IDW was our first crack at spatial interpolation. Simple, transparent, and completely deterministic. Thin-plate splines (TPS) are also deterministic, but the philosophy is different. Instead of weighting nearby points by distance, TPS fits a single smooth surface to all the data at once, penalizing roughness globally rather than reasoning locally from neighbors. The payoff is a smoother surface with none of the bullseye artifacts IDW made in sparse areas. The cost is that TPS is a black box. The math is complex, the fitting is automatic, and the surface can over-smooth in ways that are hard to diagnose.
+
+Like IDW, TPS gives you a surface but no measure of uncertainty. That's still coming.
 
 ## Packages
-The `fields` package is your friend. 
 
-```{r, message=FALSE}
+The `fields` package [@R-fields] is your friend.
+
+```{r}
+#| warning: false
+#| message: false
 library(fields)
 library(tidyverse)
 library(gstat)
@@ -21,148 +31,202 @@ library(terra)
 library(tidyterra)
 ```
 
-## Radial Bias Functions and TPS
-This is a quick and dirty introduction to thin-plate splines (TPS). TPS is a second deterministic method for interpolation. This isn't a method I've worked with much but it is an increasingly common interpolation method I've seen used in the wild. I thought a short intro would be appropriate even if we don't cover this in the same depth that we did for IDW and that we will for kriging.
+## Theory
 
-A [spline](https://en.wikipedia.org/wiki/Flat_spline) is tool (historically bendy strips of wood or metal or rubber) used to draw curves. You might use them if you are into drawing, drafting, or woodworking. In computing and math they are functions of piece-wise polynomial curves that can fit complex functions. E.g., cubic smoothing splines.
+The name comes from a physical analogy. Imagine a thin sheet of steel or rubber that is flexible but resistant to bending. Pin it down at every data point, forcing it to pass through (or near) each observed value. The sheet will settle into the shape that satisfies all those constraints while bending as little as possible overall. That's the core idea.
 
-  ![](assets/Cubic_Spline.png)
+More formally, TPS finds a function $f(x,y)$ that minimizes:
 
-There are many different algorithms and theoretical underpinnings for splines and we don't even have to come close to explaining those. Splines are used commonly in time-series analysis for smoothing data and can also be used for spatial analysis and even in higher dimension applications.
+$$\sum_{i=1}^n \left(z_i - f(x_i, y_i)\right)^2 + \lambda \int \int \left[ \left(\frac{\partial^2 f}{\partial x^2}\right)^2 + 2\left(\frac{\partial^2 f}{\partial x \partial y}\right)^2 + \left(\frac{\partial^2 f}{\partial y^2}\right)^2 \right] dx\, dy$$
 
-One way to think about how we can use splines for spatial interpolation is draping a sheet over a surface. So imagine an elevation model, say the one we used at Mt Baker. If you threw a giant sheet over that you'd have a thin surface that would approximate the topography. If the sheet was really loose it might fill in all the nooks and crannies and if it was stiffer (like rubber) it might not. For interpolation imagine that instead of the full elevation surface we just draped the sheet over a bunch of points with their height being the elevation. If we had enough points and bent the sheet at smart angles we could approximate the surface. Having semi-stiff splines to bend the surface is what we do with TPS.
+The first term is the residual sum of squares (how well the surface fits the data) and the second term is the roughness penalty (how much the surface bends). The smoothing parameter $\lambda$ controls the trade-off. A small $\lambda$ allows the surface to flex and hit every point more closely. A large $\lambda$ enforces smoothness at the cost of fit. But unlike IDW, rather than you choosing $\lambda$ by hand (the way you'd tune $p$), TPS selects it automatically using generalized cross-validation (GCV). The GCV criterion asks: for what value of $\lambda$ does the model predict left-out points best? The fitting algorithm tries values and converges on the answer. That is an improvement over IDW's tuning-by-eye approach.
 
-TPS is a kind of radial basis function. The underlying function is a poly-harmonic spline and nothing we want to unpack. The idea though is similar in some ways to the weights function in IDW where we use the existing point data we have to assign weights and then use those weights to approximate values. This method is "mesh free" meaning the points we want to interpolate don't need to be on a structured grid (it does not require the formation of a mesh).
+The whole equation is saying: find the surface $f$ that fits the data reasonably well (first term) without bending too much (second term). The output of solving that problem is the interpolated surface.
 
-There is a lot to like about TPS. The downside is that the calculation is complex which makes it a black box for almost every user who isn't a mathematician. I haven't tried to understand all the details of it. The parameters for the model are fit by iteration and cross validated. The goal in the fitting process is to minimize the residual sum of squares subject to a constraint that the final function have a certain level of smoothness.
+TPS belongs to a broader family called **radial basis functions (RBFs)**. The "radial" part means the basis functions depend only on distance from each data point, similar in spirit to the distance weights in IDW. The difference is that TPS combines all these basis functions into a single global surface, whereas IDW makes each prediction locally from its nearest neighbors. That global character is why TPS avoids the bullseye problem: instead of each data point dominating its own neighborhood, TPS has to reconcile all the points simultaneously. The downside is that what happens in one corner of the domain can subtly influence every other corner.
 
-I won't go into any detail about that process. I will say that we have to fall back on assessing skill in a smart way when we use a black-box method. So we will need to go about assessing skill with out-of-sample error. And know that there isn't one best interpolation method for every situation. 
+There is no toy example here the way there was for IDW. I can't walk through the TPS calculation by hand the way I walked through the weighted average. The matrix math involved is doable in principle but not particularly illuminating. For our purposes we will trust the implementation and focus on what the surface looks like and how it performs. If you want the gory details [this vignette](https://github.com/NCAR/fields/blob/master/fieldsVignette.pdf) by Ashton Wiens and Mitch Krock is excellent.
 
 ## Application
-Unlike IDW, I can't show how to calculate an estimate for unknown value of $Z$ at a know point. So there is no toy example of getting $\hat{Z}(s_0)$ here. We can redo the applied example from the IDW module.
 
 ### Data
-Let's give this a shot with the logged lead data from the Meuse River. First we'll load and plot the lead measurements. Note that I'm using the raw `meuse` data as a plain old `data.frame` and plotting with `ggplot`.
+
+Let's redo the Meuse lead application from the IDW module. We will use the same data, the same grid, but a different method. I won't repeat all the setup commentary, you can refer back to that chapter if you need a refresher on what `meuse.all` and `meuse.grid` are.
 
 ```{r}
+#| warning: false
+#| message: false
 data(meuse.all)
-glimpse(meuse.all)
-class(meuse.all)
 meuse.all$logLead <- log(meuse.all$lead)
-# or for the tidyverse fans this is the same output
-meuse.all <- meuse.all %>% mutate(logLead = log(lead))
-# make into sf
 meuse_sf <- st_as_sf(meuse.all, coords = c("x", "y")) %>%
   st_set_crs(value = 28992)
 
-class(meuse_sf) # note change in class from data.frame to sf and data.frame
-
-ggplot(data = meuse_sf) +
-  geom_sf(aes(fill=logLead), size=4, 
-          shape = 21, color="white",alpha=0.8)+
-  scale_fill_continuous(type = "viridis",name="log(ppm)") + 
-  labs(title="Lead concentrations")
-
+meuse.grid <- readRDS("data/meuse.grid.Rds")
 ```
 
-Let's interpolate those measurements to an empty grid like we did before. 
-
 ```{r}
-meuse.grid <- readRDS("data/meuse.grid.Rds")
-head(meuse.grid)
+ggplot(data = meuse_sf) +
+  geom_sf(aes(fill=logLead), size=4,
+          shape = 21, color="white",alpha=0.8)+
+  scale_fill_continuous(type = "viridis",name="log(ppm)") +
+  labs(title="Lead concentrations")
 ```
 
 ### TPS
-So the idea here is that we will model a value for lead for every location in `meuse.grid` using the thin-plate splines function `Tps` in the `fields` library. Fields is not fussy about the class of the objects like `gstat` is. We can work directly on the `data.frame` objects or the `sf` objects. Let's just use the `data.frames` for now.
+
+The `Tps` function from `fields` fits the thin-plate spline model. It takes `x`, a matrix of coordinates, and `Y`, the response variable (Yes, that is confusing variable naming. Why not x, y, and z?). Note that `fields` is less fussy about object classes than `gstat` so we can work directly on `data.frame` objects rather than converting to `sf`.
 
 ```{r}
 logLeadTPSmodel <- Tps(x = meuse.all[,2:3], Y = meuse.all$logLead)
 logLeadTPSmodel
+```
+
+The output is worth working through. Let's go term by term.
+
+**Number of parameters in the null space: 3.** Before TPS fits the smooth spatial surface, it first fits a low-order polynomial as a baseline. In 2D with the default settings, that polynomial is linear in $x$ and $y$ (intercept plus an $x$ coefficient plus a $y$ coefficient) so three parameters. This captures any broad linear spatial trend in the data before the smooth correction is layered on top.
+
+**Model degrees of freedom: 52.9** and **Residual degrees of freedom: 111.1.** These add up to 164, the number of observations. Model degrees of freedom is the EDF, or effective degrees of freedom (roughly how many parameters the model is using to fit the surface). With EDF = 52.9, the model is using about a third of the data's worth of parameters. The remaining 111.1 go toward estimating residual error. This concept doesn't exist in IDW at all. There's no equivalent of "how many parameters did IDW use" because IDW isn't fitting a model in this sense.
+
+**GCV estimate for tau: 0.3336** and **MLE for tau: 0.3234.** $\tau$ is the estimated noise standard deviation (the scatter of residuals around the fitted surface). Since we're on the log scale, $\tau \approx 0.33$ log(ppm). The two estimates (GCV and MLE) land close to each other, which is a good sign.
+
+**MLE for sigma: 283.** This is confusing because `fields` uses "sigma" here to mean the scale of the spatial covariance, roughly the overall variance of the spatial signal. It has nothing to do with $\tau$. The ratio $\lambda = \tau^2 / \sigma$ is what controls the smoothness trade-off.
+
+**lambda: 0.00037.** The chosen smoothing parameter. Very small, meaning the surface is quite flexible. You can sanity-check this: $\tau^2 / \sigma \approx 0.3234^2 / 283 \approx 0.00037$.
+
+The last rows of the summary, **GCV** and **REML**, show two different criteria for choosing $\lambda$. They land on similar values of $\lambda$ and $\tau$ here, which is reassuring. When they agree, you can trust the chosen $\lambda$ more. When they disagree a lot, think harder about what the model is doing.
+
+### A Note on GCV
+
+GCV stands for Generalized Cross-Validation. The "generalized" part is worth talking about as you've seen "regular" cross-validation in the [Model Skill and Cross Validation aside](05xAsideModelSkill.html).
+
+In LOOCV you remove each observation, refit the model without it, predict it back, and repeat $n$ times. It works, but you're fitting 164 separate models to find the best $\lambda$. GCV approximates that process using a mathematical shortcut. Rather than actually leaving each point out, it uses the model's hat matrix -- a matrix that describes how much each observation influences its own prediction -- to estimate what LOOCV would give for any value of $\lambda$ without refitting the model each time. That's the "generalized" part: it generalizes cross-validation from something you do by brute force to something you can compute analytically from a single model fit.
+
+The result is the same thing you want from LOOCV: the $\lambda$ that minimizes prediction error on left-out points. You just get there without the computational cost. REML (also shown in the summary) is a different method for choosing $\lambda$ based on likelihood rather than prediction error. They usually agree, and they do here.
+
+Now let's predict over the full grid and make a raster.
+
+::: {.callout-note}
+Note that we're calling `predict()` again here which is the same generic function we used with `gstat` objects in the IDW module. It dispatches to a different method under the hood because `logLeadTPSmodel` is a `Tps` object rather than a `gstat` object, but the interface looks the same. That's generics doing their job.
+:::
+
+```{r}
 # Predict the model over all the coordinates in meuse.grid
 logLeadPreds <- c(predict(object=logLeadTPSmodel, x = meuse.grid[,1:2]))
-# store in a data.frame with the x,y coordinates
+# Store in a data.frame with the x,y coordinates
 logLeadTPS <- data.frame(x = meuse.grid[,1],
                          y = meuse.grid[,2],
                          logLead=logLeadPreds)
-# and into SpatStat
-logLeadIDW_rast <- rast(logLeadTPS,crs=crs(meuse_sf))
+# And into SpatRaster
+logLeadTPS_rast <- rast(logLeadTPS, crs=crs(meuse_sf))
 
-# now plot and add the meuse points from which we built the surface
+# Plot
 ggplot() +
-  geom_spatraster(data=logLeadIDW_rast, mapping = aes(fill=logLead),alpha=0.8) +
-  scale_fill_continuous(type = "viridis",name="log(ppm)",na.value = "transparent") + 
+  geom_spatraster(data=logLeadTPS_rast, mapping = aes(fill=logLead),alpha=0.8) +
+  scale_fill_continuous(type = "viridis",name="log(ppm)",na.value = "transparent") +
   labs(title="Lead concentrations", subtitle = "TPS") +
   theme_minimal()
-
 ```
 
-We've made a prediction using the entire muese data set. Is it any good? It doesn't look nearly as funny as the IDW surface, it doesn't have any of the craters in the middle for instance. Let's look deeper.
+Compare that to the IDW surface from the last module. No craters. The sparse center of the study area gets a smooth interpolation rather than bullseyes around each isolated point. That's the global nature of TPS doing its job.
 
 ## Skill
-Let's get the R$^2$ and RMSE of the surface. Like most model outputs, `logLeadTPSmodel` is a `list` and has a stunning number of components (`r length(logLeadTPSmodel)` of them as a matter of fact). You can explore them with `str` if you like. Let's extract the fitted values and compare them to the original data.
+
+Now let's check the numbers. First the in-sample fit, using all 164 observations to build the model and evaluating at those same locations.
 
 ```{r}
 obs <- meuse.all$logLead
-preds <- extract(logLeadIDW_rast, meuse_sf) %>% pull(logLead)
+preds <- extract(logLeadTPS_rast, meuse_sf) %>% pull(logLead)
 rsq <- cor(obs,preds)^2
 rmse <- sqrt(mean((preds - obs)^2))
-rsq
-rmse
+c(rsq = rsq, rmse = rmse)
+```
+
+```{r}
 ggplot() +
   geom_abline(slope=1,intercept = 0) +
-  geom_point(aes(x=obs,y=preds)) + 
+  geom_point(aes(x=obs,y=preds)) +
   coord_fixed(ratio=1, xlim = range(preds,obs),ylim = range(preds,obs)) +
   labs(x="Observed Values",
        y="Predicted Values",
        title="Lead log(ppm)")
 ```
 
-The model does a pretty good job of predicting the observed values with `r round(cor(obs,preds)^2,digits = 2)*100`% variance explained and a low RMSE. This is in fact comparable to the interpolation we did by withholding data with IDW. It's interesting that the low observed values are getting substantially over predicted. The bendy surface that TPS makes can't fit those data without distorting the rest of the surface. That might or might not be a trade off you are willing to make as an analyst. 
+Here we have R$^2$ of `r round(rsq,3)` and a reasonable RMSE of `r round(rmse,3)`. Notice these in-sample numbers tell a more informative story than IDW's 0.99 R$^2$ did. IDW is exact at data locations in theory -- the weight to each point from itself becomes infinite and overwhelms everything -- so its in-sample performance is essentially perfect by construction. TPS is different. The GCV smoothing means the fitted surface doesn't pass through every point exactly, so you have in-sample residuals. That's the smoothing penalty doing its job.
 
-Let's see how we do with a `train` and `test` data set in a 90%, 10% split.
+Notice also that the low observed values are getting consistently overpredicted. The smooth TPS surface can't accommodate those low values in the sparse center of the study area without distorting everything else, so it compromises and pulls them up. We'll come back to this.
+
+Let's do a proper train/test evaluation. Here is a 80%/20% split.
 
 ```{r}
 n <- nrow(meuse.all)
-rows4test <- sample(x = 1:n,size = n*0.1)
+rows4test <- sample(x = 1:n,size = n*0.2)
 meuseTest <- meuse.all[rows4test,]
 meuseTrain <- meuse.all[-rows4test,]
 
-# note meuseTrain here
+# Note meuseTrain here
 logLeadTPSmodel <- Tps(x = meuseTrain[,2:3], Y = meuseTrain$logLead)
 logLeadTPSmodel
+
 # Predict the model over all the coordinates in meuse.grid
 logLeadPreds <- c(predict(object=logLeadTPSmodel, x = meuse.grid[,1:2]))
-# store in a data.frame with the x,y coordinates
+# Store in a data.frame with the x,y coordinates
 logLeadTPS <- data.frame(x = meuse.grid[,1],
                          y = meuse.grid[,2],
                          logLead=logLeadPreds)
-# and into SpatStat
-logLeadIDW_rast <- rast(logLeadTPS,crs=crs(meuse_sf))
+# And into SpatRaster
+logLeadTPS_rast <- rast(logLeadTPS, crs=crs(meuse_sf))
 
-# look at skill on withheld data. Note meuseTest:
+# Look at skill on withheld data. Note meuseTest:
 obs <- meuseTest$logLead
-preds <- extract(logLeadIDW_rast, meuseTest[,2:3]) %>% pull(logLead)
+preds <- extract(logLeadTPS_rast, meuseTest[,2:3]) %>% pull(logLead)
 rsq <- cor(obs,preds)^2
 rmse <- sqrt(mean((preds - obs)^2))
-rsq
-rmse
+c(rsq = rsq, rmse = rmse)
+```
+
+```{r}
 ggplot() +
   geom_abline(slope=1,intercept = 0) +
-  geom_point(aes(x=obs,y=preds)) + 
+  geom_point(aes(x=obs,y=preds)) +
   coord_fixed(ratio=1, xlim = range(preds,obs),ylim = range(preds,obs)) +
   labs(x="Observed Values",
        y="Predicted Values",
        title="Lead log(ppm)")
 ```
 
-We see now that the skill of the model is decreased with R$^2$ = `r round(rsq,3)` and RMSE = `r round(rmse,3)`. This is better than the IDW on the test data but still in the same neighborhood.
+We see now that skill of the model is decreased with R$^2$ = `r round(rsq,3)` and RMSE = `r round(rmse,3)` as these are out-of-sample tests. The exact numbers vary with the random split, but you should be in that neighborhood.
 
-## Is this an Improvement?
-In terms of skill this seems similar to IDW. Qualitatively, it seems like IDW wasn't smooth enough. It might well be that TPS is too smooth. If you were concerned with the low values in the middle of the study area you might want the craters that IDW makes rather than the systematic overpredcition that TPS gives. If you were after a smooth-looking surface that gets the big picture right, then TPS might be a good choice. Sadly, there isn't one right answer.
+### Null Model
 
-## Your work
-None. This is kind of an add on to introduce you to TPS. But you should be able to apply this to the precip data from the IDW assignment by following the workflow above.
+How does that RMSE look against the simplest possible baseline, predicting the training mean everywhere?
 
+```{r}
+rmseNULL <- sqrt(mean((mean(meuseTrain$logLead) - obs)^2))
+rmseNULL
+```
 
+```{r}
+1 - (rmse / rmseNULL)
+```
 
+TPS beats the null. The skill score here (`r round(1 - (rmse / rmseNULL),3)`) usually lands around 0.35-0.45 depending on the random split. Compare that to IDW from the last module, where the skill score was around 0.22-0.25. TPS is doing better, though not dramatically. For a full treatment of how to interpret these skill scores, see the [Model Skill and Cross Validation aside](05xAsideModelSkill.html).
 
+## Is This an Improvement?
+
+In terms of skill scores, TPS and IDW are in the same neighborhood on the Meuse data. TPS tends to do a bit better out-of-sample, but the margins are not large.
+
+What is clearly different is how the two methods fail. IDW made craters in the sparse center of the study area. TPS smoothed those away, which looks better. But look at what TPS does instead: it consistently overpredicts the low values. The smooth surface can't simultaneously honor the low values in the sparse center and the high values near the river without distorting everything in between. So it splits the difference, and the extremes lose.
+
+You could make the case either way. If you need a smooth-looking surface that gets the broad spatial pattern right, TPS is probably the better choice. If the extreme values matter -- if the low-lead areas in the center of the floodplain are scientifically important, say -- then IDW's craters are at least clear about how little information the model has there. TPS hides that uncertainty under a plausible-looking surface.
+
+Neither method is right in general. It depends on the data and what you need from the output. Which brings us to the biggest limitation they share.
+
+Thin-plate splines give you something IDW doesn't: a principled, data-driven way to control smoothness. The GCV fitting is useful -- you don't have to tune a power parameter by hand and hope for the best. The surface looks cleaner and tends to generalize a bit better. But TPS is still deterministic. There is no probability model underneath it, no uncertainty estimate, and no way to know how confident you should be in any particular prediction.
+
+Both IDW and TPS produce a surface but tell you nothing about how wrong it might be. If you want to know whether a predicted value of 4.8 log(ppm) at some unsampled location could plausibly be 3.8 or 5.8, IDW and TPS have nothing to say. You just get the 4.8 and are expected to be satisfied with it.
+
+That's what kriging fixes. Kriging is a probabilistic method that uses the variogram (which you already know from the autocorrelation module) to model the spatial structure of the data and produce a prediction surface with an actual uncertainty estimate alongside it. That `var1.var` column that was full of NAs in the IDW output? Kriging fills it in, and it means something. That's the next chapter.
+
+## Your Work
+
+None for this module. This is meant as an add-on to introduce you to TPS before we move on to kriging. That said, you should be able to apply this to the California precipitation data from the IDW assignment by following the workflow above.
