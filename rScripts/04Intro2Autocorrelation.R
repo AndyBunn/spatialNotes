@@ -1,7 +1,5 @@
 ## ----echo=FALSE, include=FALSE------------------------------------------------
 set.seed(1984)
-knitr::purl("04Intro2Autocorrelation.qmd", output = "rScripts/04Intro2Autocorrelation.R", documentation = 1)
-
 
 
 ## ----message=FALSE------------------------------------------------------------
@@ -597,7 +595,7 @@ pGradBumpsI
 
 ## ----message=FALSE------------------------------------------------------------
 library(tmap)
-birds_sf <- readRDS("data/birdRichnessMexico.rds")
+birds_sf <- readRDS("../data/birdRichnessMexico.rds")
 tmap_mode("view")
 tm_shape(birds_sf) + 
   tm_symbols(col="nSpecies", alpha = 0.7)

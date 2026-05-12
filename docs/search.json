@@ -829,17 +829,6 @@
     "href": "05xAsideModelSkill.html#the-problem-with-in-sample-statistics",
     "title": "Aside: Model Skill and Cross Validation",
     "section": "The Problem with In-Sample Statistics",
-    "text": "The Problem with In-Sample Statistics",
-    "crumbs": [
-      "Interpolation & Geostatistics",
-      "Aside: Model Skill and Cross Validation"
-    ]
-  },
-  {
-    "objectID": "05xAsideModelSkill.html#the-problem-with-in-sample-statistics-1",
-    "href": "05xAsideModelSkill.html#the-problem-with-in-sample-statistics-1",
-    "title": "Aside: Model Skill and Cross Validation",
-    "section": "The Problem with In-Sample Statistics",
     "text": "The Problem with In-Sample Statistics\nLet’s make the overfitting problem concrete. We will simulate some data where we know the true relationship, hold out a chunk of it as a test set, and then fit polynomial models of increasing complexity. For each model we’ll track in-sample and out-of-sample \\(R^2\\) as flexibility grows.\n\n\nCode\nn   &lt;- 50\nx   &lt;- runif(n, min=-4, max=4)\neps &lt;- rnorm(n, sd=15)\ny   &lt;- 30 + 2*x^3 - 5*x + eps\ndat &lt;- data.frame(x=x, y=y)\n\n\nWe have 50 observations with one predictor \\(x\\) and response \\(y\\). The true relationship is \\(y = 30 + 2x^3 - 5x + \\varepsilon\\) but we don’t know that when fitting.\n\n\nCode\nggplot(dat, aes(x=x, y=y)) +\n  geom_point(size=2.5, alpha=0.8) +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\nLet’s hold out 1/3 of the points as a test set, then on the training data fit polynomial models of degree 1 through 10. For each one we’ll compute in-sample \\(R^2\\) on the training data and out-of-sample \\(R^2\\) on the test data.\n\n\nCode\ntest_ov_idx &lt;- sample(1:nrow(dat), size=round(nrow(dat) * 0.33))\ntrain_ov    &lt;- dat[-test_ov_idx, ]\ntest_ov     &lt;- dat[test_ov_idx,  ]\n\ndegrees &lt;- 1:10\nrsq_in  &lt;- numeric(length(degrees))\nrsq_out &lt;- numeric(length(degrees))\n\nfor(d in degrees){\n  fit_d      &lt;- lm(y ~ poly(x, d), data=train_ov)\n  rsq_in[d]  &lt;- cor(train_ov$y, predict(fit_d))^2\n  rsq_out[d] &lt;- cor(test_ov$y,  predict(fit_d, newdata=test_ov))^2\n}\n\nbv &lt;- data.frame(\n  degree = rep(degrees, 2),\n  rsq    = c(rsq_in, rsq_out),\n  set    = rep(c(\"Training\", \"Test\"), each=length(degrees))\n)\n\nggplot(bv, aes(x=degree, y=rsq, color=set)) +\n  geom_line(linewidth=1.1) +\n  geom_point(size=2.5) +\n  scale_x_continuous(breaks=degrees) +\n  scale_color_manual(values=c(anem7[7], anem7[1])) +\n  labs(x=\"Polynomial degree\", y=bquote(R^2), color=NULL) +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\nTraining \\(R^2\\) climbs as we add flexibility because more parameters always reduce in-sample residuals. Out-of-sample \\(R^2\\) peaks somewhere around the true cubic relationship and then starts to fall off as the model begins chasing noise rather than signal. The two curves tell completely different stories about model quality. If you only looked at the training curve you would conclude the most complex model wins every time.\nThat gap between the training and test curves is overfitting. And the lesson is not to pick the model that maximizes in-sample \\(R^2\\). It is to pick the one that does well on data it has not seen.",
     "crumbs": [
       "Interpolation & Geostatistics",

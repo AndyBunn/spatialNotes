@@ -1,7 +1,3 @@
-## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
-knitr::purl("07RegressionGLS.qmd", output = "rScripts/07RegressionGLS.R", documentation = 1)
-
-
 ## ----message=FALSE------------------------------------------------------------
 library(automap)
 library(gstat)

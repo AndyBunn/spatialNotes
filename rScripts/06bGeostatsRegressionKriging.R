@@ -1,6 +1,5 @@
 ## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
 set.seed(733)
-knitr::purl("06bGeostatsRegressionKriging.qmd", output = "rScripts/06bGeostatsRegressionKriging.R", documentation = 1)
 
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
@@ -41,7 +40,7 @@ str(meuse.all)
 
 
 ## -----------------------------------------------------------------------------
-meuse.grid <- readRDS("data/meuse.grid.Rds")
+meuse.grid <- readRDS("../data/meuse.grid.Rds")
 str(meuse.grid)
 
 

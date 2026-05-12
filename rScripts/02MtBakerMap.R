@@ -1,6 +1,5 @@
 ## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
 set.seed(184)
-knitr::purl("02MtBakerMap.qmd", output = "rScripts/02MtBakerMap.R", documentation = 1)
 
 
 ## ----message=FALSE------------------------------------------------------------
@@ -12,7 +11,7 @@ library(tidyterra)
 
 
 ## -----------------------------------------------------------------------------
-mtbDEM <- rast("data/mtbDEM.tif")
+mtbDEM <- rast("../data/mtbDEM.tif")
 mtbDEM
 # and a quick plot
 mtbDEM_df <- as.data.frame(mtbDEM, xy = TRUE)
@@ -64,12 +63,12 @@ p1
 
 
 ## -----------------------------------------------------------------------------
-chairs <- st_read("data/mtbChairLines.shp")
+chairs <- st_read("../data/mtbChairLines.shp")
 p1 + geom_sf(data=chairs)
 
 
 ## -----------------------------------------------------------------------------
-buildings <- read.csv("data/mtbLodges.csv")
+buildings <- read.csv("../data/mtbLodges.csv")
 buildings
 
 

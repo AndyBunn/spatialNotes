@@ -1,7 +1,5 @@
 ## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
 set.seed(184)
-knitr::purl("05aGeostatsIDW.qmd", output = "rScripts/05aGeostatsIDW.R", documentation = 1)
-
 
 
 ## ----message=FALSE------------------------------------------------------------
@@ -106,7 +104,7 @@ p2
 
 
 ## -----------------------------------------------------------------------------
-meuse.grid <- readRDS("data/meuse.grid.Rds")
+meuse.grid <- readRDS("../data/meuse.grid.Rds")
 head(meuse.grid)
 
 
@@ -270,9 +268,9 @@ ggplot() +
 
 ## -----------------------------------------------------------------------------
 # precip point data
-prcpCA <- readRDS("data/prcpCA.rds")
+prcpCA <- readRDS("../data/prcpCA.rds")
 # empty grid to interpolate into
-gridCA <- readRDS("data/gridCA.rds")
+gridCA <- readRDS("../data/gridCA.rds")
 
 # make as sf
 prcpCA <- prcpCA %>% st_as_sf(coords = c("X", "Y")) %>%

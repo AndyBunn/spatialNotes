@@ -1,6 +1,5 @@
 ## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
 set.seed(184)
-knitr::purl("05bGeostat2TPS.qmd", output = "rScripts/05bGeostat2TPS.R", documentation = 1)
 
 
 ## -----------------------------------------------------------------------------
@@ -22,7 +21,7 @@ meuse.all$logLead <- log(meuse.all$lead)
 meuse_sf <- st_as_sf(meuse.all, coords = c("x", "y")) %>%
   st_set_crs(value = 28992)
 
-meuse.grid <- readRDS("data/meuse.grid.Rds")
+meuse.grid <- readRDS("../data/meuse.grid.Rds")
 
 
 ## -----------------------------------------------------------------------------

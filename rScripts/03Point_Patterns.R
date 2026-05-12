@@ -1,6 +1,5 @@
 ## ----echo=FALSE, include=FALSE------------------------------------------------
 set.seed(1984)
-knitr::purl("03Point_Patterns.qmd", output = "rScripts/03Point_Patterns.R", documentation = 1)
 
 
 ## ----message=FALSE------------------------------------------------------------

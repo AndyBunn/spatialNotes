@@ -1,9 +1,5 @@
 # Regression: GLS with Autocorrelated Residuals
 
-```{r,echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-knitr::purl("07RegressionGLS.qmd", output = "rScripts/07RegressionGLS.R", documentation = 1)
-```
-
 ## Big Idea
 In the big picture, identifying spatial patterns in data lets us understand process. In practical terms, standard ordinary least squares regression can be problematic with spatial data but there are other approaches that are useful.
 

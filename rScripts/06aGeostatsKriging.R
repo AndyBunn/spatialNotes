@@ -1,6 +1,5 @@
 ## ----echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------------
 set.seed(184)
-knitr::purl("06aGeostatsKriging.qmd", output = "rScripts/06aGeostatsKriging.R", documentation = 1)
 
 
 ## ----message=FALSE------------------------------------------------------------
@@ -14,7 +13,7 @@ library(tidyterra)
 ## -----------------------------------------------------------------------------
 # load
 data(meuse.all)
-meuse.grid <- readRDS("data/meuse.grid.Rds")
+meuse.grid <- readRDS("../data/meuse.grid.Rds")
 
 # make a variable to work with
 meuse.all$logLead <- log(meuse.all$lead)
@@ -171,9 +170,9 @@ cor(leadKrigeLOOCV_sf$observed,leadKrigeLOOCV_sf$var1.pred)^2
 
 ## -----------------------------------------------------------------------------
 # precip point data
-prcpCA <- readRDS("data/prcpCA.rds")
+prcpCA <- readRDS("../data/prcpCA.rds")
 # empty grid to interpolate into
-gridCA <- readRDS("data/gridCA.rds")
+gridCA <- readRDS("../data/gridCA.rds")
 
 prcpCAsf <- prcpCA %>% st_as_sf(coords = c("X", "Y")) %>%
   st_set_crs(value = 3310)

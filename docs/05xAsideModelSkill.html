@@ -354,7 +354,6 @@ window.Quarto = {
   <li><a href="#rmse-and-mae" id="toc-rmse-and-mae" class="nav-link" data-scroll-target="#rmse-and-mae">RMSE and MAE</a></li>
   </ul></li>
   <li><a href="#the-problem-with-in-sample-statistics" id="toc-the-problem-with-in-sample-statistics" class="nav-link" data-scroll-target="#the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</a></li>
-  <li><a href="#the-problem-with-in-sample-statistics-1" id="toc-the-problem-with-in-sample-statistics-1" class="nav-link" data-scroll-target="#the-problem-with-in-sample-statistics-1">The Problem with In-Sample Statistics</a></li>
   <li><a href="#traintest-holdout" id="toc-traintest-holdout" class="nav-link" data-scroll-target="#traintest-holdout">Train/Test Holdout</a></li>
   <li><a href="#the-null-model" id="toc-the-null-model" class="nav-link" data-scroll-target="#the-null-model">The Null Model</a></li>
   <li><a href="#k-fold-cross-validation" id="toc-k-fold-cross-validation" class="nav-link" data-scroll-target="#k-fold-cross-validation">K-Fold Cross Validation</a></li>
@@ -436,9 +435,6 @@ window.Quarto = {
 </section>
 <section id="the-problem-with-in-sample-statistics" class="level2">
 <h2 class="anchored" data-anchor-id="the-problem-with-in-sample-statistics">The Problem with In-Sample Statistics</h2>
-</section>
-<section id="the-problem-with-in-sample-statistics-1" class="level2">
-<h2 class="anchored" data-anchor-id="the-problem-with-in-sample-statistics-1">The Problem with In-Sample Statistics</h2>
 <p>Let’s make the overfitting problem concrete. We will simulate some data where we know the true relationship, hold out a chunk of it as a test set, and then fit polynomial models of increasing complexity. For each model we’ll track in-sample and out-of-sample <span class="math inline">\(R^2\)</span> as flexibility grows.</p>
 <div class="cell">
 <details open="" class="code-fold">

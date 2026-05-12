@@ -76,8 +76,6 @@ mae  <- mean(abs(preds - obs))
 
 ## The Problem with In-Sample Statistics
 
-## The Problem with In-Sample Statistics
-
 Let's make the overfitting problem concrete. We will simulate some data where we know the true relationship, hold out a chunk of it as a test set, and then fit polynomial models of increasing complexity. For each model we'll track in-sample and out-of-sample $R^2$ as flexibility grows.
 
 ```{r}
