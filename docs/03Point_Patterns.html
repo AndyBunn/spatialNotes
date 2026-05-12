@@ -347,7 +347,6 @@ window.Quarto = {
   <ul>
   <li><a href="#big-idea" id="toc-big-idea" class="nav-link active" data-scroll-target="#big-idea">Big Idea</a></li>
   <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
-  <li><a href="#distance-refresh" id="toc-distance-refresh" class="nav-link" data-scroll-target="#distance-refresh">Distance Refresh</a></li>
   <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#point-patterns" id="toc-point-patterns" class="nav-link" data-scroll-target="#point-patterns">Point Patterns</a>
   <ul>
@@ -402,10 +401,19 @@ window.Quarto = {
 <section id="reading" class="level2">
 <h2 class="anchored" data-anchor-id="reading">Reading</h2>
 <p>Read chapter 7 in Bivand’s book up to section 7.5 <span class="citation" data-cites="bivand2008pointpattern">(<a href="08PackagesUsed.html#ref-bivand2008pointpattern" role="doc-biblioref">Bivand 2008</a>)</span>. Also start reading through <span class="citation" data-cites="fortin2016spatial">Fortin et al. (<a href="08PackagesUsed.html#ref-fortin2016spatial" role="doc-biblioref">2016</a>)</span> as a great overall short chapter on spatial analysis. Don’t worry about some of the details in there yet. We will revisit as we go along.</p>
-</section>
-<section id="distance-refresh" class="level2">
-<h2 class="anchored" data-anchor-id="distance-refresh">Distance Refresh</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Before diving in, make sure you’re comfortable with distance matrices. If you need a refresher, work through the <a href="03xAsideDistanceMatrices.html">Distance Matrix aside</a>.</p>
+</div>
+</div>
 </section>
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
@@ -552,7 +560,20 @@ Unit of length: 1 metre</code></pre>
 </div>
 </div>
 <p>Note that the units on these data are not the same. The <code>japanesepines</code> data are measured where one unit equals 5.7 meters, <code>redwood</code> is unitless (re-scaled at some point to an xy grid ranging from 0,1), <code>bei</code> is actually in meters in a 1000x500m bounding box. This doesn’t really matter when we interpret each data set on its own, but we should keep it in mind when comparing numbers down below.</p>
-<p>Note also that I’m using the <code>plot</code> function to show the point data. E.g., <code>plot(japanesepines)</code>. Because <code>japanesepines</code> is class <code>ppp</code>, the generic function <code>plot.ppp</code> is being used with the authors of <code>spatstat</code> having made the visualization choices for you. Look back at the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a>. If you are a die hard <code>ggplot</code> enthusiast you can figure out how to make your own plot using <code>ggplot</code>. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the <code>japanesepines</code> object which is a <code>list</code>. I’m not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note also that I’m using the <code>plot</code> function to show the point data. E.g., <code>plot(japanesepines)</code>. Because <code>japanesepines</code> is class <code>ppp</code>, the generic function <code>plot.ppp</code> is being used with the authors of <code>spatstat</code> having made the visualization choices for you. Look back at the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a>.</p>
+</div>
+</div>
+<p>If you are a die hard <code>ggplot</code> enthusiast you can figure out how to make your own plot using <code>ggplot</code>. E.g., you can get the units right and geek out on this as much as you like by looking at the plumbing of the <code>japanesepines</code> object which is a <code>list</code>. I’m not suggesting you do this. But I know many of you take your data viz seriously and might be offended by the default plots.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>

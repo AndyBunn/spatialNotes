@@ -162,7 +162,9 @@ p1 + geom_point(aes(x=2,y=4,size=zhat_s0))
 
 You can see how we interpolated (estimated) one point using inverse distance weighting. And you could imagine then how we'd do that for any point we could imagine.
 
+::: {.callout-note}
 If you need a refresher in `dist()`, work through the [Distance Matrices aside](03xAsideDistanceMatrices.html).
+:::
 
 ## Application
 ### Data
@@ -399,9 +401,9 @@ That's a better model all around but not by much. Tuning $p$ only gets you so fa
 
 ## Wrapping Up IDW
 
-IDW is a reasonable starting point for spatial interpolation. It's fast, intuitive, and has no assumptions beyond Tobler's first law. But it has  limits. It's purely deterministic, so you get a surface but no uncertainty estimate. It's sensitive to the choice of $p$ but there's no principled way to pick it -- you're essentially just tuning by eye and cross-validation. And it has no way to account for spatial structure beyond distance: it can't know that lead decreases consistently with distance from the river, for instance. It just sees nearby points and weights them.
+IDW is a reasonable starting point for spatial interpolation. It's fast, intuitive, and has no assumptions beyond Tobler's first law. But it is purely deterministic, so you get a surface but no uncertainty estimate. It's sensitive to the choice of $p$ but there's no principled way to pick it other than tuning by eye and cross-validation. And it has no way to account for spatial structure beyond distance: it can't know that lead decreases consistently with distance from the river, for instance. It just sees nearby points and weights them.
 
-After a quick detour into thin-plate splines we'll tackle these problems. Kriging uses the variogram to model the spatial structure explicitly and, crucially, returns a variance estimate alongside the prediction. That `var1.var` column that was full of NAs? Kriging fills it in. After that, regression kriging incorporates covariates like distance to river directly into the model -- and that's where the formula `logLead~1` vs. `logLead~dist` distinction will make sense.
+After a detour into thin-plate splines we'll tackle these problems. Kriging uses the variogram to model the spatial structure explicitly and, crucially, returns a variance estimate alongside the prediction. That `var1.var` column that was full of NAs? Kriging fills it in. After that, regression kriging incorporates covariates like distance to river directly into the model -- and that's where the formula `logLead~1` vs. `logLead~dist` distinction will make sense.
 
 ```{r, eval=FALSE, echo=FALSE}
 #Optimizing p 3.058529

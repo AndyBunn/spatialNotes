@@ -605,7 +605,19 @@ window.Quarto = {
 </div>
 </div>
 <p>You can see how we interpolated (estimated) one point using inverse distance weighting. And you could imagine then how we’d do that for any point we could imagine.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>If you need a refresher in <code>dist()</code>, work through the <a href="03xAsideDistanceMatrices.html">Distance Matrices aside</a>.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="application" class="level2">
@@ -1077,8 +1089,8 @@ max value   :  6.444424 </code></pre>
 </section>
 <section id="wrapping-up-idw" class="level2">
 <h2 class="anchored" data-anchor-id="wrapping-up-idw">Wrapping Up IDW</h2>
-<p>IDW is a reasonable starting point for spatial interpolation. It’s fast, intuitive, and has no assumptions beyond Tobler’s first law. But it has limits. It’s purely deterministic, so you get a surface but no uncertainty estimate. It’s sensitive to the choice of <span class="math inline">\(p\)</span> but there’s no principled way to pick it – you’re essentially just tuning by eye and cross-validation. And it has no way to account for spatial structure beyond distance: it can’t know that lead decreases consistently with distance from the river, for instance. It just sees nearby points and weights them.</p>
-<p>After a quick detour into thin-plate splines we’ll tackle these problems. Kriging uses the variogram to model the spatial structure explicitly and, crucially, returns a variance estimate alongside the prediction. That <code>var1.var</code> column that was full of NAs? Kriging fills it in. After that, regression kriging incorporates covariates like distance to river directly into the model – and that’s where the formula <code>logLead~1</code> vs.&nbsp;<code>logLead~dist</code> distinction will make sense.</p>
+<p>IDW is a reasonable starting point for spatial interpolation. It’s fast, intuitive, and has no assumptions beyond Tobler’s first law. But it is purely deterministic, so you get a surface but no uncertainty estimate. It’s sensitive to the choice of <span class="math inline">\(p\)</span> but there’s no principled way to pick it other than tuning by eye and cross-validation. And it has no way to account for spatial structure beyond distance: it can’t know that lead decreases consistently with distance from the river, for instance. It just sees nearby points and weights them.</p>
+<p>After a detour into thin-plate splines we’ll tackle these problems. Kriging uses the variogram to model the spatial structure explicitly and, crucially, returns a variance estimate alongside the prediction. That <code>var1.var</code> column that was full of NAs? Kriging fills it in. After that, regression kriging incorporates covariates like distance to river directly into the model – and that’s where the formula <code>logLead~1</code> vs.&nbsp;<code>logLead~dist</code> distinction will make sense.</p>
 </section>
 <section id="your-work" class="level2">
 <h2 class="anchored" data-anchor-id="your-work">Your Work</h2>

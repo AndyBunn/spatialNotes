@@ -437,7 +437,20 @@ Multiple R-squared:  0.5788,    Adjusted R-squared:  0.5609
 F-statistic: 32.29 on 2 and 47 DF,  p-value: 1.497e-09</code></pre>
 </div>
 </div>
-<p>OK. We have one definitely helpful predictor, and one borderline predictor. Now let’s say we want to extend that model to predict a new data set. The object <code>lm1</code> is class <code>lm</code> and most every model class has a <code>predict</code> function, or a <code>newdata</code> argument to the original function, that allows you feed it new data. Review the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a> if that is unclear. So let’s imagine we have a new data set with <code>x1</code> and <code>x2</code> but no <code>y</code>.</p>
+<p>OK. We have one definitely helpful predictor, and one borderline predictor. Now let’s say we want to extend that model to predict a new data set. The object <code>lm1</code> is class <code>lm</code> and most every model class has a <code>predict</code> function, or a <code>newdata</code> argument to the original function, that allows you feed it new data.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Review the <a href="01xAsideMethodsAndGenerics.html">Understanding Methods and Generics in R aside</a> if that is unclear. So let’s imagine we have a new data set with <code>x1</code> and <code>x2</code> but no <code>y</code>.</p>
+</div>
+</div>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
